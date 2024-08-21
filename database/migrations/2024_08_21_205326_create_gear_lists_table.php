@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->bigInteger('user_id');
+            $table->string('notes');
             $table->timestamps();
         });
     }
