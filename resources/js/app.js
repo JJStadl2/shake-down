@@ -1,9 +1,9 @@
 import './bootstrap';
-window.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function(e) {
     console.log('ready');
-    function showPassword(id){
-        console.log('id in show password: '+id);
-        let password = document.getElementById(id);
+    function showPassword(){
+        console.log('id in show password: ');
+        let password = document.getElementById('inputPassword');
         if (password.type === "password") {
                 password.type = "text";
         } else {
@@ -11,3 +11,5 @@ window.addEventListener("DOMContentLoaded", function() {
         }
     }
 });
+
+

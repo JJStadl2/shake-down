@@ -22,7 +22,7 @@
 
  _mix
      .js('resources/js/app.js', 'js')
-     .sass('resources/sass/app.sass', 'css')
+     .sass('resources/sass/app.scss', 'css')
      .extract()
      .version()
      .setPublicPath('./public');
