@@ -19,14 +19,14 @@ class AccountController extends Controller
         //confirm the passwords match
         if(!Validation::validateRegistration($request)){
 
-            return redirect()->back()->with('error','The passwords you entered do not match.');
+            return redirect()->back()->with('error','The passwords you entered do not match.')->withInput();
         }
 
         //check if the user aleady has an account
-        $user = User::where('email',$request->inputEmail)->first();
+        $user = User::where('email',strtolower($request->inputEmail))->first();
 
         if(!empty($user)){
-            return redirect()->back()->with('error','An account already exists for '.$request->inputEmail.'.');
+            return redirect()->back()->with('error','An account already exists for '.$request->inputEmail.'.')->withInput();;
         }
 
         $newUser = new User();
