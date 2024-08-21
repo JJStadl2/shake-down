@@ -12,7 +12,6 @@ class AuthController extends Controller
     }
 
     public function login(Request $request){
-        Log::debug(__FILE__.' '.__LINE__.' in login controller');
-        return redirect()->back()->with('error','failed to login.');
+        return redirect('/dashboard');
     }
 }
