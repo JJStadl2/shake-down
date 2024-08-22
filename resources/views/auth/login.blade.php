@@ -1,9 +1,9 @@
 @extends('layouts.header-footer')
 @section('content')
 <div class="container">
-    <h1>Login form</h1>
+    <h1 style="text-align: center;">Log In</h1>
     <div class="form-container">
-        <form method="post" action="{{ route('login') }}">
+        <form class="login-form" method="post" action="{{ route('login') }}">
             @csrf
             <div class="mb-3">
               <label for="email" class="form-label">Email address</label>
@@ -15,8 +15,15 @@
               <input type="password" class="form-control" id="password" name="password" required/>
               {{-- <input type="checkbox" class="form-control-check" onclick="showPassword();"/><span>&nbsp;Show Password</span> --}}
             </div>
-             <button type="submit" class="btn btn-primary">Submit</button>
+            <div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                <a  href="/register" class="btn btn-primary">Create an Account</a>
+
+            </div>
+
           </form>
+
     </div>
+
 </div>
 @endsection

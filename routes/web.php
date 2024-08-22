@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
+
+Route::get('/', function () {
+    return view('welcome');
+
+});
 //view routs
 Route::get('/dashboard', function () {
      return view('dashboard');
@@ -29,3 +34,7 @@ Route::post('/gear-list/{id}', [App\Http\Controllers\GearListsController::class,
 )->name('update');
 Route::post('/gear-list', [App\Http\Controllers\GearListsController::class, 'create']
 )->name('create');
+
+//about/housekeeping
+Route::get('/about', [App\Http\Controllers\GearListsController::class, 'index']
+)->name('index');

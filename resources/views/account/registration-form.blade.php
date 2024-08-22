@@ -2,7 +2,7 @@
 @section('content')
 <div class="container">
     <div class="form-container">
-        <form method="post" action="{{ route('register') }}">
+        <form class="registration-form" method="post" action="{{ route('register') }}">
             @csrf
             <div class="mb-3">
                 <label for="inputName" class="form-label">Name</label>
@@ -26,5 +26,6 @@
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>
     </div>
+    <div class="form-footer"></div>
 </div>
 @endsection
