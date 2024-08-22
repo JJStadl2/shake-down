@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth as PackAuth;
 class Auth
 {
     /**
@@ -18,13 +19,16 @@ class Auth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = User::where('email',strtolower($request->email))->first();
-        if(empty($user)){
-            return redirect()->back()->with('error','Invalid email address. User account does not exist. Please register.');
+        $credentials = $request->only('email', 'password');
+        if (PackAuth::attempt($credentials)) {
+            Log::debug(__FILE__.' '.__LINE__);
+            // Authentication passed...
+            return redirect()->intended('dashboard');
         }
-        if(!Hash::check($request->password, $user->password)){
-            return redirect()->back()->with('error','Invaild password.');
-        }
+
+        return back()->with([
+            'error' => 'The provided credentials do not match our records.',
+        ]);
         return $next($request);
     }
 }

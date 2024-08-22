@@ -32,9 +32,11 @@ Route::get('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 
 )->name('show');
 Route::post('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 'update']
 )->name('update');
-Route::post('/gear-list', [App\Http\Controllers\GearListsController::class, 'create']
+Route::get('/gear-list', [App\Http\Controllers\GearListsController::class, 'create']
 )->name('create');
 
 //about/housekeeping
 Route::get('/about', [App\Http\Controllers\GearListsController::class, 'index']
-)->name('index');
+)->name('about');
+Route::get('/gallery', [App\Http\Controllers\GearListsController::class, 'index']
+)->name('gallery');
