@@ -2,6 +2,7 @@
 @section('content')
 <div class="container">
     <div class="form-container">
+        <h1>Sign Up</h1>
         <form class="registration-form" method="post" action="{{ route('register') }}">
             @csrf
             <div class="mb-3">
@@ -16,12 +17,12 @@
             <div class="mb-3">
               <label for="inputPassword" class="form-label">Password</label>
               <input type="password" class="form-control" id="inputPassword" name="inputPassword" required/>
-              {{-- <input type="checkbox" class="form-control-check" onclick="showPassword();"/><span>&nbsp;Show Password</span> --}}
+              <input type="checkbox" class="form-control-check" onclick="showPassword('inputPassword');"/><span>&nbsp;Show</span>
             </div>
             <div class="mb-3">
                 <label for="confirmPassword" class="form-label">Confirm Password</label>
                 <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required/>
-                {{-- <input type="checkbox" class="form-control-check" onclick="showPassword();"/><span>&nbsp;Show Password</span> --}}
+                <input type="checkbox" class="form-control-check" onclick="showPassword('confirmPassword');"/><span>&nbsp;Show</span>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->float('item_weight');
             $table->boolean('in_grams')->default(false);
             $table->boolean('in_ounces')->default(true);
+            $table->integer('amount');
 
 
 

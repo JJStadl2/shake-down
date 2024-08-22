@@ -34,6 +34,8 @@ Route::post('/gear-list/{id}', [App\Http\Controllers\GearListsController::class,
 )->name('update');
 Route::get('/gear-list', [App\Http\Controllers\GearListsController::class, 'create']
 )->name('create');
+Route::post('/gear-list', [App\Http\Controllers\GearListsController::class, 'store']
+)->name('store');
 
 //about/housekeeping
 Route::get('/about', [App\Http\Controllers\GearListsController::class, 'index']
