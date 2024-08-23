@@ -62,8 +62,8 @@ body {
 
 .create-list-form-header {
   width: 35%;
-  margin-left: -20%;
-  float: left;
+  margin-left: 35%;
+  padding-bottom: 285px;
 }
 
 .add-list-items-form {

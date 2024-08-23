@@ -42,7 +42,7 @@ class GearListsController extends Controller
     public function store(Request $request)
     {
         Log::debug(__FILE__.' '.__LINE__.' request in store list: '.print_r($request->input(),true));
-        return redirect()->back()->with('success','List created');
+        return redirect()->back()->with('success','List created')->withInput();
     }
 
     /**
