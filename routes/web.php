@@ -27,15 +27,27 @@ Route::post('/register',[App\Http\Controllers\AccountController::class, 'registe
 
 //gear list routes
 Route::get('/gear-lists', [App\Http\Controllers\GearListsController::class, 'index']
-)->name('index');
+)->name('list-index');
 Route::get('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 'show']
-)->name('show');
+)->name('list-show');
 Route::post('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 'update']
-)->name('update');
+)->name('list-update');
 Route::get('/gear-list', [App\Http\Controllers\GearListsController::class, 'create']
-)->name('create');
+)->name('list-create');
 Route::post('/gear-list', [App\Http\Controllers\GearListsController::class, 'store']
-)->name('store');
+)->name('list-store');
+
+//gear list item routes
+Route::get('/list-items/{listId}', [App\Http\Controllers\GearListItemsController::class, 'index']
+)->name('item-index');
+// Route::get('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 'show']
+// )->name('show');
+Route::post('/list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'update']
+)->name('item-update');
+Route::get('/list-item', [App\Http\Controllers\GearListItemsController::class, 'create']
+)->name('item-create');
+Route::post('/list-item', [App\Http\Controllers\GearListItemsController::class, 'store']
+)->name('item-store');
 
 //about/housekeeping
 Route::get('/about', [App\Http\Controllers\GearListsController::class, 'index']

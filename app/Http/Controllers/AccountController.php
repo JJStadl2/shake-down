@@ -35,6 +35,6 @@ class AccountController extends Controller
         $newUser->password = Hash::make($request->inputPassword);
         $newUser->save();
 
-        return redirect()->back()->with('success','The user has been created.');
+        return redirect('/login')->with('success','Your accoutn has been created. Please login.');
     }
 }

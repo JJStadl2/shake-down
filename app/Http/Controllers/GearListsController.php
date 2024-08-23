@@ -15,17 +15,18 @@ class GearListsController extends Controller
     public function index()
     {
         $user = Auth::user();
-
+  
         if(empty($user)){
             return redirect()->back()->with('error','Please login');
         }
+
         $gearLists = GearLists::where('user_id',$user->id)->get();
-        Log::debug(__FILE__.' '.__LINE__.' lists: '.print_r($gearLists,true));
+
         if($gearLists->isEmpty()){
             return redirect('/gear-list')->with('info','Please create a gear list.');
         }
-        Log::debug(__FILE__.' '.__LINE__.' user id: '.print_r($user,true));
-        return redirect()->back()->with('success','User Found');
+
+        return view('gear-lists.user-list-index',['gearLists'=>$gearLists,'user'=>$user]);
     }
 
     /**
@@ -41,8 +42,22 @@ class GearListsController extends Controller
      */
     public function store(Request $request)
     {
-        Log::debug(__FILE__.' '.__LINE__.' request in store list: '.print_r($request->input(),true));
-        return redirect()->back()->with('success','List created')->withInput();
+        $user = Auth::user();
+        $gearList = new GearLists();
+        $gearList->user_id = $user->id;
+        $gearList->name = $request->listName;
+        $gearList->notes = $request->listNotes ?? '';
+        $gearList->sort = $request->sortBy ?? 'category';
+
+        try{
+            $gearList->save();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return redirect()->back()->with('error','Unable to save list at this time.')->withInput();
+        }
+
+        $gearListItems = [];
+        return view('gear-lists.gear-list',['gearList'=>$gearList,'listItems'=>$gearListItems,'user'=>$user]);
     }
 
     /**

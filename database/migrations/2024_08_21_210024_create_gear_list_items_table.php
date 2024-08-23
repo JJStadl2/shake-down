@@ -20,10 +20,6 @@ return new class extends Migration
             $table->boolean('in_grams')->default(false);
             $table->boolean('in_ounces')->default(true);
             $table->integer('amount');
-
-
-
-
             $table->timestamps();
         });
     }
