@@ -3,11 +3,46 @@
 @section('content')
 <div class="container">
     {{-- add header update form --}}
-    <h1 style="margin-bottom: 5px;">{{ ucwords($gearList->name) }}</h1>
-    {{-- <h1 style="margin-bottom: 5px;">{{ ucwords( $user->name)."'s"}} Gear Lists</h1> --}}
-    <div class="spacer">
-            <button class="btn btn-primary" onclick="addListItem();">+ Item</button>
+    <div class="form-container">
+            <div class="row">
+                <div class="col-md-1 mb-3">
+                    <h4>Name</h4>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <input type="text" class="form-control" id="listName" name="listName" data-column-name="name" value="{{ $gearList->name ?? '' }}"/>
+                </div>
+                <div class="col-md-1 mb-3">
+                    <h4>Notes</h4>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <textarea type="text" class="form-control" id="listNotes" name="listNotes" data-column-name="notes">{{ $gearList->notes ?? '' }}</textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1 mb-3">
+                    <h4>UOM</h4>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <select class="form-control" id="uom" name="uom">
+                        <option value="us"  @if($gearList->uom === 'us') selected @endif>US(OZ/LBS)</option>
+                        <option value="metric"  @if($gearList->uom === 'metric') selected @endif >Metric(GR/KG)</option>
+                    </select>
+                </div>
+
+                <input type="hidden" data-column-name="uom" id="list-uom" name="list_uom" value="{{$gearList->uom}}"/>
+
+            </div>
+            <div class="row">
+                <div class="col-md-1 mb-3"> </div>
+                <div class="col-md-2 mb-3">
+                    <button class="btn btn-primary" onclick="addListItem();">+ Item</button>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <button style="margin-left: -25%;" class="btn btn-primary" >Update</button>
+                </div>
+            </div>
     </div>
+
     <form class="list-item-form">
         <table class="table table-dark">
             <thead>
@@ -28,11 +63,11 @@
                     @foreach($gearListItems as $item)
 
                         <tr>
-                            <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[{{ $i }}]" value="{{ $item->id}}"/>
+                            <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[]" value="{{ $item->id}}"/>
                             <th scope="row">{{ $i }}</th>
                             <td>
                                 {{-- onchange update item by id --}}
-                                <input type="text" data-column-name="item_name" id="itemName-{{ $i }}" name="itemName[]]" value="{{ $item->item_name}}"/>
+                                <input type="text" data-column-name="item_name" id="itemName-{{ $i }}" name="itemName[]" placeholder="Enter the name of the item"  value="{{ $item->item_name}}"/>
                             </td>
                             {{-- <td>cat?</td> --}}
                             <td>
@@ -49,6 +84,10 @@
                                         Grams
                                     </label>
                                 </div>
+                            </td>
+                            <td>
+                                {{-- onchange update item by id --}}
+                                <input type="number" data-column-name="amount" id="packesAmount-{{ $i }}" name="pakedAmount[]" placeholder="How many are you bringing?" value="{{ $item->item_weight}}"/>
                             </td>
                             <td> <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 24 24">
                                 <path d="M 10 2 L 9 3 L 3 3 L 3 5 L 4.109375 5 L 5.8925781 20.255859 L 5.8925781 20.263672 C 6.023602 21.250335 6.8803207 22 7.875 22 L 16.123047 22 C 17.117726 22 17.974445 21.250322 18.105469 20.263672 L 18.107422 20.255859 L 19.890625 5 L 21 5 L 21 3 L 15 3 L 14 2 L 10 2 z M 6.125 5 L 17.875 5 L 16.123047 20 L 7.875 20 L 6.125 5 z" fill="white"></path>

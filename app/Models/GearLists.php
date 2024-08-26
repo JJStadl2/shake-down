@@ -18,6 +18,7 @@ class GearLists extends Model
         'name',
         'user_id',
         'notes',
+        'uom',
     ];
 
     /**
@@ -37,7 +38,7 @@ class GearLists extends Model
     protected function casts(): array
     {
         return [
-       
+
         ];
     }
 }

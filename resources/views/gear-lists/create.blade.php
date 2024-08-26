@@ -29,6 +29,14 @@
                         </select>
 
                     </div>
+                    <div class="mb-3">
+                        <label for="uom" class="form-label">Measurement</label>
+                        <select class="form-control" id="uom" name="uom">
+                            <option value="us"  @if(old('uom') === 'us') selected @endif>US(OZ/LBS)</option>
+                            <option value="metric"  @if(old('uom') === 'metric') selected @endif >Metric(GR/KG)</option>
+                        </select>
+
+                    </div>
                     <div class="">
                         <button type="submit" class="btn btn-primary">Save</button>
                     </div>

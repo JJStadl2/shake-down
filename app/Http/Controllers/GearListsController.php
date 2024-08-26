@@ -15,7 +15,7 @@ class GearListsController extends Controller
     public function index()
     {
         $user = Auth::user();
-  
+
         if(empty($user)){
             return redirect()->back()->with('error','Please login');
         }
@@ -48,6 +48,7 @@ class GearListsController extends Controller
         $gearList->name = $request->listName;
         $gearList->notes = $request->listNotes ?? '';
         $gearList->sort = $request->sortBy ?? 'category';
+        $gearList->uom = $request->uom ?? 'us';
 
         try{
             $gearList->save();

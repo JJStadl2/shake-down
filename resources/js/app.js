@@ -11,10 +11,13 @@ window.addEventListener("DOMContentLoaded", function(e) {
     }
     this.window.addListItem = function addListItem(){
 
+        let listUOM = document.getElementById('list-uom').value;
         let finalIElement = document.getElementById('final-i');
         let itemTable = document.getElementById('item-table-body');
         let finalI = finalIElement.value;
         finalIElement.value = +finalI + 1;
+        console.log('list uom in js: ' +listUOM);
+
 
         let row = document.createElement("tr");
 
@@ -53,39 +56,94 @@ window.addEventListener("DOMContentLoaded", function(e) {
         itemWeight.setAttribute('data-column-name','item_weight');
         cell2.appendChild(itemWeight);
 
+        //for radios on click-> getConversionRate();.
+        //add pounds and kilos?
+        //set total label on click
         let cell3 = document.createElement("td");
-        let ouncesRadio = document.createElement("input");
-        ouncesRadio.className = 'form-check-input';
-        ouncesRadio.type = "radio";
-        ouncesRadio.name = "uom[]";
-        ouncesRadio.id = 'uom-oz-'+finalI;
-        ouncesRadio.setAttribute('data-column-name','in_ounces');
-        ouncesRadio.checked = true;
+        if(listUOM === 'us'){
 
-        let ouncesRadioLabel = document.createElement("label");
-        ouncesRadioLabel.className = 'form-check-label oz-radio';
-        ouncesRadioLabel.htmlFor = 'uom-oz-'+finalI;
-        ouncesRadioLabel.innerHTML = 'Ounces';
+            let ouncesRadio = document.createElement("input");
+            ouncesRadio.className = 'form-check-input';
+            ouncesRadio.type = "radio";
+            ouncesRadio.name = "uom-"+finalI+"[]";
+            ouncesRadio.id = 'uom-oz-'+finalI;
+            ouncesRadio.setAttribute('data-column-name','in_ounces');
+            ouncesRadio.checked = true;
 
-        let gramsRadio = document.createElement("input");
-        gramsRadio.className = 'form-check-input';
-        gramsRadio.type = "radio";
-        gramsRadio.name = "uom[]";
-        gramsRadio.id = 'uom-gram-'+finalI;
-        gramsRadio.setAttribute('data-column-name','in_grams');
+            let ouncesRadioLabel = document.createElement("label");
+            ouncesRadioLabel.className = 'form-check-label oz-radio';
+            ouncesRadioLabel.htmlFor = 'uom-oz-'+finalI;
+            ouncesRadioLabel.innerHTML = 'OZ';
 
-        let gramsRadioLabel = document.createElement("label");
-        gramsRadioLabel.className = 'form-check-label';
-        gramsRadioLabel.htmlFor = 'uom-gram-'+finalI;
-        gramsRadioLabel.innerHTML = 'Grams';
+            let poundsRadio = document.createElement("input");
+            poundsRadio.className = 'form-check-input';
+            poundsRadio.type = "radio";
+            poundsRadio.name = "uom-"+finalI+"[]";
+            poundsRadio.id = 'uom-lbs-'+finalI;
+            poundsRadio.setAttribute('data-column-name','in_pounds');
 
-        cell3.appendChild(ouncesRadio);
-        cell3.appendChild(ouncesRadioLabel);
-        cell3.appendChild(gramsRadio);
-        cell3.appendChild(gramsRadioLabel);
+            let poundsRadioLabel = document.createElement("label");
+            poundsRadioLabel.className = 'form-check-label oz-radio';
+            poundsRadioLabel.htmlFor = 'uom-lbs-'+finalI;
+            poundsRadioLabel.innerHTML = 'LBS';
 
-        // let cell4 = document.createElement("td");
+            cell3.appendChild(ouncesRadio);
+            cell3.appendChild(ouncesRadioLabel);
+            cell3.appendChild(poundsRadio);
+            cell3.appendChild(poundsRadioLabel);
 
+        }else{
+
+            let gramsRadio = document.createElement("input");
+            gramsRadio.className = 'form-check-input';
+            gramsRadio.type = "radio";
+            gramsRadio.name = "uom-"+finalI+"[]";
+            gramsRadio.id = 'uom-gram-'+finalI;
+            gramsRadio.setAttribute('data-column-name','in_grams');
+
+            let gramsRadioLabel = document.createElement("label");
+            gramsRadioLabel.className = 'form-check-label';
+            gramsRadioLabel.htmlFor = 'uom-gram-'+finalI;
+            gramsRadioLabel.innerHTML = 'Grams';
+
+            let kilosRadio = document.createElement("input");
+            kilosRadio.className = 'form-check-input';
+            kilosRadio.type = "radio";
+            kilosRadio.name = "uom-"+finalI+"[]";
+            kilosRadio.id = 'uom-kilo-'+finalI;
+            kilosRadio.setAttribute('data-column-name','in_grams');
+
+            let kilosRadioLabel = document.createElement("label");
+            kilosRadioLabel.className = 'form-check-label';
+            kilosRadioLabel.htmlFor = 'uom-kg-'+finalI;
+            kilosRadioLabel.innerHTML = 'KG';
+
+            cell3.appendChild(gramsRadio);
+            cell3.appendChild(gramsRadioLabel);
+            cell3.appendChild(kilosRadio);
+            cell3.appendChild(kilosRadioLabel);
+
+        }
+
+
+        //on change update and run total line calc.
+        let cell4 = document.createElement("td");
+        let packedAmount = document.createElement("input");
+        packedAmount.type = "number";
+        packedAmount.name = "packedAmount[]";
+        packedAmount.id = 'packedAmount-'+finalI;
+        packedAmount.value = 1;
+        packedAmount.setAttribute('data-column-name','amount');
+        cell4.appendChild(packedAmount);
+
+        let cell5 = document.createElement("td");
+        let totalLineWeight = document.createElement("input");
+        totalLineWeight.type = "number";
+        totalLineWeight.name = "totalLineWeight[]";
+        totalLineWeight.id = 'totalLineWeight-'+finalI;
+        totalLineWeight.value = 0;//getLineTotalWeight();
+        totalLineWeight.setAttribute('data-column-name','total_line_weight');//add to DB
+        cell5.appendChild(totalLineWeight);
 
 
 
@@ -101,7 +159,8 @@ window.addEventListener("DOMContentLoaded", function(e) {
         row.appendChild(cell1);
         row.appendChild(cell2);
         row.appendChild(cell3);
-        // row.appendChild(cell4);
+        row.appendChild(cell4);
+        row.appendChild(cell5);
 
         // Append the row to the table
         itemTable.appendChild(row);
