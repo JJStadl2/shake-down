@@ -53,7 +53,9 @@
                 <th scope="col">Weight</th>
                 <th scope="col">UOM</th>
                 <th scope="col"># Packed</th>
-                <th scope="col">Total Item Weight</th>
+                <th scope="col">Total Packed Weight</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
 
             </tr>
             </thead>
