@@ -49,13 +49,10 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Item</th>
-                {{-- <th scope="col">cat?</th> --}}
+                <th scope="col">Category</th>
                 <th scope="col">Weight</th>
-                {{-- <th scope="col">UOM</th> --}}
                 <th scope="col"># Packed</th>
                 <th scope="col">Total Packed Weight</th>
-                {{-- <th scope="col"></th>
-                <th scope="col"></th> --}}
                 <th scope="col">UOM</th>
                 <th scope="col">Remove</th>
 

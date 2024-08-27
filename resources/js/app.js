@@ -33,23 +33,18 @@ window.addEventListener("DOMContentLoaded", function(e) {
         counter.value = finalI;
         counter.setAttribute('data-column-name','id');
 
-        let itemName = document.createElement("input");
-        itemName.type = "text";
-        itemName.name = "itemName[]";
-        itemName.id = 'itemName-'+finalI;
-        itemName.value = '';
-        itemName.setAttribute('data-column-name','item_name');
-        itemName.placeholder = 'Enter the name of the item';
+        let itemName =  createListItemInput('text','itemName',finalI,'item_name');
+        itemName.placeholder = 'Item Name';
+        itemName.classList.add('form-control');
         // itemName.onclick = '';
 
         let cell2 = document.createElement("td");
-        let itemWeight = document.createElement("input");
-        itemWeight.type = "number";
-        itemWeight.name = "itemWeight[]";
-        itemWeight.id = 'itemWeight-'+finalI;
+        let itemWeight = createListItemInput('number','itemWeight',finalI,'item_weight');
         itemWeight.value = 0;
-        itemWeight.setAttribute('data-column-name','item_weight');
         itemWeight.classList.add('for-weight');
+        itemWeight.classList.add('number-input');
+        itemWeight.classList.add('form-control');
+        cell2.classList.add('number-col');
 
         //for radios on click-> getConversionRate();.
         //add pounds and kilos?
@@ -66,89 +61,46 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
         if(listUOM === 'us'){
 
-            ouncesRadio = document.createElement("input");
-            ouncesRadio.className = 'form-check-input us-radio';
-            ouncesRadio.type = "radio";
-            ouncesRadio.name = "uom-"+finalI+"[]";
-            ouncesRadio.id = 'uom-oz-'+finalI;
-            ouncesRadio.setAttribute('data-column-name','in_ounces');
-            ouncesRadio.checked = true;
-            ouncesRadio.classList.add('for-weight');
-
-            ouncesRadioLabel = document.createElement("label");
-            ouncesRadioLabel.className = 'form-check-label us-radio';
-            ouncesRadioLabel.htmlFor = 'uom-oz-'+finalI;
-            ouncesRadioLabel.id = 'uom-oz-label-'+finalI;
-            ouncesRadioLabel.innerHTML = 'OZ';
-
-            poundsRadio = document.createElement("input");
-            poundsRadio.className = 'form-check-input us-radio';
-            poundsRadio.type = "radio";
-            poundsRadio.name = "uom-"+finalI+"[]";
-            poundsRadio.id = 'uom-lbs-'+finalI;
-            poundsRadio.setAttribute('data-column-name','in_pounds');
-            poundsRadio.classList.add('for-weight');
-
-            poundsRadioLabel = document.createElement("label");
-            poundsRadioLabel.className = 'form-check-label us-radio';
-            poundsRadioLabel.htmlFor = 'uom-lbs-'+finalI;
-            poundsRadioLabel.id = 'uom-lbs-label-'+finalI;
-            poundsRadioLabel.innerHTML = 'LBS';
+            ouncesRadio = createRadio('in_ounces', '', 'oz', finalI);
+            ouncesRadioLabel = createLabel('OZ',  'uom-oz-'+finalI, 'oz', finalI);
+            poundsRadio = createRadio('in_pounds', '', 'lbs', finalI);
+            poundsRadioLabel = createLabel('LBS',  'uom-lbs-'+finalI, 'lbs', finalI);
 
         }else{
 
-            gramsRadio = document.createElement("input");
-            gramsRadio.className = 'form-check-input metric-radio';
-            gramsRadio.type = "radio";
-            gramsRadio.name = "uom-"+finalI+"[]";
-            gramsRadio.id = 'uom-gram-'+finalI;
-            gramsRadio.checked = true;
-            gramsRadio.setAttribute('data-column-name','in_grams');
-            gramsRadio.classList.add('for-weight');
-
-            gramsRadioLabel = document.createElement("label");
-            gramsRadioLabel.className = 'form-check-label metric-radio';
-            gramsRadioLabel.htmlFor = 'uom-gram-'+finalI;
-            gramsRadioLabel.innerHTML = 'Grams';
-            gramsRadioLabel.id = 'uom-gram-label-'+finalI;
-
-            kilosRadio = document.createElement("input");
-            kilosRadio.className = 'form-check-input metric-radio';
-            kilosRadio.type = "radio";
-            kilosRadio.name = "uom-"+finalI+"[]";
-            kilosRadio.id = 'uom-kg-'+finalI;
-            kilosRadio.setAttribute('data-column-name','in_kg');
-            kilosRadio.classList.add('for-weight');
-
-            kilosRadioLabel = document.createElement("label");
-            kilosRadioLabel.className = 'form-check-label metric-radio';
-            kilosRadioLabel.htmlFor = 'uom-kg-'+finalI;
-            kilosRadioLabel.id = 'uom-kg-label-'+finalI;
-            kilosRadioLabel.innerHTML = 'KG';
+            gramsRadio = createRadio('in_grams', '', 'gram', finalI);
+            gramsRadioLabel =  createLabel('Grams',  'uom-gram-'+finalI, 'gram', finalI);
+            kilosRadio =  createRadio('in_kg', '', 'kg', finalI);
+            kilosRadioLabel = createLabel('KG',  'uom-kg-'+finalI, 'kg', finalI);
         }
 
         let cell4 = document.createElement("td");
-        let packedAmount = document.createElement("input");
-        packedAmount.type = "number";
-        packedAmount.name = "packedAmount[]";
-        packedAmount.id = 'packedAmount-'+finalI;
+        cell4.classList.add('number-col');
+        let packedAmount = createListItemInput('number','packedAmount',finalI,'amount');
         packedAmount.value = 1;
-        packedAmount.setAttribute('data-column-name','amount');
-        packedAmount.classList.add('for-weight')
+
+        packedAmount.classList.add('for-weight');
+        packedAmount.classList.add('number-input');
+        packedAmount.classList.add('form-control');
 
         let cell5 = document.createElement("td");
-        let totalLineWeight = document.createElement("input");
-        totalLineWeight.type = "number";
-        totalLineWeight.name = "totalLineWeight[]";
-        totalLineWeight.id = 'totalLineWeight-'+finalI;
+        cell5.classList.add('number-col');
+        let totalLineWeight = createListItemInput('number','totalLineWeight',finalI,'total_line_weight');
         totalLineWeight.value = 0;//getLineTotalWeight();
         totalLineWeight.setAttribute('data-column-name','total_line_weight');
         totalLineWeight.setAttribute('readonly',true);
+        totalLineWeight.classList.add('number-input');
+        totalLineWeight.classList.add('form-control');
 
         //append inputs to cells.
         cell1.appendChild(counter);
         cell1.appendChild(itemName);
         cell2.appendChild(itemWeight);
+
+        let selectCell = document.createElement("td");
+        let categorySelect = getCategroySelect(finalI);
+        selectCell.append(categorySelect);
+
 
         if(listUOM === 'us'){
             cell3.appendChild(ouncesRadio);
@@ -168,8 +120,8 @@ window.addEventListener("DOMContentLoaded", function(e) {
         // Append cells to the row.
         row.appendChild(cell0);
         row.appendChild(cell1);
+        row.appendChild(selectCell);
         row.appendChild(cell2);
-        // row.appendChild(cell3);
         row.appendChild(cell4);
         row.appendChild(cell5);
         row.appendChild(cell3);
@@ -205,9 +157,35 @@ window.addEventListener("DOMContentLoaded", function(e) {
         document.getElementById('totalLineWeight-'+row).value = lineTotal;
 
     }
-    // function getCategroySelect(){
+    function  createListItemInput(type,nameBase,row,columnName){
+        let element = document.createElement("input");
+        element.type = type;
+        element.name = nameBase+"[]";
+        element.id = nameBase+'-'+row;
+        element.value = '';
+        element.setAttribute('data-column-name',columnName);
+        return element;
 
-    // }
+    }
+    function getCategroySelect(row){
+
+        let values = ['','clothes','worn_clothes','rain_gear','packs','consumables','shelter','fire_and_water_treatment','luxury_item','tech'];
+        let texts = ['Choose','Clothes','Worn Clothes', 'Rain Gear','Packs','Consumbables','Shelter','Fire and Water Treatment','Luxury Item','Tech'];
+        let select =  document.createElement("select");
+        select.id = 'ItemCategory-'+row;
+        select.name = 'itemCategory-'+row;
+        select.setAttribute('data-column-name','item_category');
+        select.className = 'form-control';
+
+        for(let i = 0; i < values.length; i++){
+            let option = document.createElement("option");
+            option.value = values[i];
+            option.text = texts[i];
+            select.appendChild(option);
+        }
+        return select;
+
+    }
     function metricRadioToUs(){
         let inputElements = document.querySelectorAll('.metric-radio');
         inputElements.forEach(function (inputElement) {
@@ -263,12 +241,14 @@ window.addEventListener("DOMContentLoaded", function(e) {
         });
     }
     function createRadio(dataColumnName, label, uom, row) {
+
         let radio = document.createElement("input");
         radio.className = 'form-check-input' + (uom === 'gram' || uom === 'kg' ? ' metric-radio' : ' us-radio');
         radio.type = "radio";
         radio.name = "uom-" + row + "[]";
         radio.id = 'uom-' + uom + '-' + row;
         radio.setAttribute('data-column-name', dataColumnName);
+
         if(uom === 'gram' || uom === 'oz'){
             radio.checked = true;
         }
@@ -277,8 +257,6 @@ window.addEventListener("DOMContentLoaded", function(e) {
         return radio;
     }
     function createLabel(innerHtml, htmlFor, uom, row) {
-        console.log('uom in create label: '+uom);
-        console.log('row in create label: '+row);
 
         let label = document.createElement("label");
         label.className = 'form-check-label' + (uom === 'gram' || uom === 'kg' ? ' metric-radio' : ' us-radio');

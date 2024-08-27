@@ -184,7 +184,15 @@ body {
   font-size: 0.9rem;
 }
 
-lists .list-item-form-container {
+.number-col {
+  margin-left: -10%;
+}
+
+Lists and ListItems .number-input {
+  width: 34%;
+}
+
+.list-item-form-container {
   width: 95%;
 }
 
