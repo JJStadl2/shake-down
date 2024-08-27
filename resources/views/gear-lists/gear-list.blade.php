@@ -1,7 +1,7 @@
 @extends('layouts.header-footer')
 @section('title','Grear List with items | ')
 @section('content')
-<div class="container">
+<div class="list-item-form-container">
     {{-- add header update form --}}
     <div class="form-container">
             <div class="row">
@@ -23,7 +23,7 @@
                     <h4>UOM</h4>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <select class="form-control" id="uom" name="uom">
+                    <select class="form-control" id="uom" name="uom" onchange="updateUOM(this.value)">
                         <option value="us"  @if($gearList->uom === 'us') selected @endif>US(OZ/LBS)</option>
                         <option value="metric"  @if($gearList->uom === 'metric') selected @endif >Metric(GR/KG)</option>
                     </select>
@@ -51,11 +51,13 @@
                 <th scope="col">Item</th>
                 {{-- <th scope="col">cat?</th> --}}
                 <th scope="col">Weight</th>
-                <th scope="col">UOM</th>
+                {{-- <th scope="col">UOM</th> --}}
                 <th scope="col"># Packed</th>
                 <th scope="col">Total Packed Weight</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
+                {{-- <th scope="col"></th>
+                <th scope="col"></th> --}}
+                <th scope="col">UOM</th>
+                <th scope="col">Remove</th>
 
             </tr>
             </thead>

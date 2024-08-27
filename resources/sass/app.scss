@@ -194,12 +194,15 @@ body {
 .footer p {
     font-size: 0.9rem;
 }
-//lists
+lists
+.list-item-form-container{
+    width: 95%;
+}
 .list-form-text{
     color: #f5f5f5;
 }
  //Lists and ListItems
- .oz-radio{
+ .us-radio,.metric-radio{
     margin-right: 3%;
  }
  .create-list-form-header{
