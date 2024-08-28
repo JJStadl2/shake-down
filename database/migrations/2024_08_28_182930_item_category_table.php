@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gear_lists', function (Blueprint $table) {
+
+        Schema::create('item_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->bigInteger('user_id');
-            $table->string('notes')->nullable();
-            $table->string('sort');
-            $table->string('uom');
-            $table->timestamps();
+            $table->string('value');
+            $table->string('category');
+            $table->integer('ordinal');
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gear_lists');
+        Schema::dropIfExists('item_categories');
     }
 };

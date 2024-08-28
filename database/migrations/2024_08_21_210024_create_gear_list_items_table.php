@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('gear_list_items', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('list_id');
-            $table->string('item_name');
-            $table->string('item_category');
-            $table->float('item_weight');
+            $table->string('item_name')->nullable();
+            $table->string('item_category')->nullable();
+            $table->float('item_weight')->default(0);
             $table->boolean('in_grams')->default(false);
             $table->boolean('in_kilos')->default(false);
             $table->boolean('in_ounces')->default(true);
-            $table->boolean('in_lbs')->default(true);
-            $table->integer('amount');
+            $table->boolean('in_lbs')->default(false);
+            $table->integer('amount')->default(1);
             $table->timestamps();
         });
     }

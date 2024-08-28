@@ -6,6 +6,7 @@ use App\Models\GearListItems;
 use App\Models\GearLists;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class GearListItemsController extends Controller
@@ -15,7 +16,10 @@ class GearListItemsController extends Controller
      */
     public function index($listId)
     {
+        $request = new Request();
         $user = Auth::user();
+        $itemCategories = $this->getCategories($request);
+
         try{
             $gearList = GearLists::where('id',$listId)->first();
         }catch(\Exception $e){
@@ -23,7 +27,7 @@ class GearListItemsController extends Controller
             return redirect()->back()->with('error','Unable to find list info.');
         }
         try{
-            $gearListItems = GearListItems::where('list-id',$listId)->orderBy('id')->get();
+            $gearListItems = GearListItems::where('list_id',$listId)->orderBy('id')->get();
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             $gearListItems = [];
@@ -33,7 +37,7 @@ class GearListItemsController extends Controller
             $gearListItems = [];
         }
 
-        return view('gear-lists.gear-list',['gearList'=>$gearList,'listItems'=>$gearListItems,'user'=>$user]);
+        return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories]);
     }
 
     /**
@@ -49,9 +53,13 @@ class GearListItemsController extends Controller
      */
     public function store(Request $request)
     {
-        Log::debug(__FILE__.' '.__LINE__.' request for create item: '.print_r($request->input(),true));
         $gearListItem = new GearListItems();
-        $gearListItem->$request->columnName = $request->value;
+        $inputs = $request->except(['_token','q','id']);
+
+        foreach($inputs as $key => $value){
+            $gearListItem->$key = $value;
+        }
+
         try{
             $gearListItem->save();
         }catch(\Exception $e){
@@ -59,8 +67,7 @@ class GearListItemsController extends Controller
             return response()->json(['status'=>'0','msg'=>'Error Saving list item']);;
         }
 
-        $response = ['status'=>'1','newId'=>$gearListItem->id];
-        return response()->json($response);
+        return response()->json( ['status'=>'1','newId'=>$gearListItem->id]);
     }
 
     /**
@@ -82,9 +89,30 @@ class GearListItemsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, GearListItems $gearListItems)
+    public function update(Request $request, $id)
     {
-        //
+        $list_id = $request->list_id;
+        $inputs = $request->except(['_token','q','list_id']);
+
+        try{
+            $gearListItem = GearListItems::where('id',$id)->where('list_id',$list_id)->first();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Error fetching list item']);;
+        }
+
+        foreach($inputs as $key => $value){
+            $gearListItem->$key = $value;
+        }
+
+        try{
+            $gearListItem->save();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Error updating list item']);;
+        }
+
+        return response()->json( ['status'=>'1','msg'=>'updated']);
     }
 
     /**
@@ -93,5 +121,16 @@ class GearListItemsController extends Controller
     public function destroy(GearListItems $gearListItems)
     {
         //
+    }
+    public function getCategories(Request $request){
+
+        $itemCategories = DB::table('item_categories')->orderBy('ordinal','ASC')->get(['category','value']);
+
+        if($request->expectsJson()){
+            return response()->json($itemCategories);
+        }
+         return $itemCategories;
+
+
     }
 }

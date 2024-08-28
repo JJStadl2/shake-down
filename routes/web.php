@@ -49,6 +49,10 @@ Route::get('/list-item', [App\Http\Controllers\GearListItemsController::class, '
 Route::post('/list-item', [App\Http\Controllers\GearListItemsController::class, 'store']
 )->name('item-store');
 
+//js helpers
+Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsController::class, 'getCategories']
+)->name('get-categories');
+
 //about/housekeeping
 Route::get('/about', [App\Http\Controllers\GearListsController::class, 'index']
 )->name('about');

@@ -151,7 +151,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
         });
      }
 
-    function getLineTotalWeight(row,convert = false){
+     this.window.getLineTotalWeight = function getLineTotalWeight(row,convert = false){
 
         let weight = document.getElementById('itemWeight-'+row).value;
         let packedAmount = document.getElementById('packedAmount-'+row).value;
@@ -196,7 +196,8 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
 
     }
-    function updateListItem(element){
+    this.window.updateListItem = function updateListItem(element){
+
         let columnName = element.getAttribute('data-column-name');
         let value = element.value;
         let id = element.id;
@@ -205,30 +206,27 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let row = idArr[arrLength-1];
         let itemId = document.getElementById('id-'+row);
         let itemIdValue = itemId.value;
+        let listId = document.getElementById('listId').value;
         let url = '/list-item'
+        let update = false;
+
         if(itemIdValue.substring(0,3) !== 'new'){
-            console.log('URL TO UPDATE');
-        }else{
-            console.log('IS NEW ID');
+            update = true;
+            url = url+'/'+itemIdValue;
         }
-        console.log('item id  in update: ' +itemId);
-        console.log('row num  in update: ' +row);
-        console.log('data att in update: ' +columnName);
-        console.log('value update: ' + value);
-        console.log('id update: ' + id);
+
         let data = {};
-        data['columnName'] = columnName;
-        data['value'] = value;
-        // let form = document.querySelector(`#create-form`);
-
-
+        data['list_id'] = listId;
+        data[columnName] = value;
 
         axios.post(url, data, itemId)
             .then((res) => {
-               alert('updated! id is: '+res.newId);
-               itemId.value = res.neeId;
+               if(!update){
+                itemId.value = res.data.newId;
+               }
+
             }).catch((err) => {
-            alert('Failed to save list item. Please try again later.');
+            alert('Failed to update list item. Please try again later.');
             console.error(err);
         });
 
@@ -250,20 +248,43 @@ window.addEventListener("DOMContentLoaded", function(e) {
     }
     function getCategroySelect(row){
 
-        let values = ['','clothes','worn_clothes','rain_gear','packs','consumables','shelter','fire_and_water_treatment','luxury_item','tech'];
-        let texts = ['Choose','Clothes','Worn Clothes', 'Rain Gear','Packs','Consumbables','Shelter','Fire and Water Treatment','Luxury Item','Tech'];
         let select =  document.createElement("select");
         select.id = 'ItemCategory-'+row;
         select.name = 'itemCategory-'+row;
         select.setAttribute('data-column-name','item_category');
         select.className = 'form-control';
 
-        for(let i = 0; i < values.length; i++){
-            let option = document.createElement("option");
-            option.value = values[i];
-            option.text = texts[i];
-            select.appendChild(option);
-        }
+        let option = document.createElement("option");
+        option.value = '';
+        option.text ='Choose';
+        select.appendChild(option);
+        let optionList;
+
+            optionList = async function (){
+                try {
+                    const response = await axios.get('/list-item-categories');
+                    return response.data;
+                } catch (error) {
+                    // handle error
+                    console.log(error);
+                }
+            };
+
+            // To use the function and handle the response data
+            optionList().then((data) => {
+                // Do something with the response data
+                 for(let i = 0; i < data.length ;i++){
+                    let option = document.createElement("option");
+                    option.value = data[i].value;
+                    option.text =data[i].category;
+                    select.appendChild(option);
+                 }
+            });
+
+        select.addEventListener('change', function() {
+            updateListItem(select);
+        });
+
         return select;
 
     }
