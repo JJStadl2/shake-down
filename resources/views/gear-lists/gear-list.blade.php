@@ -18,27 +18,15 @@
                     <textarea type="text" class="form-control" id="listNotes" name="listNotes" data-column-name="notes">{{ $gearList->notes ?? '' }}</textarea>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-1 mb-3">
-                    <h4>UOM</h4>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <select class="form-control" id="uom" name="uom" onchange="updateUOM(this.value)">
-                        <option value="us"  @if($gearList->uom === 'us') selected @endif>US(OZ/LBS)</option>
-                        <option value="metric"  @if($gearList->uom === 'metric') selected @endif >Metric(GR/KG)</option>
-                    </select>
-                </div>
 
-                <input type="hidden" data-column-name="uom" id="list-uom" name="list_uom" value="{{$gearList->uom}}"/>
-
-            </div>
             <div class="row">
+                <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
                 <div class="col-md-1 mb-3"> </div>
                 <div class="col-md-2 mb-3">
                     <button class="btn btn-primary" onclick="addListItem();">+ Item</button>
                 </div>
                 <div class="col-md-2 mb-3">
-                    <button style="margin-left: -25%;" class="btn btn-primary" >Update</button>
+                    <button style="margin-left: -25%;" class="btn btn-primary" onclick="updateList();" >Update</button>
                 </div>
             </div>
     </div>

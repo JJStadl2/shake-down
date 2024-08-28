@@ -1,4 +1,5 @@
 import './bootstrap';
+
 window.addEventListener("DOMContentLoaded", function(e) {
 
     this.window.showPassword = function showPassword(id){
@@ -30,7 +31,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
         counter.type = "hidden";
         counter.name = "id[]";
         counter.id = 'id-'+finalI;
-        counter.value = finalI;
+        counter.value = 'new-'+finalI;
         counter.setAttribute('data-column-name','id');
 
         let itemName =  createListItemInput('text','itemName',finalI,'item_name');
@@ -129,13 +130,9 @@ window.addEventListener("DOMContentLoaded", function(e) {
         // Append the row to the table.
         itemTable.appendChild(row);
 
-        //add function to calculate total weight.
-        let neededForWeights = document.querySelectorAll('.for-weight');
-        neededForWeights.forEach(function (neededForWeight){
-            neededForWeight.addEventListener('change', function() {
-                getLineTotalWeight(finalI);
-            });
-        });
+        //add functions to calculate and convert total weight.
+        addEventListenerWeightCalc(finalI);
+
     }
 
     this.window.updateUOM = function updateUOM(value) {
@@ -145,16 +142,96 @@ window.addEventListener("DOMContentLoaded", function(e) {
             metricRadioToUs();
         }
     }
+    function addEventListenerWeightCalc(row){
+        let neededForWeights = document.querySelectorAll('.for-weight');
+        neededForWeights.forEach(function (neededForWeight){
+            neededForWeight.addEventListener('change', function() {
+                getLineTotalWeight(row);
+            });
+        });
+     }
 
-    function getLineTotalWeight(row){
+    function getLineTotalWeight(row,convert = false){
 
         let weight = document.getElementById('itemWeight-'+row).value;
         let packedAmount = document.getElementById('packedAmount-'+row).value;
-        let lineTotal = 0;
+        let uom = document.getElementById('uom');
 
+        let lineTotal = 0;
         lineTotal = +weight * +packedAmount;
         lineTotal = Math.round((lineTotal + Number.EPSILON) * 100) / 100;
         document.getElementById('totalLineWeight-'+row).value = lineTotal;
+
+    }
+    function convertMeasurement(row, convert = false){
+
+        let uom = document.getElementById('uom').value;
+        let weight = document.getElementById('itemWeight-'+row);
+        let weightValue = weight.value;
+        let small;
+        let large;
+
+        if(uom === 'us'){
+            small = document.getElementById('uom-oz-'+row);
+            large = document.getElementById('uom-lbs-'+row);
+            if(small.checked === true){
+                weightValue = +weightValue * 16;
+            }else{
+                weightValue = +weightValue / 16;
+            }
+
+        }else{
+            small = document.getElementById('uom-gram-'+row);
+            large = document.getElementById('uom-kg-'+row);
+
+            if(small.checked === true){
+                weightValue = +weightValue * 1000;
+            }else{
+                weightValue = +weightValue /1000
+            }
+        }
+
+        document.getElementById('itemWeight-'+row).value = weightValue;
+        getLineTotalWeight(row);
+
+
+    }
+    function updateListItem(element){
+        let columnName = element.getAttribute('data-column-name');
+        let value = element.value;
+        let id = element.id;
+        let idArr = id.split('-');
+        let arrLength = idArr.length
+        let row = idArr[arrLength-1];
+        let itemId = document.getElementById('id-'+row);
+        let itemIdValue = itemId.value;
+        let url = '/list-item'
+        if(itemIdValue.substring(0,3) !== 'new'){
+            console.log('URL TO UPDATE');
+        }else{
+            console.log('IS NEW ID');
+        }
+        console.log('item id  in update: ' +itemId);
+        console.log('row num  in update: ' +row);
+        console.log('data att in update: ' +columnName);
+        console.log('value update: ' + value);
+        console.log('id update: ' + id);
+        let data = {};
+        data['columnName'] = columnName;
+        data['value'] = value;
+        // let form = document.querySelector(`#create-form`);
+
+
+
+        axios.post(url, data, itemId)
+            .then((res) => {
+               alert('updated! id is: '+res.newId);
+               itemId.value = res.neeId;
+            }).catch((err) => {
+            alert('Failed to save list item. Please try again later.');
+            console.error(err);
+        });
+
 
     }
     function  createListItemInput(type,nameBase,row,columnName){
@@ -164,6 +241,10 @@ window.addEventListener("DOMContentLoaded", function(e) {
         element.id = nameBase+'-'+row;
         element.value = '';
         element.setAttribute('data-column-name',columnName);
+        element.addEventListener('blur', function() {
+            updateListItem(element);
+        });
+
         return element;
 
     }
@@ -253,7 +334,11 @@ window.addEventListener("DOMContentLoaded", function(e) {
             radio.checked = true;
         }
 
-        radio.classList.add('for-weight');
+        // radio.classList.add('for-weight');
+        radio.classList.add('for-conversion');
+        radio.addEventListener('change', function() {
+            convertMeasurement(row);
+        });
         return radio;
     }
     function createLabel(innerHtml, htmlFor, uom, row) {
@@ -265,6 +350,26 @@ window.addEventListener("DOMContentLoaded", function(e) {
         label.id = 'uom-' + uom + '-label-' + row;
         return label;
     }
+
+    this.window.updateList = function updateList(){
+        let form = document.getElementById(`list-item-form`);
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        let formData = new FormData(form);
+        axios.post(`/admin/pages`, formData)
+            .then((res) => {
+                window.open(`/${res.data.slug}`, '_blank').focus();
+                window.location.href = `/admin/page/${res.data.id}`
+            }).catch((err) => {
+            alert('Failed to save page. Please try again later.');
+            console.error(err)
+        });
+
+    }
+
 
     const headers = document.querySelectorAll('.form-collapsible-header');
 

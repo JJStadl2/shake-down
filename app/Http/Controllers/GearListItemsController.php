@@ -32,9 +32,6 @@ class GearListItemsController extends Controller
         if($gearListItems->isEmpty()){
             $gearListItems = [];
         }
-        Log::debug(__FILE__.' '.__LINE__.' user: '.print_r($user,true));
-        Log::debug(__FILE__.' '.__LINE__.' all lists: '.print_r($gearList,true));
-        Log::debug(__FILE__.' '.__LINE__.' user lists: '.print_r($gearListItems,true));
 
         return view('gear-lists.gear-list',['gearList'=>$gearList,'listItems'=>$gearListItems,'user'=>$user]);
     }
@@ -52,7 +49,18 @@ class GearListItemsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Log::debug(__FILE__.' '.__LINE__.' request for create item: '.print_r($request->input(),true));
+        $gearListItem = new GearListItems();
+        $gearListItem->$request->columnName = $request->value;
+        try{
+            $gearListItem->save();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Error Saving list item']);;
+        }
+
+        $response = ['status'=>'1','newId'=>$gearListItem->id];
+        return response()->json($response);
     }
 
     /**
