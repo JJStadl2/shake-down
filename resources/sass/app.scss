@@ -87,9 +87,9 @@ body {
     margin-left: 30%;
 }
 
-// .nav {
-//     float: right;
-// }
+.nav-header {
+    margin-left: 22.5%;
+}
 
 .nav ul {
     list-style: none;
@@ -200,52 +200,49 @@ body {
 }
  //Lists and ListItems
  .number-input{
-    width: 34%;
+    // width: 34%;
  }
  .list-item-form-container{
     width: 95%;
 }
 .list-form-text{
     color: #f5f5f5;
+    text-align: center;
 }
  .us-radio,.metric-radio{
     margin-right: 3%;
+    border-radius: 50%;
+ }
+ .terms-and-info{
+   float: left;
  }
  .create-list-form-header{
-    width: 35%;
-   margin-left: 35%;
-   padding-bottom: 285px;
-   margin-top: -6%;
+    // width: 35%;
+    // margin-left: 32%;
+    padding-bottom: 6.5%;
+    // margin-top: 2%;
+
 }
 .add-list-items-form{
     width: 45%;
-   padding-left: 15%;
-   float: right;
-  // margin-left: 25%;
-  // padding-bottom: 410px;
-  // padding-top: 50px;
+    padding-left: 15%;
+    float: right;
 }
 
 .list-item-details{
    width: 30%;
   padding-left: 10%;
   float: right;
- // margin-left: 25%;
- // padding-bottom: 410px;
- // padding-top: 50px;
+
 }
-.list-header-help{
-    // margin-left: 10%;
-
-
+.form-h1{
+    text-align: center;
 }
 .save-list{
    width: 20%;
   padding-left: 5%;
   float: right;
- // margin-left: 25%;
- // padding-bottom: 410px;
- // padding-top: 50px;
+
 }
 .gear-list-index-table{
     width: 90%;

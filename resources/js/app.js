@@ -71,7 +71,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
             gramsRadio = createRadio('in_grams', '', 'gram', finalI);
             gramsRadioLabel =  createLabel('Grams',  'uom-gram-'+finalI, 'gram', finalI);
-            kilosRadio =  createRadio('in_kg', '', 'kg', finalI);
+            kilosRadio =  createRadio('in_kilos', '', 'kg', finalI);
             kilosRadioLabel = createLabel('KG',  'uom-kg-'+finalI, 'kg', finalI);
         }
 
@@ -179,7 +179,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
         updateListItem(lineTotalWeightElement);
 
     }
-    function convertMeasurement(row, convert = false){
+    this.window.convertMeasurement = function convertMeasurement(row, convert = false){
 
         let uom = document.getElementById('uom').value;
         let weight = document.getElementById('itemWeight-'+row);
@@ -192,8 +192,10 @@ window.addEventListener("DOMContentLoaded", function(e) {
             large = document.getElementById('uom-lbs-'+row);
             if(small.checked === true){
                 weightValue = +weightValue * 16;
+                updateListItem(small);
             }else{
                 weightValue = +weightValue / 16;
+                updateListItem(large);
             }
 
         }else{
@@ -202,8 +204,10 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
             if(small.checked === true){
                 weightValue = +weightValue * 1000;
+                updateListItem(small);
             }else{
-                weightValue = +weightValue /1000
+                weightValue = +weightValue /1000;
+                updateListItem(large);
             }
         }
 
@@ -211,6 +215,32 @@ window.addEventListener("DOMContentLoaded", function(e) {
         getLineTotalWeight(row);
 
 
+    }
+    function getBooleanData(columnName){
+
+        let data = {};
+        data['in_ounces'] = false;
+        data['in_lbs'] = false;
+        data['in_grams'] = false;
+        data['in_kilos'] = false;
+
+        switch(columnName){
+            case 'in_ounces':
+                data['in_ounces'] = true;
+                break;
+            case 'in_pounds':
+                data['in_lbs'] = true;
+                break
+            case 'in_grams':
+                data['in_grams'] = true;
+                break
+            case 'in_kilos':
+                data['in_kilos'] = true;
+               break;
+            default:
+                break;
+        }
+        return data;
     }
     this.window.updateListItem = function updateListItem(element){
 
@@ -226,15 +256,19 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let deleteBtn = document.getElementById('deleteBtn-'+row);
         let url = '/list-item'
         let update = false;
+        let data = {};
+        data[columnName] = value;
+
+        if(columnName.substring(0,3) === 'in_'){
+            data = getBooleanData(columnName);
+        }
 
         if(itemIdValue.substring(0,3) !== 'new'){
             update = true;
             url = url+'/'+itemIdValue;
         }
 
-        let data = {};
         data['list_id'] = listId;
-        data[columnName] = value;
 
         axios.post(url, data, itemId)
             .then((res) => {
@@ -348,7 +382,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
             if (elementType === 'radio' && uom === 'oz') {
                 newElement = createRadio('in_grams', 'Grams', 'gram', row);
             } else if (elementType === 'radio' && uom === 'lbs') {
-                newElement = createRadio('in_kg', 'KG', 'kg', row);
+                newElement = createRadio('in_kilos', 'KG', 'kg', row);
             } else if (elementTag === 'label' && uom === 'oz') {
                 newElement = createLabel('Grams', 'uom-gram-' + row, 'gram', row);
             } else if (elementTag === 'label' && uom === 'lbs') {
@@ -390,21 +424,24 @@ window.addEventListener("DOMContentLoaded", function(e) {
         return label;
     }
 
-    this.window.updateList = function updateList(){
-        let form = document.getElementById(`list-item-form`);
+    this.window.updateList = function updateList(element, listId){
 
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-        let formData = new FormData(form);
-        axios.post(`/admin/pages`, formData)
+        let columnName = element.getAttribute('data-column-name');
+        let value = element.value;
+        let url = '/gear-list/'+listId;
+
+        let data = {};
+        data[columnName] = value;
+
+        axios.post(url, data, listId)
             .then((res) => {
-                window.open(`/${res.data.slug}`, '_blank').focus();
-                window.location.href = `/admin/page/${res.data.id}`
+
+                alert(res.data.msg);
+
             }).catch((err) => {
-            alert('Failed to save page. Please try again later.');
-            console.error(err)
+
+            alert('Failed to update list. Please try again later.');
+
         });
 
     }

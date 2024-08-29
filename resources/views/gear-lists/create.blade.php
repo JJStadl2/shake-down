@@ -3,66 +3,61 @@
 @section('content')
 
 <div class="container">
+
     <div class="row">
         <div class="col-md-4">
-            <h1 style="text-align: center;" >Use ShakeDown</h1>
-
-
-        <p>Once we have these details, you can add items.</p>
-        <div>
-            this is where the info should go
-
-        </div>
         </div>
         <div class="col-md-4">
-            4 column
-        </div>
-        <div class="col-md-4">
-            4 column
-        </div>
+            <form method="post" action="{{ route('list-store') }}">
 
+                    <div class="create-list-form-header">
+                        <h1 class="form-h1" style="text-align: center;">Create a Gear List</h1>
+                        <div id="listHelp" class="list-form-text">You can add items once it is created.</div>
 
+                            @csrf
+                            <div class="mb-3">
+                                <label for="listName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="listName" name="listName" value="{{ old('listName') }}" placeholder="Enter the List's Name" required/>
+                            </div>
+                            <div class="mb-3">
+                            <label for="listNotes" class="form-label">List Notes</label>
+                            <textarea class="form-control" id="listNotes" name="listNotes" aria-describedby="listHelp" placeholder="Things like trip location, milage, weather and /or group size." >{{ old('listNotes') }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="sortBy" class="form-label">Sort By</label>
+                                <select class="form-control" id="sortBy" name="sortBy">
+                                    @foreach($sortOptions as $option)
+                                    <option value="{{ $option->value }}"  @if(old('sortBy') === $option->value) selected @endif>{{ $option->display }}</option>
+                                    @endforeach
+                                </select>
+
+                            </div>
+                            <div class="mb-3">
+                                <label for="listClass" class="form-label">Type</label>
+                                <select class="form-control" id="listClass" name="listClass">
+                                    <option value=""  @if(old('listClass') ==='') selected @endif>Select Style of Hiking </option>
+                                    @foreach($listClasses as $class)
+                                    <option value="{{ $class->type }}"  @if(old('listClass') === $class->type) selected @endif>{{ $class->display.' - '.$class->description }}</option>
+                                    @endforeach
+                                </select>
+
+                            </div>
+                            <div class="mb-3">
+                                <label for="uom" class="form-label">Measurement</label>
+                                <select class="form-control" id="uom" name="uom">
+                                    <option value="us"  @if(old('uom') === 'us') selected @endif>US(OZ/LBS)</option>
+                                    <option value="metric"  @if(old('uom') === 'metric') selected @endif >Metric(GR/KG)</option>
+                                </select>
+
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+
+                    </div>
+            </form>
+        </div>
     </div>
-    <form method="post" action="{{ route('list-store') }}">
-
-            <div class="create-list-form-header">
-                <h1 style="text-align: center;">Create a Gear List</h1>
-                    @csrf
-                    <div class="mb-3">
-                        <label for="listName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="listName" name="listName" value="{{ old('listName') }}" placeholder="Enter the List's Name" required/>
-                    </div>
-                    <div class="mb-3">
-                    <label for="listNotes" class="form-label">List Notes</label>
-                    <textarea class="form-control" id="listNotes" name="listNotes" aria-describedby="listHelp" placeholder="Things like trip location, milage, weather and /or group size." >{{ old('listNotes') }}</textarea>
-                    {{-- <div id="listHelp" class="list-form-text">Things like trip location, milage, weather and /or group size.</div> --}}
-                    </div>
-                    <div class="mb-3">
-                        <label for="sortBy" class="form-label">Sort By</label>
-                        <select class="form-control" id="sortBy" name="sortBy">
-                            <option value="category"  @if(old('sortBy') === 'category') selected @endif>Category</option>
-                            <option value="item_asc"  @if(old('sortBy') === 'item_asc') selected @endif >Item Name (A-Z)</option>
-                            <option value="item_desc"   @if(old('sortBy') === 'item_desc') selected @endif>Item Name (Z-A)</option>
-                            <option value="weight_asc"  @if(old('sortBy') === 'weight_asc') selected @endif>Weight (Low-High)</option>
-                            <option value="weight_desc"  @if(old('sortBy') === 'weight_desc') selected @endif>Weight (High-Low)</option>
-                            <option value="dont" @if(old('sortBy') === 'dont') selected @endif>Don't Sort</option>
-                        </select>
-
-                    </div>
-                    <div class="mb-3">
-                        <label for="uom" class="form-label">Measurement</label>
-                        <select class="form-control" id="uom" name="uom">
-                            <option value="us"  @if(old('uom') === 'us') selected @endif>US(OZ/LBS)</option>
-                            <option value="metric"  @if(old('uom') === 'metric') selected @endif >Metric(GR/KG)</option>
-                        </select>
-
-                    </div>
-                    <div class="">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-
-            </div>
-    </form>
     <div class="form-footer"></div>
 </div>
 @endsection

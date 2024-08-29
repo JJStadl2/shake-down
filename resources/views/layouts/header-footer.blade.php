@@ -15,8 +15,7 @@
     <div class="wrapper">
         <header class="header">
             <div class="container">
-                {{-- <h1 class="logo">ShakeDown</h1> --}}
-                <nav class="nav">
+                <nav class="nav nav-header">
                     <a href="/" class="nav-link">Home</a>
                     <a href="/register" class="nav-link">Sign Up</a>
                     <a href="/login" class="nav-link">Login</a>

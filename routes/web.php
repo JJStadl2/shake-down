@@ -38,6 +38,8 @@ Route::get('/gear-list', [App\Http\Controllers\GearListsController::class, 'crea
 )->name('list-create');
 Route::post('/gear-list', [App\Http\Controllers\GearListsController::class, 'store']
 )->name('list-store');
+Route::get('/destroy-list/{id}', [App\Http\Controllers\GearListsController::class, 'destroy']
+)->name('list-destroy');
 
 //gear list item routes
 Route::get('/list-items/{listId}', [App\Http\Controllers\GearListItemsController::class, 'index']

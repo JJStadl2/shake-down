@@ -19,6 +19,8 @@ class GearListItemsController extends Controller
         $request = new Request();
         $user = Auth::user();
         $itemCategories = $this->getCategories($request);
+        $listSortingOptions = GearLists::getSortingOptions();
+        $listClasses = GearLists::getListClasses();
 
         try{
             $gearList = GearLists::where('id',$listId)->first();
@@ -26,6 +28,9 @@ class GearListItemsController extends Controller
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             return redirect()->back()->with('error','Unable to find list info.');
         }
+
+        //TODO sort lists based on header setting
+
         try{
             $gearListItems = GearListItems::where('list_id',$listId)->orderBy('id')->get();
         }catch(\Exception $e){
@@ -37,7 +42,7 @@ class GearListItemsController extends Controller
             $gearListItems = [];
         }
 
-        return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories]);
+        return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
     }
 
     /**
@@ -120,20 +125,16 @@ class GearListItemsController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        // $id = $request->id ?? false;
-        // if(!$id){
-        //     return redirect()->back()->with('error','No line id provided.');
-        // }
         $gearListItem = GearListItems::where('id',$id)->first();
 
         try{
             $gearListItem->delete();
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            // return response()->json(['status'=>'0','msg'=>'Error deleting list item']);
+            return redirect()->back()->with('error','Failed to delete item.');
         }
+
         return redirect()->back()->with('success','Item deleted.');
-        // return response()->json(['status'=>'1','msg'=>'List item deleted']);
     }
     public function getCategories(Request $request){
 
