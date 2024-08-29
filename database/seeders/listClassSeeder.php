@@ -14,7 +14,7 @@ class listClassSeeder extends Seeder
      */
     public function run(): void
     {
-         //seed categories table for dropdown
+         //seed list classes table for dropdown
          $classes = [
            ['type'=>'sul','display'=>'Super UL','description'=>'<=5LBS BPW','ordinal'=>1],
            ['type'=>'ul','display'=>'Ultra Light','description'=>'<=10LBS BPW','ordinal'=>2],
@@ -25,34 +25,26 @@ class listClassSeeder extends Seeder
 
          ];
 
-        //  $sql = "INSERT INTO list_classes('type', 'display', 'description', 'ordinal') VALUES (?, ?, ?, ?) ";
-
          foreach($classes as $class){
 
             $sql = "INSERT INTO list_classes( ";
             $params = [];
 
             foreach($class as $key => $value){
-
                 $sql.= ' '.$key.',';
-
             }
 
             $sql = rtrim($sql,',');
             $sql .=' )VALUES( ';
 
             foreach($class as $key => $value){
-
                 $sql.= ' ?,';
                 $params[]=$value;
-
             }
 
             $sql = rtrim($sql,',');
             $sql.= ')';
 
-            Log::debug(__FILE__.' '.__LINE__.' Sql: '.$sql);
-            Log::debug(__FILE__.' '.__LINE__.' params: '.print_r($params,true));
              try{
                  DB::insert($sql,$params);
              }catch(\Exception $e){
