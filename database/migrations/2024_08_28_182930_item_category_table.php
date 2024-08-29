@@ -14,8 +14,8 @@ return new class extends Migration
 
         Schema::create('item_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('value');
-            $table->string('category');
+            $table->string('value')->unique();
+            $table->string('category')->unique();
             $table->integer('ordinal');
         });
     }

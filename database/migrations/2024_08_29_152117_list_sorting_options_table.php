@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('list_sorting_options', function (Blueprint $table) {
             $table->id();
-            $table->string('value');
-            $table->string('display');
+            $table->string('value')->unique();
+            $table->string('display')->unique();
             $table->integer('ordinal');
+            $table->string('order_by')->nullable();
         });
     }
 

@@ -4,7 +4,7 @@
 <div class="list-item-form-container">
     {{-- add header update form --}}
     <div class="form-container">
-
+        <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
         <div class="row">
             <div class="col-md-2"></div>
             <input type="hidden" name="listId" id="listId" data-column-name="list_id" value="{{ $gearList->id }}"/>
@@ -13,12 +13,9 @@
                 <label style="display: inline-block" class="form-control-label">Name</label>
                 <input type="text" class="form-control" id="listName" name="listName" data-column-name="name" value="{{ $gearList->name ?? '' }}" onblur="updateList(this,{{ $gearList->id }})"/>
             </div>
-
-            <div class="col-md-1">
-            </div>
             <div class="col-md-3 mb-2">
                 <label class="form-control-label">Notes</label>
-                <textarea type="text" class="form-control" id="listNotes" name="listNotes" data-column-name="notes" onblur="updateList(this,{{ $gearList->id }})">{{ $gearList->notes ?? '' }}</textarea>
+                <textarea type="text" class="form-control" id="listNotes" name="listNotes" data-column-name="notes"  onblur="updateList(this,{{ $gearList->id }})">{{ $gearList->notes ?? '' }}</textarea>
             </div>
             <div class="col-md-2"></div>
         </div>
@@ -34,15 +31,36 @@
                     @endforeach
                 </select>
             </div>
-            <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
-            <div class="col-md-1 mb-3"> </div>
-            <div class="col-md-2 mb-3">
-                <button style="margin-left: 20%;" class="btn btn-primary mt-3" onclick="addListItem();">+ Item</button>
-            </div>
-            <div class="col-md-2 mb-3">
-                <button style="margin-left: -25%;" class="btn btn-primary mt-3" onclick="updateAll();" >Update</button>
+            <div class="col-md-3 mb-3">
+                <label class="form-control-label" for="sortBy" class="form-label">Sort By</label>
+                <select class="form-control" id="sortBy" name="sortBy" data-column-name="sort" onchange="updateList(this,{{ $gearList->id }})">
+                    @foreach($sortingOptions as $option)
+                    <option value="{{ $option->value }}"  @if($gearList->sort === $option->value) selected @endif>{{ $option->display }}</option>
+                    @endforeach
+                </select>
+
             </div>
             <div class="col-md-2 mb-3"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-2 mb-3">
+            </div>
+            <div class="col-md-2 mb-3">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary mt-3" onclick="addListItem();">+ Item</button>
+                </div>
+            </div>
+
+
+            <div class="col-md-2 mb-3">
+
+            </div>
+            <div class="col-md-2 mb-3">
+
+            </div>
+            <div class="col-md-1 mb-3"></div>
         </div>
 
         </div>
@@ -115,7 +133,7 @@
                             <td>
                                 <input  class="form-control" type="number" data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}" name="totalLineWeight[]" value="{{floatval($item->total_line_weight) ?? floatval(($item->item_weight * $item->amount))}}" onblur="updateListItem(this);" />
                             </td>
-                            <td>
+                            <td id="btn-td-{{ $i }}">
                                 <a id="deleteBtn-{{ $i }}" href="/destroy-list-item/{{ $item->id }}" class="btn btn-primary btn-sm  py-2">x</a>
                             </td>
 

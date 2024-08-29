@@ -7,10 +7,6 @@ use App\Models\GearListItems;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-/*
- TODO master user item list-> all items from all lists and allow user to manage and insert into other
- lists as need with all data.
- */
 
 class GearListsController extends Controller
 {
@@ -27,7 +23,7 @@ class GearListsController extends Controller
 
         $gearLists = GearLists::where('user_id',$user->id)->get();
 
-        if($gearLists->isEmpty()){
+        if(empty($gearLists)){
             return redirect('/gear-list')->with('info','Please create a gear list.');
         }
 
@@ -90,16 +86,17 @@ class GearListsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        Log::debug(__FILE__.' '.__LINE__.' request in update list header: '.print_r($request->input(),true));
-        Log::debug(__FILE__.' '.__LINE__.' is list header: '.$id);
-
         $inputs = $request->input();
 
         try{
             $gearList = GearLists::where('id',$id)->first();
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Error fetching list data']);;
+            return response()->json(['status'=>'0','msg'=>'Error fetching list data']);
+        }
+
+        if(empty($gearList)){
+            return response()->json(['status'=>'0','msg'=>'Error. No list found.']);;
         }
 
         foreach($inputs as $key => $value){
@@ -119,6 +116,10 @@ class GearListsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    /*
+    TODO master user item list-> all items from all lists and allow user to manage and insert into other
+    lists as need with all data.
+    */
     public function destroy(Request $request, $id)
     {
         $gearList = GearLists::where('id',$id)->first();

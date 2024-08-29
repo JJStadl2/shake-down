@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('display');
             $table->string('description');
             $table->integer('ordinal');
+            $table->integer('max_weight');
         });
     }
 

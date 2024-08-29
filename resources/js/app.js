@@ -37,7 +37,6 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let itemName =  createListItemInput('text','itemName',finalI,'item_name');
         itemName.placeholder = 'Item Name';
         itemName.classList.add('form-control');
-        // itemName.onclick = '';
 
         let cell2 = document.createElement("td");
         let itemWeight = createListItemInput('number','itemWeight',finalI,'item_weight');
@@ -47,32 +46,25 @@ window.addEventListener("DOMContentLoaded", function(e) {
         itemWeight.classList.add('form-control');
         cell2.classList.add('number-col');
 
-        //for radios on click-> getConversionRate();.
-        //add pounds and kilos?
-        //set total label on click
         let cell3 = document.createElement("td");
-        let ouncesRadio;
-        let poundsRadio;
-        let gramsRadio;
-        let kilosRadio;
-        let ouncesRadioLabel;
-        let poundsRadioLabel;
-        let gramsRadioLabel;
-        let kilosRadioLabel;
+        let radio1;
+        let radio2;
+        let radioLabel1;
+        let radioLabel2;
 
         if(listUOM === 'us'){
 
-            ouncesRadio = createRadio('in_ounces', '', 'oz', finalI);
-            ouncesRadioLabel = createLabel('OZ',  'uom-oz-'+finalI, 'oz', finalI);
-            poundsRadio = createRadio('in_pounds', '', 'lbs', finalI);
-            poundsRadioLabel = createLabel('LBS',  'uom-lbs-'+finalI, 'lbs', finalI);
+            radio1 = createRadio('in_ounces', '', 'oz', finalI);
+            radioLabel1 = createLabel('OZ',  'uom-oz-'+finalI, 'oz', finalI);
+            radio2 = createRadio('in_lbs', '', 'lbs', finalI);
+            radioLabel2 = createLabel('LBS',  'uom-lbs-'+finalI, 'lbs', finalI);
 
         }else{
 
-            gramsRadio = createRadio('in_grams', '', 'gram', finalI);
-            gramsRadioLabel =  createLabel('Grams',  'uom-gram-'+finalI, 'gram', finalI);
-            kilosRadio =  createRadio('in_kilos', '', 'kg', finalI);
-            kilosRadioLabel = createLabel('KG',  'uom-kg-'+finalI, 'kg', finalI);
+            radio1 = createRadio('in_grams', '', 'gram', finalI);
+            radioLabel1 =  createLabel('Grams',  'uom-gram-'+finalI, 'gram', finalI);
+            radio2 =  createRadio('in_kilos', '', 'kg', finalI);
+            radioLabel2 = createLabel('KG',  'uom-kg-'+finalI, 'kg', finalI);
         }
 
         let cell4 = document.createElement("td");
@@ -87,7 +79,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let cell5 = document.createElement("td");
         cell5.classList.add('number-col');
         let totalLineWeight = createListItemInput('number','totalLineWeight',finalI,'total_line_weight');
-        totalLineWeight.value = 0;//getLineTotalWeight();
+        totalLineWeight.value = 0;
         totalLineWeight.setAttribute('data-column-name','total_line_weight');
         totalLineWeight.setAttribute('readonly',true);
         totalLineWeight.classList.add('number-input');
@@ -102,28 +94,24 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let categorySelect = getCategroySelect(finalI);
         selectCell.append(categorySelect);
 
-
-        if(listUOM === 'us'){
-            cell3.appendChild(ouncesRadio);
-            cell3.appendChild(ouncesRadioLabel);
-            cell3.appendChild(poundsRadio);
-            cell3.appendChild(poundsRadioLabel);
-        }else{
-            cell3.appendChild(gramsRadio);
-            cell3.appendChild(gramsRadioLabel);
-            cell3.appendChild(kilosRadio);
-            cell3.appendChild(kilosRadioLabel);
-        }
+        cell3.appendChild(radio1);
+        cell3.appendChild(radioLabel1);
+        cell3.appendChild(radio2);
+        cell3.appendChild(radioLabel2);
 
         cell4.appendChild(packedAmount);
         cell5.appendChild(totalLineWeight);
 
         let cell6 = document.createElement('td');
-        let deleteBtn = document.createElement('a');
+        cell6.id = 'btn-td-'+finalI;
+        let deleteBtn = document.createElement('button');
         deleteBtn.id = 'deleteBtn-'+finalI;
-        deleteBtn.href = '/destroy-list-item/new-'+finalI;
+        // deleteBtn.href = '/destroy-list-item/new-'+finalI;
         deleteBtn.className = 'btn btn-primary btn-sm  py-2';
         deleteBtn.innerHTML = 'x';
+        deleteBtn.addEventListener('click', function() {
+           row.remove();
+        });
         cell6.appendChild(deleteBtn);
 
 
@@ -228,7 +216,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
             case 'in_ounces':
                 data['in_ounces'] = true;
                 break;
-            case 'in_pounds':
+            case 'in_lbs':
                 data['in_lbs'] = true;
                 break
             case 'in_grams':
@@ -257,6 +245,14 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let url = '/list-item'
         let update = false;
         let data = {};
+
+        let tdCell = document.getElementById('btn-td-'+row);
+        let deleteLink = document.createElement('a');
+        deleteLink.id = 'deleteBtn-'+row;
+        // deleteBtn.href = '/destroy-list-item/new-'+finalI;
+        deleteLink.className = 'btn btn-primary btn-sm  py-2';
+        deleteLink.innerHTML = 'x';
+
         data[columnName] = value;
 
         if(columnName.substring(0,3) === 'in_'){
@@ -274,7 +270,9 @@ window.addEventListener("DOMContentLoaded", function(e) {
             .then((res) => {
                if(!update){
                 itemId.value = res.data.newId;
-                deleteBtn.href = '/destroy-list-item/'+res.data.newId;
+                deleteLink.href = '/destroy-list-item/'+res.data.newId;
+                deleteBtn.remove();
+                tdCell.appendChild(deleteLink);
                }
 
             }).catch((err) => {
@@ -355,7 +353,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
             if (elementType === 'radio' && uom === 'gram') {
                 newElement = createRadio('in_ounces', 'OZ', 'oz', row, true);
             } else if (elementType === 'radio' && uom === 'kg') {
-                newElement = createRadio('in_pounds', 'LBS', 'lbs', row);
+                newElement = createRadio('in_lbs', 'LBS', 'lbs', row);
             } else if (elementTag === 'label' && uom === 'gram') {
                 newElement = createLabel('OZ', 'uom-oz-' + row, 'oz', row);
             } else if (elementTag === 'label' && uom === 'kg') {
@@ -436,13 +434,16 @@ window.addEventListener("DOMContentLoaded", function(e) {
         axios.post(url, data, listId)
             .then((res) => {
 
-                alert(res.data.msg);
+                // alert(res.data.msg);
 
             }).catch((err) => {
 
             alert('Failed to update list. Please try again later.');
 
         });
+        if(columnName === 'sort'){
+            location.reload();
+        }
 
     }
 

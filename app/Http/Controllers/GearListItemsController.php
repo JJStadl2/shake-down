@@ -30,15 +30,15 @@ class GearListItemsController extends Controller
         }
 
         //TODO sort lists based on header setting
+        $sort = DB::table('list_sorting_options')->where('value',$gearList->sort)->first('order_by');
+        $sort = explode(' ',$sort->order_by);
+        $sort_by = $sort[0];
+        $order = $sort[1];
 
         try{
-            $gearListItems = GearListItems::where('list_id',$listId)->orderBy('id')->get();
+            $gearListItems = GearListItems::where('list_id',$listId)->orderBy($sort_by,$order)->get();
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            $gearListItems = [];
-        }
-
-        if($gearListItems->isEmpty()){
             $gearListItems = [];
         }
 
@@ -103,11 +103,11 @@ class GearListItemsController extends Controller
             $gearListItem = GearListItems::where('id',$id)->where('list_id',$list_id)->first();
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Error fetching list item']);;
+            return response()->json(['status'=>'0','msg'=>'Error fetching list item']);
         }
 
         foreach($inputs as $key => $value){
-            $gearListItem->$key = $value;
+            $gearListItem->$key = ucwords($value);
         }
 
         try{
@@ -126,6 +126,10 @@ class GearListItemsController extends Controller
     public function destroy(Request $request, $id)
     {
         $gearListItem = GearListItems::where('id',$id)->first();
+
+        if(empty($gearListItem)){
+            return redirect()->back()->with('error','No item found to delete.');
+        }
 
         try{
             $gearListItem->delete();
