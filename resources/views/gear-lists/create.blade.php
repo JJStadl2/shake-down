@@ -1,24 +1,44 @@
 @extends('layouts.header-footer')
 @section('title', 'Create Grear List | ')
 @section('content')
+
 <div class="container">
-    <h1 style="margin-bottom: 5px;">Create a Gear List</h1>
-    <p style="margin-bottom: 5px;">Once we have these details, you can add items.</p>
+    <div class="row">
+        <div class="col-md-4">
+            <h1 style="text-align: center;" >Use ShakeDown</h1>
+
+
+        <p>Once we have these details, you can add items.</p>
+        <div>
+            this is where the info should go
+
+        </div>
+        </div>
+        <div class="col-md-4">
+            4 column
+        </div>
+        <div class="col-md-4">
+            4 column
+        </div>
+
+
+    </div>
     <form method="post" action="{{ route('list-store') }}">
 
             <div class="create-list-form-header">
+                <h1 style="text-align: center;">Create a Gear List</h1>
                     @csrf
                     <div class="mb-3">
                         <label for="listName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="listName" name="listName" value="{{ old('listName') }}" required/>
+                        <input type="text" class="form-control" id="listName" name="listName" value="{{ old('listName') }}" placeholder="Enter the List's Name" required/>
                     </div>
                     <div class="mb-3">
                     <label for="listNotes" class="form-label">List Notes</label>
-                    <textarea class="form-control" id="listNotes" name="listNotes" aria-describedby="listHelp" >{{ old('listNotes') }}</textarea>
-                    <div id="listHelp" class="list-form-text">Things like trip location, length, milage, weather.</div>
+                    <textarea class="form-control" id="listNotes" name="listNotes" aria-describedby="listHelp" placeholder="Things like trip location, milage, weather and /or group size." >{{ old('listNotes') }}</textarea>
+                    {{-- <div id="listHelp" class="list-form-text">Things like trip location, milage, weather and /or group size.</div> --}}
                     </div>
                     <div class="mb-3">
-                        <label for="sortBy" class="form-label">Sort</label>
+                        <label for="sortBy" class="form-label">Sort By</label>
                         <select class="form-control" id="sortBy" name="sortBy">
                             <option value="category"  @if(old('sortBy') === 'category') selected @endif>Category</option>
                             <option value="item_asc"  @if(old('sortBy') === 'item_asc') selected @endif >Item Name (A-Z)</option>

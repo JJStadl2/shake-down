@@ -188,7 +188,7 @@ body {
   margin-left: -10%;
 }
 
-Lists and ListItems .number-input {
+.number-input {
   width: 34%;
 }
 
@@ -208,6 +208,7 @@ Lists and ListItems .number-input {
   width: 35%;
   margin-left: 35%;
   padding-bottom: 285px;
+  margin-top: -6%;
 }
 
 .add-list-items-form {
