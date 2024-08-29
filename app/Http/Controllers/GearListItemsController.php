@@ -109,7 +109,7 @@ class GearListItemsController extends Controller
             $gearListItem->save();
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Error updating list item']);;
+            return response()->json(['status'=>'0','msg'=>'Error updating list item']);
         }
 
         return response()->json( ['status'=>'1','msg'=>'updated']);
@@ -118,9 +118,22 @@ class GearListItemsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(GearListItems $gearListItems)
+    public function destroy(Request $request, $id)
     {
-        //
+        // $id = $request->id ?? false;
+        // if(!$id){
+        //     return redirect()->back()->with('error','No line id provided.');
+        // }
+        $gearListItem = GearListItems::where('id',$id)->first();
+
+        try{
+            $gearListItem->delete();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            // return response()->json(['status'=>'0','msg'=>'Error deleting list item']);
+        }
+        return redirect()->back()->with('success','Item deleted.');
+        // return response()->json(['status'=>'1','msg'=>'List item deleted']);
     }
     public function getCategories(Request $request){
 

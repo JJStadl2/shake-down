@@ -39,10 +39,10 @@
                 <th scope="col">#</th>
                 <th scope="col">Item</th>
                 <th scope="col">Category</th>
+                <th scope="col">UOM</th>
                 <th scope="col">Weight</th>
                 <th scope="col"># Packed</th>
                 <th scope="col">Total Packed Weight</th>
-                <th scope="col">UOM</th>
                 <th scope="col">Remove</th>
 
             </tr>
@@ -68,16 +68,13 @@
                                         @endforeach
                                 </select>
                             </td>
-                            <td>
-                                <input  class="form-control" type="number" data-column-name="item_weight" id="itemWeight-{{ $i }}" name="itemWeight[]" value="{{ $item->item_weight}}" onblur="updateListItem(this)" />
-                            </td>
-                            <td>
+                             <td>
                                 @if($item->in_ounces || $item->in_lbs)
                                     <input class="form-check-input us-radio for-conversion" type="radio" data-column-name="in_ounces" name="uom-{{ $i }}" id="uom-oz[]" @if($item->in_ounces) checked @endif/>
                                     <label class="form-check-label us-radio" id="uom-oz-label-{{ $i }}" for="uom-oz-{{ $i }}">
-                                        Ounces
+                                        OZ
                                     </label>
-                                    <input class="form-check-input us-radio for-conversion" data-column-name="in_lbs" name="uom-{{ $i }}" id="uom-lbs[]" @if($item->in_lbs) checked @endif/>
+                                    <input class="form-check-input us-radio for-conversion" type="radio" data-column-name="in_lbs" name="uom-{{ $i }}" id="uom-lbs[]" @if($item->in_lbs) checked @endif/>
                                         <label class="form-check-label us-radio" id="uom-lbs-label-{{ $i }}" for="uom-lbs-{{ $i }}">
                                             LBS
                                         </label>
@@ -86,7 +83,7 @@
                                     <label class="form-check-label metric-radio" id="uom-gram-label-{{ $i }}" for="uom-gram-{{ $i }}">
                                         Grams
                                     </label>
-                                    <input class="form-check-input metric-radio for-conversion" data-column-name="in_kilos" name="uom-{{ $i }}" id="uom-kg[]" @if($item->in_kilos) checked @endif/>
+                                    <input class="form-check-input metric-radio for-conversion" type=radio data-column-name="in_kilos" name="uom-{{ $i }}" id="uom-kg[]" @if($item->in_kilos) checked @endif/>
                                         <label class="form-check-label metric-radio" id="uom-kg-label-{{ $i }}" for="uom-kg-{{ $i }}">
                                             KG
                                         </label>
@@ -94,17 +91,17 @@
 
                             </td>
                             <td>
-                                {{-- onchange update item by id --}}
-                                <input type="number" data-column-name="amount" id="packesAmount-{{ $i }}" name="pakedAmount[]" value="{{ $item->item_weight}}" onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
+                                <input  class="form-control" type="number" data-column-name="item_weight" id="itemWeight-{{ $i }}" name="itemWeight[]" value="{{ $item->item_weight ?? 0}}" onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
                             </td>
-                            <td> <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 24 24">
-                                <path d="M 10 2 L 9 3 L 3 3 L 3 5 L 4.109375 5 L 5.8925781 20.255859 L 5.8925781 20.263672 C 6.023602 21.250335 6.8803207 22 7.875 22 L 16.123047 22 C 17.117726 22 17.974445 21.250322 18.105469 20.263672 L 18.107422 20.255859 L 19.890625 5 L 21 5 L 21 3 L 15 3 L 14 2 L 10 2 z M 6.125 5 L 17.875 5 L 16.123047 20 L 7.875 20 L 6.125 5 z" fill="white"></path>
-                                </svg>
+                            <td>
+                                <input  class="form-control" type="number" data-column-name="amount" id="packedAmount-{{ $i }}" name="pakedAmount[]" value="{{ $item->amount ?? 1}}" onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
                             </td>
-                            {{-- <td><a href='/list-item/{{ $item->id}}/destroy' <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 24 24">
-                                <path d="M 10 2 L 9 3 L 3 3 L 3 5 L 4.109375 5 L 5.8925781 20.255859 L 5.8925781 20.263672 C 6.023602 21.250335 6.8803207 22 7.875 22 L 16.123047 22 C 17.117726 22 17.974445 21.250322 18.105469 20.263672 L 18.107422 20.255859 L 19.890625 5 L 21 5 L 21 3 L 15 3 L 14 2 L 10 2 z M 6.125 5 L 17.875 5 L 16.123047 20 L 7.875 20 L 6.125 5 z" fill="white"></path>
-                                </svg></a>
-                            </td> --}}
+                            <td>
+                                <input  class="form-control" type="number" data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}" name="totalLineWeight[]" value="{{floatval($item->total_line_weight) ?? floatval(($item->item_weight * $item->amount))}}" onblur="updateListItem(this);" />
+                            </td>
+                            <td>
+                                <a id="deleteBtn-{{ $i }}" href="/destroy-list-item/{{ $item->id }}" class="btn btn-primary btn-sm  py-2">x</a>
+                            </td>
 
                         </tr>
                     @php $i++; @endphp

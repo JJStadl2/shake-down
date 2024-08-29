@@ -21,7 +21,8 @@ return new class extends Migration
             $table->boolean('in_kilos')->default(false);
             $table->boolean('in_ounces')->default(true);
             $table->boolean('in_lbs')->default(false);
-            $table->integer('amount')->default(1);
+            $table->float('amount')->default(1);
+            $table->float('total_line_weight')->default(0);
             $table->timestamps();
         });
     }

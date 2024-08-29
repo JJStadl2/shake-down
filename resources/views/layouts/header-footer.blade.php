@@ -22,6 +22,7 @@
                     <a href="/login" class="nav-link">Login</a>
                     <a href="/gear-lists" class="nav-link">My Gear Lists</a>
                     <a href="/about" class="nav-link">About</a>
+                    <a href="/logout" class="nav-link">Log Out</a>
                 </nav>
             </div>
         </header>

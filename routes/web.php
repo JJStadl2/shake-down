@@ -18,6 +18,8 @@ Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm
 )->name('showLoginForm');
 Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']
 )->middleware('auth')->name('login');
+Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout']
+)->name('logout');
 
 //registration routes
 Route::get('/register',[App\Http\Controllers\AccountController::class, 'showRegistration']
@@ -48,6 +50,8 @@ Route::get('/list-item', [App\Http\Controllers\GearListItemsController::class, '
 )->name('item-create');
 Route::post('/list-item', [App\Http\Controllers\GearListItemsController::class, 'store']
 )->name('item-store');
+Route::get('/destroy-list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'destroy']
+)->name('item-destroy');
 
 //js helpers
 Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsController::class, 'getCategories']

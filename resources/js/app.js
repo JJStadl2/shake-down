@@ -118,14 +118,25 @@ window.addEventListener("DOMContentLoaded", function(e) {
         cell4.appendChild(packedAmount);
         cell5.appendChild(totalLineWeight);
 
+        let cell6 = document.createElement('td');
+        let deleteBtn = document.createElement('a');
+        deleteBtn.id = 'deleteBtn-'+finalI;
+        deleteBtn.href = '/destroy-list-item/new-'+finalI;
+        deleteBtn.className = 'btn btn-primary btn-sm  py-2';
+        deleteBtn.innerHTML = 'x';
+        cell6.appendChild(deleteBtn);
+
+
         // Append cells to the row.
         row.appendChild(cell0);
         row.appendChild(cell1);
         row.appendChild(selectCell);
+        row.appendChild(cell3);
         row.appendChild(cell2);
         row.appendChild(cell4);
         row.appendChild(cell5);
-        row.appendChild(cell3);
+        row.appendChild(cell6);
+
 
         // Append the row to the table.
         itemTable.appendChild(row);
@@ -156,11 +167,16 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let weight = document.getElementById('itemWeight-'+row).value;
         let packedAmount = document.getElementById('packedAmount-'+row).value;
         let uom = document.getElementById('uom');
+        let lineTotalWeightElement =  document.getElementById('totalLineWeight-'+row);
 
         let lineTotal = 0;
         lineTotal = +weight * +packedAmount;
         lineTotal = Math.round((lineTotal + Number.EPSILON) * 100) / 100;
-        document.getElementById('totalLineWeight-'+row).value = lineTotal;
+        // document.getElementById('totalLineWeight-'+row).value = lineTotal;
+        lineTotalWeightElement.value = lineTotal;
+
+
+        updateListItem(lineTotalWeightElement);
 
     }
     function convertMeasurement(row, convert = false){
@@ -207,6 +223,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let itemId = document.getElementById('id-'+row);
         let itemIdValue = itemId.value;
         let listId = document.getElementById('listId').value;
+        let deleteBtn = document.getElementById('deleteBtn-'+row);
         let url = '/list-item'
         let update = false;
 
@@ -223,6 +240,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
             .then((res) => {
                if(!update){
                 itemId.value = res.data.newId;
+                deleteBtn.href = '/destroy-list-item/'+res.data.newId;
                }
 
             }).catch((err) => {

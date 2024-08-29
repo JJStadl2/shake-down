@@ -19,16 +19,22 @@ class Auth
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $test = PackAuth::check();
+   
+        if(PackAuth::check()){
+            return redirect()->intended('dashboard');
+        }
+
         $credentials = $request->only('email', 'password');
+
         if (PackAuth::attempt($credentials)) {
-            Log::debug(__FILE__.' '.__LINE__);
-            // Authentication passed...
             return redirect()->intended('dashboard');
         }
 
         return back()->with([
             'error' => 'The provided credentials do not match our records.',
         ]);
+
         return $next($request);
     }
 }
