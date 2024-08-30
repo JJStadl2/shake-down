@@ -4,7 +4,7 @@
 <div class="list-item-form-container">
     {{-- add header update form --}}
     <div class="form-container">
-        <h2 class="mb-4" style="text-align: center;"> Edit Your {{ ucwords($gearList->name) ?? '' }} List.</h2>
+        <h2 class="mb-4" style="text-align: center; margin-right: -5%"> Edit Your List.</h2>
         <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
         <div class="row">
             <div class="col-md-1"></div>
@@ -44,15 +44,16 @@
                 </select>
 
             </div>
+
             <div class="col-md-2 mb-3">
-                <label class="form-control-label">Total Pack Weight @if($gearList->uom === 'us') (LBS) @else (KG) @endif</label>
+                <label class="form-control-label">Total Pack Weight @if($gearList->uom === 'us') (LBS) @else ((KG)) @endif</label>
                 <input type="text" class="form-control" id="totalPackWeight" name="totalPackWeight" value="{{ number_format( $gearList->totalPackWeight,2,'.',',') ?? 0 }}" readonly/>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-3 mb-3" style="margin-right: 10%;" ></div>
-            <div class="col-md-1 mt-2">
-                <input style="width: 50%; margin-left: 50.5%" class="form-control" type="number" id='linesToAdd' name="linesToAdd" min='1' value="1"/>
+            <div class="col-md-3 mb-3" style="margin-right: 12.5%;" ></div>
+            <div class="col-md-2 mt-2">
+                <input style="width: 30%; margin-left: 75.5%" class="form-control" type="number" id='linesToAdd' name="linesToAdd" min='1' value="1"/>
             </div>
             <div class="col-md-2 mb-3">
                 <button class="btn btn-primary btn-sm mt-2 py-2 px-3" onclick="addListItem();">+ Lines</button>
@@ -61,7 +62,14 @@
         </div>
 
     </div>
-    <div class="row"></div>
+    @if($gearList->baseWeight > $gearList->maxPackWeight)
+        <div class="row">
+            <div class="col-md-4" style="margin-right: 5%"></div>
+            <div class="col-md-4 alert alert-warning" style="text-align: center"> The base weight  ({{  number_format($gearList->baseWeight,2,'.',',') }}  @if($gearList->uom === 'us') LBS @else (KG) @endif ) of the items on this list have exceeded the weight for the type/style of hike selected for this list.</div>
+            <div class="col-md-4"></div>
+
+        </div>
+    @endif
     </div>
 
     <form class="list-item-form">

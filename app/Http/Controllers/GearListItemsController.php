@@ -49,6 +49,7 @@ class GearListItemsController extends Controller
         }
 
         GearLists::checkWeight($gearList);
+        Log::debug('gearlist with weights: '.print_r($gearList,true));
 
         return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
     }
@@ -106,7 +107,6 @@ class GearListItemsController extends Controller
     {
         $list_id = $request->list_id;
         $inputs = $request->except(['_token','q','list_id']);
-
         try{
             $gearListItem = GearListItems::where('id',$id)->where('list_id',$list_id)->first();
         }catch(\Exception $e){
@@ -114,6 +114,7 @@ class GearListItemsController extends Controller
             return response()->json(['status'=>'0','msg'=>'Error fetching list item']);
         }
 
+        //TODO fix calcuation bug
         foreach($inputs as $key => $value){
             $gearListItem->$key = $value;
         }

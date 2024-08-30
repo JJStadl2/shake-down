@@ -172,9 +172,10 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
         let lineTotal = 0;
         lineTotal = +weight * +packedAmount;
-        lineTotal = Math.round((lineTotal + Number.EPSILON) * 100) / 100;
+        lineTotal = Math.round(lineTotal);
         lineTotalWeightElement.value = lineTotal;
 
+        //TODO add logic to convert/calculate TPW and BPW.
 
         updateListItem(lineTotalWeightElement);
 
@@ -452,7 +453,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
             alert('Failed to update list. Please try again later.');
 
         });
-        if(columnName === 'sort'){
+        if(columnName === 'sort' || columnName === 'list_class'){
             location.reload();
         }
 

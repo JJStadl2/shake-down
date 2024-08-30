@@ -144,7 +144,7 @@ class GearLists extends Model
 
         $gearList->totalPackWeight = $totalPackWeight;
         $gearList->baseWeight = $baseWeight;
-        $gearList->maxPackweight = $maxListWeight;
+        $gearList->maxPackWeight = $maxListWeight;
 
     }
 }
