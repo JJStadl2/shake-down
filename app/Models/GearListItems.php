@@ -47,5 +47,36 @@ class GearListItems extends Model
 
         ];
     }
+
+    /**
+     * getSortedListItems
+     *
+     * @param  mixed $listId
+     * @param  mixed $sort
+     * @return void
+     * Uses raw sql because it is more readable than Eloquent for this specific query.
+     */
+    public static function getSortedListItems($listId, $sort){
+
+        $by = $sort[0];
+        $order = $sort[1];
+
+        $sql =' SELECT *
+                FROM gear_list_items
+                WHERE list_id = ?';
+
+        $sql.=" ORDER BY $by COLLATE NOCASE $order";
+
+        $params = [$listId];
+
+        try{
+           $gearListItems = DB::select($sql,$params);
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return [];
+        }
+        return $gearListItems;
+
+    }
 }
 

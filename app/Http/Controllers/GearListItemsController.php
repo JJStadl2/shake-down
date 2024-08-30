@@ -11,8 +11,12 @@ use Illuminate\Support\Facades\Auth;
 
 class GearListItemsController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
+     * index
+     *
+     * @param  mixed $listId
+     * @return blade
      */
     public function index($listId)
     {
@@ -32,11 +36,8 @@ class GearListItemsController extends Controller
         //TODO sort lists based on header setting
         $sort = DB::table('list_sorting_options')->where('value',$gearList->sort)->first('order_by');
         $sort = explode(' ',$sort->order_by);
-        $sort_by = $sort[0];
-        $order = $sort[1];
-
         try{
-            $gearListItems = GearListItems::where('list_id',$listId)->orderBy($sort_by,$order)->get();
+            $gearListItems = GearListItems::getSortedListItems($listId, $sort);
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             $gearListItems = [];
@@ -107,7 +108,7 @@ class GearListItemsController extends Controller
         }
 
         foreach($inputs as $key => $value){
-            $gearListItem->$key = ucwords($value);
+            $gearListItem->$key = $value;
         }
 
         try{

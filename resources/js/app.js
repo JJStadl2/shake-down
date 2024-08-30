@@ -245,7 +245,6 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let url = '/list-item'
         let update = false;
         let data = {};
-
         let tdCell = document.getElementById('btn-td-'+row);
         let deleteLink = document.createElement('a');
         deleteLink.id = 'deleteBtn-'+row;

@@ -19,8 +19,6 @@ class Auth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $test = PackAuth::check();
-   
         if(PackAuth::check()){
             return redirect()->intended('dashboard');
         }

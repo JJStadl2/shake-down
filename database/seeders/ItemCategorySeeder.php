@@ -14,7 +14,12 @@ class ItemCategorySeeder extends Seeder
      */
     public function run(): void
     {
-         //seed categories table for dropdown
+        $categoryCheck = DB::table('item_categories')->get();
+
+        if(count($categoryCheck)){
+            return;
+        }
+            //seed categories table for dropdown
          $categories = [
             'clothes',
              'worn_clothes',
@@ -24,7 +29,10 @@ class ItemCategorySeeder extends Seeder
              'shelter',
              'fire~water_treatment',
              'luxury_item',
-             'tech'
+             'tech',
+             'cooking',
+             'tools',
+             'emergency'
          ];
 
          $sql = "INSERT INTO item_categories('value','category','ordinal') VALUES (?,?,?) ";

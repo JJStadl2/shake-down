@@ -172,6 +172,12 @@ body {
   transition: background-color 0.3s ease;
 }
 
+.btn-primary:focus,
+.btn-primary:hover {
+  background-color: #c0392b; /* Set the background color to the initial color when focused or hovered */
+  color: #fff; /* Set the text color to the initial color when focused or hovered */
+}
+
 .btn-primary:hover {
   background-color: #e74c3c;
 }
@@ -199,6 +205,10 @@ body {
 .list-form-text {
   color: #f5f5f5;
   text-align: center;
+}
+
+.form-text {
+  color: #f5f5f5;
 }
 
 .us-radio, .metric-radio {
