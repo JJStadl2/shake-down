@@ -14,8 +14,7 @@ class AccountController extends Controller
     }
 
     public function register(Request $request){
-        Log::debug(__FILE__.' '.__LINE__.' request: '.print_r($request->input(),true));
-
+       
         //confirm the passwords match
         if(!Validation::validateRegistration($request)){
 

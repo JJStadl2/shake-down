@@ -23,7 +23,7 @@ class GearListsController extends Controller
 
         $gearLists = GearLists::where('user_id',$user->id)->get();
 
-        if(empty($gearLists)){
+        if(!count($gearLists)){
             return redirect('/gear-list')->with('info','Please create a gear list.');
         }
 
@@ -62,7 +62,10 @@ class GearListsController extends Controller
         }
 
         $gearListItems = [];
-        return view('gear-lists.gear-list',['gearList'=>$gearList,'listItems'=>$gearListItems,'user'=>$user]);
+        $listSortingOptions = GearLists::getSortingOptions();
+        $listClasses = GearLists::getListClasses();
+
+        return view('gear-lists.gear-list',['gearList'=>$gearList,'listItems'=>$gearListItems,'user'=>$user, 'listClasses'=>$listClasses,'sortingOptions'=> $listSortingOptions ]);
     }
 
     /**
@@ -95,7 +98,7 @@ class GearListsController extends Controller
             return response()->json(['status'=>'0','msg'=>'Error fetching list data']);
         }
 
-        if(empty($gearList)){
+        if(!count($gearList)){
             return response()->json(['status'=>'0','msg'=>'Error. No list found.']);;
         }
 

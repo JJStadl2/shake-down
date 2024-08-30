@@ -128,7 +128,7 @@ class GearListItemsController extends Controller
     {
         $gearListItem = GearListItems::where('id',$id)->first();
 
-        if(empty($gearListItem)){
+        if(!count($gearListItem)){
             return redirect()->back()->with('error','No item found to delete.');
         }
 
