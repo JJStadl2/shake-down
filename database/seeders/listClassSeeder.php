@@ -14,6 +14,11 @@ class ListClassSeeder extends Seeder
      */
     public function run(): void
     {
+        $classCheck = DB::table('list_classes')->get();
+
+        if(count($classCheck)){
+            return;
+        }
          //seed list classes table for dropdown
          $classes = [
            ['type'=>'sul','display'=>'Super Ultra Light','description'=>'5LBS or Less BPW','ordinal'=>1, 'max_weight'=>5],

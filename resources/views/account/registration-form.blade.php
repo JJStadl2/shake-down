@@ -2,8 +2,8 @@
 @section('content')
 <div class="container">
     <div class="form-container">
-        <h1>Sign Up</h1>
         <form class="registration-form" method="post" action="{{ route('register') }}">
+            <h1 style="text-align: center;">Sign Up</h1>
             @csrf
             <div class="mb-3">
                 <label for="inputName" class="form-label">Name</label>
