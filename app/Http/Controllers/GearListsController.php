@@ -98,7 +98,7 @@ class GearListsController extends Controller
             return response()->json(['status'=>'0','msg'=>'Error fetching list data']);
         }
 
-        if(!count($gearList)){
+        if(empty($gearList)){
             return response()->json(['status'=>'0','msg'=>'Error. No list found.']);;
         }
 

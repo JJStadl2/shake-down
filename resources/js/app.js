@@ -12,125 +12,138 @@ window.addEventListener("DOMContentLoaded", function(e) {
     }
     this.window.addListItem = function addListItem(){
 
-        let listUOM = document.getElementById('uom').value;
-        let finalIElement = document.getElementById('final-i');
-        let itemTable = document.getElementById('item-table-body');
-        let finalI = finalIElement.value;
-        finalIElement.value = +finalI + 1;
-
-        let row = document.createElement("tr");
-
-        // Create cells and input elements.
-        let cell0 = document.createElement("th");
-        cell0.scope = 'row';
-        cell0.innerHTML = finalI;
-
-        let cell1 = document.createElement("td");
-
-        let counter = document.createElement("input");
-        counter.type = "hidden";
-        counter.name = "id[]";
-        counter.id = 'id-'+finalI;
-        counter.value = 'new-'+finalI;
-        counter.setAttribute('data-column-name','id');
-
-        let itemName =  createListItemInput('text','itemName',finalI,'item_name');
-        itemName.placeholder = 'Item Name';
-        itemName.classList.add('form-control');
-
-        let cell2 = document.createElement("td");
-        let itemWeight = createListItemInput('number','itemWeight',finalI,'item_weight');
-        itemWeight.value = 0;
-        itemWeight.classList.add('for-weight');
-        itemWeight.classList.add('number-input');
-        itemWeight.classList.add('form-control');
-        cell2.classList.add('number-col');
-
-        let cell3 = document.createElement("td");
-        let radio1;
-        let radio2;
-        let radioLabel1;
-        let radioLabel2;
-
-        if(listUOM === 'us'){
-
-            radio1 = createRadio('in_ounces', '', 'oz', finalI);
-            radioLabel1 = createLabel('OZ',  'uom-oz-'+finalI, 'oz', finalI);
-            radio2 = createRadio('in_lbs', '', 'lbs', finalI);
-            radioLabel2 = createLabel('LBS',  'uom-lbs-'+finalI, 'lbs', finalI);
-
+        let numberOfItemsToAdd = document.getElementById('linesToAdd');
+        let linesToAdd = 1;
+        if(+numberOfItemsToAdd.value < 1){
+            numberOfItemsToAdd.value = linesToAdd;
         }else{
-
-            radio1 = createRadio('in_grams', '', 'gram', finalI);
-            radioLabel1 =  createLabel('Grams',  'uom-gram-'+finalI, 'gram', finalI);
-            radio2 =  createRadio('in_kilos', '', 'kg', finalI);
-            radioLabel2 = createLabel('KG',  'uom-kg-'+finalI, 'kg', finalI);
+            linesToAdd = +numberOfItemsToAdd.value;
         }
 
-        let cell4 = document.createElement("td");
-        cell4.classList.add('number-col');
-        let packedAmount = createListItemInput('number','packedAmount',finalI,'amount');
-        packedAmount.value = 1;
-
-        packedAmount.classList.add('for-weight');
-        packedAmount.classList.add('number-input');
-        packedAmount.classList.add('form-control');
-
-        let cell5 = document.createElement("td");
-        cell5.classList.add('number-col');
-        let totalLineWeight = createListItemInput('number','totalLineWeight',finalI,'total_line_weight');
-        totalLineWeight.value = 0;
-        totalLineWeight.setAttribute('data-column-name','total_line_weight');
-        totalLineWeight.setAttribute('readonly',true);
-        totalLineWeight.classList.add('number-input');
-        totalLineWeight.classList.add('form-control');
-
-        //append inputs to cells.
-        cell1.appendChild(counter);
-        cell1.appendChild(itemName);
-        cell2.appendChild(itemWeight);
-
-        let selectCell = document.createElement("td");
-        let categorySelect = getCategroySelect(finalI);
-        selectCell.append(categorySelect);
-
-        cell3.appendChild(radio1);
-        cell3.appendChild(radioLabel1);
-        cell3.appendChild(radio2);
-        cell3.appendChild(radioLabel2);
-
-        cell4.appendChild(packedAmount);
-        cell5.appendChild(totalLineWeight);
-
-        let cell6 = document.createElement('td');
-        cell6.id = 'btn-td-'+finalI;
-        let deleteBtn = document.createElement('button');
-        deleteBtn.id = 'deleteBtn-'+finalI;
-        // deleteBtn.href = '/destroy-list-item/new-'+finalI;
-        deleteBtn.className = 'btn btn-primary btn-sm  py-2';
-        deleteBtn.innerHTML = 'x';
-        deleteBtn.addEventListener('click', function() {
-           row.remove();
-        });
-        cell6.appendChild(deleteBtn);
+        for(let i = 0; i < linesToAdd; i++){
 
 
-        // Append cells to the row.
-        row.appendChild(cell0);
-        row.appendChild(cell1);
-        row.appendChild(selectCell);
-        row.appendChild(cell3);
-        row.appendChild(cell2);
-        row.appendChild(cell4);
-        row.appendChild(cell5);
-        row.appendChild(cell6);
+            let listUOM = document.getElementById('uom').value;
+            let finalIElement = document.getElementById('final-i');
+            let itemTable = document.getElementById('item-table-body');
+            let finalI = finalIElement.value;
+            finalIElement.value = +finalI + 1;
+
+            let row = document.createElement("tr");
+
+            // Create cells and input elements.
+            let cell0 = document.createElement("th");
+            cell0.scope = 'row';
+            cell0.innerHTML = finalI;
+
+            let cell1 = document.createElement("td");
+
+            let counter = document.createElement("input");
+            counter.type = "hidden";
+            counter.name = "id[]";
+            counter.id = 'id-'+finalI;
+            counter.value = 'new-'+finalI;
+            counter.setAttribute('data-column-name','id');
+
+            let itemName =  createListItemInput('text','itemName',finalI,'item_name');
+            itemName.placeholder = 'Item Name';
+            itemName.classList.add('form-control');
+
+            let cell2 = document.createElement("td");
+            let itemWeight = createListItemInput('number','itemWeight',finalI,'item_weight');
+            itemWeight.value = 0;
+            itemWeight.classList.add('for-weight');
+            itemWeight.classList.add('number-input');
+            itemWeight.classList.add('form-control');
+            cell2.classList.add('number-col');
+
+            let cell3 = document.createElement("td");
+            let radio1;
+            let radio2;
+            let radioLabel1;
+            let radioLabel2;
+
+            if(listUOM === 'us'){
+
+                radio1 = createRadio('in_ounces', '', 'oz', finalI);
+                radioLabel1 = createLabel('OZ',  'uom-oz-'+finalI, 'oz', finalI);
+                radio2 = createRadio('in_lbs', '', 'lbs', finalI);
+                radioLabel2 = createLabel('LBS',  'uom-lbs-'+finalI, 'lbs', finalI);
+
+            }else{
+
+                radio1 = createRadio('in_grams', '', 'gram', finalI);
+                radioLabel1 =  createLabel('Grams',  'uom-gram-'+finalI, 'gram', finalI);
+                radio2 =  createRadio('in_kilos', '', 'kg', finalI);
+                radioLabel2 = createLabel('KG',  'uom-kg-'+finalI, 'kg', finalI);
+            }
+
+            let cell4 = document.createElement("td");
+            cell4.classList.add('number-col');
+            let packedAmount = createListItemInput('number','packedAmount',finalI,'amount');
+            packedAmount.value = 1;
+
+            packedAmount.classList.add('for-weight');
+            packedAmount.classList.add('number-input');
+            packedAmount.classList.add('form-control');
+
+            let cell5 = document.createElement("td");
+            cell5.classList.add('number-col');
+            let totalLineWeight = createListItemInput('number','totalLineWeight',finalI,'total_line_weight');
+            totalLineWeight.value = 0;
+            totalLineWeight.setAttribute('data-column-name','total_line_weight');
+            totalLineWeight.setAttribute('readonly',true);
+            totalLineWeight.classList.add('number-input');
+            totalLineWeight.classList.add('form-control');
+
+            //append inputs to cells.
+            cell1.appendChild(counter);
+            cell1.appendChild(itemName);
+            cell2.appendChild(itemWeight);
+
+            let selectCell = document.createElement("td");
+            let categorySelect = getCategroySelect(finalI);
+            selectCell.append(categorySelect);
+
+            cell3.appendChild(radio1);
+            cell3.appendChild(radioLabel1);
+            cell3.appendChild(radio2);
+            cell3.appendChild(radioLabel2);
+
+            cell4.appendChild(packedAmount);
+            cell5.appendChild(totalLineWeight);
+
+            let cell6 = document.createElement('td');
+            cell6.id = 'btn-td-'+finalI;
+            let deleteBtn = document.createElement('button');
+            deleteBtn.id = 'deleteBtn-'+finalI;
+            // deleteBtn.href = '/destroy-list-item/new-'+finalI;
+            deleteBtn.className = 'btn btn-primary btn-sm  py-2';
+            deleteBtn.innerHTML = 'x';
+            deleteBtn.addEventListener('click', function() {
+            row.remove();
+            });
+            cell6.appendChild(deleteBtn);
 
 
-        // Append the row to the table.
-        itemTable.appendChild(row);
+            // Append cells to the row.
+            row.appendChild(cell0);
+            row.appendChild(cell1);
+            row.appendChild(selectCell);
+            row.appendChild(cell3);
+            row.appendChild(cell2);
+            row.appendChild(cell4);
+            row.appendChild(cell5);
+            row.appendChild(cell6);
 
-        //add functions to calculate and convert total weight.
-        addEventListenerWeightCalc(finalI);
+
+            // Append the row to the table.
+            itemTable.appendChild(row);
+
+            //add functions to calculate and convert total weight.
+            addEventListenerWeightCalc(finalI);
+        }
+        numberOfItemsToAdd.value=1;
 
     }
 
@@ -160,7 +173,6 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let lineTotal = 0;
         lineTotal = +weight * +packedAmount;
         lineTotal = Math.round((lineTotal + Number.EPSILON) * 100) / 100;
-        // document.getElementById('totalLineWeight-'+row).value = lineTotal;
         lineTotalWeightElement.value = lineTotal;
 
 

@@ -4,9 +4,10 @@
 <div class="list-item-form-container">
     {{-- add header update form --}}
     <div class="form-container">
+        <h2 class="mb-4" style="text-align: center;"> Edit Your {{ ucwords($gearList->name) ?? '' }} List.</h2>
         <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
         <div class="row">
-            <div class="col-md-2"></div>
+            <div class="col-md-1"></div>
             <input type="hidden" name="listId" id="listId" data-column-name="list_id" value="{{ $gearList->id }}"/>
             <div class="col-md-1"></div>
             <div class="col-md-3">
@@ -17,10 +18,13 @@
                 <label class="form-control-label">Notes</label>
                 <textarea type="text" class="form-control" id="listNotes" name="listNotes" data-column-name="notes"  onblur="updateList(this,{{ $gearList->id }})">{{ $gearList->notes ?? '' }}</textarea>
             </div>
-            <div class="col-md-2"></div>
+            <div class="col-md-2">
+                <label class="form-control-label">Base Weight  @if($gearList->uom === 'us') (LBS) @else (KG) @endif </label>
+                <input type="text" class="form-control" id="baseWeight" name="baseWeight" value="{{ number_format($gearList->baseWeight,2,'.',',') ?? 0 }}" readonly/>
+            </div>
         </div>
         <div class="row">
-            <div class="col-md-2"></div>
+            <div class="col-md-1"></div>
             <div class="col-md-1"></div>
             <div class="col-md-3">
                 <label class="form-control-label">Type</label>
@@ -40,31 +44,24 @@
                 </select>
 
             </div>
-            <div class="col-md-2 mb-3"></div>
+            <div class="col-md-2 mb-3">
+                <label class="form-control-label">Total Pack Weight @if($gearList->uom === 'us') (LBS) @else (KG) @endif</label>
+                <input type="text" class="form-control" id="totalPackWeight" name="totalPackWeight" value="{{ number_format( $gearList->totalPackWeight,2,'.',',') ?? 0 }}" readonly/>
+            </div>
         </div>
         <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-1"></div>
-            <div class="col-md-2 mb-3">
+            <div class="col-md-3 mb-3" style="margin-right: 10%;" ></div>
+            <div class="col-md-1 mt-2">
+                <input style="width: 50%; margin-left: 50.5%" class="form-control" type="number" id='linesToAdd' name="linesToAdd" min='1' value="1"/>
             </div>
             <div class="col-md-2 mb-3">
-                <div class="d-grid gap-2">
-                    <button class="btn btn-primary mt-3" onclick="addListItem();">+ Item</button>
-                </div>
+                <button class="btn btn-primary btn-sm mt-2 py-2 px-3" onclick="addListItem();">+ Lines</button>
             </div>
 
-
-            <div class="col-md-2 mb-3">
-
-            </div>
-            <div class="col-md-2 mb-3">
-
-            </div>
-            <div class="col-md-1 mb-3"></div>
         </div>
 
-        </div>
-        <div class="row"></div>
+    </div>
+    <div class="row"></div>
     </div>
 
     <form class="list-item-form">
@@ -131,7 +128,7 @@
                                 <input  class="form-control" type="number" data-column-name="amount" id="packedAmount-{{ $i }}" name="pakedAmount[]" value="{{ $item->amount ?? 1}}" onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
                             </td>
                             <td>
-                                <input  class="form-control" type="number" data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}" name="totalLineWeight[]" value="{{floatval($item->total_line_weight) ?? floatval(($item->item_weight * $item->amount))}}" onblur="updateListItem(this);" />
+                                <input  class="form-control" type="number" data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}" name="totalLineWeight[]" value="{{floatval($item->total_line_weight) ?? floatval(($item->item_weight * $item->amount))}}" readonly />
                             </td>
                             <td id="btn-td-{{ $i }}">
                                 <a id="deleteBtn-{{ $i }}" href="/destroy-list-item/{{ $item->id }}" class="btn btn-primary btn-sm  py-2">x</a>

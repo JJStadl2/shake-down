@@ -33,15 +33,22 @@ class GearListItemsController extends Controller
             return redirect()->back()->with('error','Unable to find list info.');
         }
 
-        //TODO sort lists based on header setting
+        if(empty($gearList)){
+            return redirect()->back()->with('error','Unable to find list.');
+        }
+
+        $uom = $gearList->uom;
         $sort = DB::table('list_sorting_options')->where('value',$gearList->sort)->first('order_by');
         $sort = explode(' ',$sort->order_by);
+
         try{
-            $gearListItems = GearListItems::getSortedListItems($listId, $sort);
+            $gearListItems = GearListItems::getSortedListItems($listId, $sort, $uom);
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             $gearListItems = [];
         }
+
+        GearLists::checkWeight($gearList);
 
         return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
     }
@@ -128,7 +135,7 @@ class GearListItemsController extends Controller
     {
         $gearListItem = GearListItems::where('id',$id)->first();
 
-        if(!count($gearListItem)){
+        if(empty($gearListItem)){
             return redirect()->back()->with('error','No item found to delete.');
         }
 

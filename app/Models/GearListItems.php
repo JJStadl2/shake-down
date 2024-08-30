@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Log;
 class GearListItems extends Model
 {
     use HasFactory;
+
+    public static int $usConversionFactor = 16;
+    public static int $metricConversionFactor = 1000;
      /**
      * The attributes that are mass assignable.
      *
@@ -22,7 +25,7 @@ class GearListItems extends Model
         'item_weight',
         'in_grams',
         'in_ounces',
-        'in_pounds',
+        'in_lbs',
         'in_kilos',
         'amount'
     ];
@@ -53,17 +56,39 @@ class GearListItems extends Model
      *
      * @param  mixed $listId
      * @param  mixed $sort
-     * @return void
+     * @return object
      * Uses raw sql because it is more readable than Eloquent for this specific query.
+     * SOrts based on smallest scale unit of measure when sorting by weight.
      */
-    public static function getSortedListItems($listId, $sort){
+    public static function getSortedListItems($listId, $sort, $uom){
 
         $by = $sort[0];
         $order = $sort[1];
+        Log::debug(__FILE__.' '.__LINE__.' sort arr: '.print_r($sort,true));
 
-        $sql =' SELECT *
-                FROM gear_list_items
-                WHERE list_id = ?';
+        if($uom === 'us'){
+            $conversionFactor = self::$usConversionFactor;
+        }else{
+            $conversionFactor = self::$metricConversionFactor;
+        }
+
+        if(!str_contains($by,'weight')){
+
+            $sql =' SELECT *
+                    FROM gear_list_items';
+        }else{
+            $sql = " SELECT *,
+                    CASE
+                        WHEN (in_grams = 1 OR in_ounces = 1) THEN item_weight
+                        WHEN (in_lbs = 1 OR in_kilos = 1) THEN item_weight * $conversionFactor
+                        ELSE 0
+                    END AS item_unit_weight
+                    FROM gear_list_items";
+
+            $by = 'item_unit_weight';
+        }
+
+        $sql.= ' WHERE list_id = ? ';
 
         $sql.=" ORDER BY $by COLLATE NOCASE $order";
 
@@ -75,6 +100,7 @@ class GearListItems extends Model
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             return [];
         }
+
         return $gearListItems;
 
     }
