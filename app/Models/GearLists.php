@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\GearListItems;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GearLists extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     public static float $metricMaxWeightConversionFactor = 2.2;
 

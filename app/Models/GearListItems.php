@@ -6,13 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GearListItems extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     public static int $usConversionFactor = 16;
     public static int $metricConversionFactor = 1000;
+    public static $uomArray = ['in_ounces'=> false, 'in_lbs'=>false,'in_grams'=>false,'in_kilos'=>false];
      /**
      * The attributes that are mass assignable.
      *
@@ -20,6 +23,7 @@ class GearListItems extends Model
      */
     protected $fillable = [
         'list_id',
+        'user_id',
         'item_name',
         'item_category',
         'item_weight',
@@ -64,7 +68,6 @@ class GearListItems extends Model
 
         $by = $sort[0];
         $order = $sort[1];
-        Log::debug(__FILE__.' '.__LINE__.' sort arr: '.print_r($sort,true));
 
         if($uom === 'us'){
             $conversionFactor = self::$usConversionFactor;
@@ -88,7 +91,7 @@ class GearListItems extends Model
             $by = 'item_unit_weight';
         }
 
-        $sql.= ' WHERE list_id = ? ';
+        $sql.= ' WHERE list_id = ? AND deleted_at IS NULL';
 
         $sql.=" ORDER BY $by COLLATE NOCASE $order";
 

@@ -49,7 +49,7 @@ class GearListItemsController extends Controller
         }
 
         GearLists::checkWeight($gearList);
-        Log::debug('gearlist with weights: '.print_r($gearList,true));
+        // Log::debug('gearlist with weights: '.print_r($gearList,true));
 
         return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
     }
@@ -105,8 +105,18 @@ class GearListItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Log::debug('Request in update line item: '.print_r($request->input(), true));
         $list_id = $request->list_id;
         $inputs = $request->except(['_token','q','list_id']);
+        
+
+        try{
+            $gearList = GearLists::where('id',$list_id)->first();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Error fetching list.']);
+        }
+
         try{
             $gearListItem = GearListItems::where('id',$id)->where('list_id',$list_id)->first();
         }catch(\Exception $e){
@@ -115,6 +125,8 @@ class GearListItemsController extends Controller
         }
 
         //TODO fix calcuation bug
+        $uomArray = GearListItems::$uomArray;
+
         foreach($inputs as $key => $value){
             $gearListItem->$key = $value;
         }

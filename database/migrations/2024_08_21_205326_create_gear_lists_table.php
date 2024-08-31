@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('uom');
             $table->string('list_class');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

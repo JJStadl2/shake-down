@@ -172,7 +172,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
         let lineTotal = 0;
         lineTotal = +weight * +packedAmount;
-        lineTotal = Math.round(lineTotal);
+        lineTotal = lineTotal.toFixed(2).replace(/[.,]00$/, "");
         lineTotalWeightElement.value = lineTotal;
 
         //TODO add logic to convert/calculate TPW and BPW.
@@ -210,9 +210,10 @@ window.addEventListener("DOMContentLoaded", function(e) {
                 weightValue = +weightValue /1000;
                 updateListItem(large);
             }
+            console.log('updated 2: '+updated);
         }
 
-        document.getElementById('itemWeight-'+row).value = weightValue;
+        document.getElementById('itemWeight-'+row).value = weightValue.toFixed(2).replace(/[.,]00$/, "");;
         getLineTotalWeight(row);
 
 
@@ -259,13 +260,14 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let update = false;
         let data = {};
         let tdCell = document.getElementById('btn-td-'+row);
+        let userId = document.getElementById('userId').value;
         let deleteLink = document.createElement('a');
         deleteLink.id = 'deleteBtn-'+row;
-        // deleteBtn.href = '/destroy-list-item/new-'+finalI;
         deleteLink.className = 'btn btn-primary btn-sm  py-2';
         deleteLink.innerHTML = 'x';
 
         data[columnName] = value;
+        data['user_id'] = userId
 
         if(columnName.substring(0,3) === 'in_'){
             data = getBooleanData(columnName);
@@ -291,7 +293,6 @@ window.addEventListener("DOMContentLoaded", function(e) {
             alert('Failed to update list item. Please try again later.');
             console.error(err);
         });
-
 
     }
     function  createListItemInput(type,nameBase,row,columnName){

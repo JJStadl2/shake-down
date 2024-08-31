@@ -34,7 +34,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="listClass" class="form-label">Type</label>
-                                <select class="form-control" id="listClass" name="listClass">
+                                <select class="form-control" id="listClass" name="listClass" required>
                                     <option value=""  @if(old('listClass') ==='') selected @endif>Select Style of Hiking </option>
                                     @foreach($listClasses as $class)
                                     <option value="{{ $class->type }}"  @if(old('listClass') === $class->type) selected @endif>{{ $class->display.' - '.$class->description }}</option>
