@@ -483,6 +483,19 @@ window.addEventListener("DOMContentLoaded", function(e) {
         });
     });
 
+    let inputs = document.querySelectorAll('#master-item-table input');
+    let selectInputs = document.querySelectorAll('select');
+
+    inputs.forEach(function(input) {
+        input.disabled = true;
+    });
+    selectInputs.forEach(function(selectInput) {
+        selectInput.disabled = true;
+    });
+
+
+
+
 });
 
 

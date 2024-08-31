@@ -42,6 +42,8 @@ Route::get('/destroy-list/{id}', [App\Http\Controllers\GearListsController::clas
 )->name('list-destroy');
 
 //gear list item routes
+Route::get('/all-list-items', [App\Http\Controllers\GearListItemsController::class, 'itemsMaster']
+)->name('item-master');
 Route::get('/list-items/{listId}', [App\Http\Controllers\GearListItemsController::class, 'index']
 )->name('item-index');
 // Route::get('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 'show']
