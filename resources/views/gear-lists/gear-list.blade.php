@@ -4,7 +4,7 @@
 <div class="list-item-form-container">
     {{-- add header update form --}}
     <div class="form-container">
-        <h2 class="mb-4" style="text-align: center; margin-right: -5%"> Edit Your List.</h2>
+        <h2 class="mb-4" style="text-align: center; margin-right: -5%"> Edit Your List</h2>
         <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
         <div class="row">
             <div class="col-md-1"></div>

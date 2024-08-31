@@ -184,19 +184,23 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
         let uom = document.getElementById('uom').value;
         let weight = document.getElementById('itemWeight-'+row);
+        let packedAmount = document.getElementById('packedAmount-'+row).value;
+        let totalWeight =  document.getElementById('totalLineWeight-'+row)
+        let totalLineWeightValue = 0;
         let weightValue = weight.value;
         let small;
         let large;
+        let element;
 
         if(uom === 'us'){
             small = document.getElementById('uom-oz-'+row);
             large = document.getElementById('uom-lbs-'+row);
             if(small.checked === true){
                 weightValue = +weightValue * 16;
-                updateListItem(small);
+                element = small;
             }else{
                 weightValue = +weightValue / 16;
-                updateListItem(large);
+                element = large
             }
 
         }else{
@@ -205,17 +209,20 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
             if(small.checked === true){
                 weightValue = +weightValue * 1000;
-                updateListItem(small);
+                element = small;
             }else{
                 weightValue = +weightValue /1000;
-                updateListItem(large);
+                element = large
             }
-            console.log('updated 2: '+updated);
+
         }
 
-        document.getElementById('itemWeight-'+row).value = weightValue.toFixed(2).replace(/[.,]00$/, "");;
-        getLineTotalWeight(row);
-
+        totalLineWeightValue = +weightValue * +packedAmount;
+        weight.value = weightValue.toFixed(2).replace(/[.,]00$/, "");
+        totalWeight.value = totalLineWeightValue.toFixed(2).replace(/[.,]00$/, "");
+        updateListItem(element);
+        updateListItem(weight);
+        updateListItem(totalWeight);
 
     }
     function getBooleanData(columnName){
@@ -489,9 +496,9 @@ window.addEventListener("DOMContentLoaded", function(e) {
     inputs.forEach(function(input) {
         input.disabled = true;
     });
-    selectInputs.forEach(function(selectInput) {
-        selectInput.disabled = true;
-    });
+    // selectInputs.forEach(function(selectInput) {
+    //     selectInput.disabled = true;
+    // });
 
 
 
