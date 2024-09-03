@@ -1,5 +1,7 @@
 import './bootstrap';
 
+const gramConverter = 1000;
+const ounceConverter = 16;
 window.addEventListener("DOMContentLoaded", function(e) {
 
     this.window.showPassword = function showPassword(id){
@@ -26,6 +28,8 @@ window.addEventListener("DOMContentLoaded", function(e) {
             let listUOM = document.getElementById('uom').value;
             let finalIElement = document.getElementById('final-i');
             let itemTable = document.getElementById('item-table-body');
+            let userId = document.getElementById('userId').value;
+            let listId = document.getElementById('listId').value;
             let finalI = finalIElement.value;
             finalIElement.value = +finalI + 1;
 
@@ -48,6 +52,36 @@ window.addEventListener("DOMContentLoaded", function(e) {
             let itemName =  createListItemInput('text','itemName',finalI,'item_name');
             itemName.placeholder = 'Item Name';
             itemName.classList.add('form-control');
+
+            let cell6 = document.createElement('td');
+            cell6.id = 'btn-td-'+finalI;
+            let deleteBtn = document.createElement('a');
+            deleteBtn.id = 'deleteBtn-'+finalI;
+            deleteBtn.className = 'btn btn-primary btn-sm  py-2';
+            deleteBtn.innerHTML = 'x';
+
+            let data = {};
+            let url = '/list-item';
+            data['list_id'] = listId;
+            data['user_id'] = userId;
+            data['item_name'] = '';
+            let updateItem;
+            updateItem = async function (){
+                try {
+                    const response = await axios.post(url, data);
+                    return response.data;
+                } catch (error) {
+                    // handle error
+                    console.log(error);
+                }
+            };
+
+            // To use the function and handle the response data
+            updateItem().then((data) => {
+                // Do something with the response data
+                counter.value = data.newId;
+                deleteBtn.setAttribute('href', '/destroy-list-item/'+data.newId);
+            });
 
             let cell2 = document.createElement("td");
             let itemWeight = createListItemInput('number','itemWeight',finalI,'item_weight');
@@ -95,6 +129,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
             totalLineWeight.setAttribute('readonly',true);
             totalLineWeight.classList.add('number-input');
             totalLineWeight.classList.add('form-control');
+            totalLineWeight.classList.add('for-total-list-weight');
 
             //append inputs to cells.
             cell1.appendChild(counter);
@@ -112,17 +147,6 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
             cell4.appendChild(packedAmount);
             cell5.appendChild(totalLineWeight);
-
-            let cell6 = document.createElement('td');
-            cell6.id = 'btn-td-'+finalI;
-            let deleteBtn = document.createElement('button');
-            deleteBtn.id = 'deleteBtn-'+finalI;
-            // deleteBtn.href = '/destroy-list-item/new-'+finalI;
-            deleteBtn.className = 'btn btn-primary btn-sm  py-2';
-            deleteBtn.innerHTML = 'x';
-            deleteBtn.addEventListener('click', function() {
-            row.remove();
-            });
             cell6.appendChild(deleteBtn);
 
 
@@ -175,9 +199,8 @@ window.addEventListener("DOMContentLoaded", function(e) {
         lineTotal = lineTotal.toFixed(2).replace(/[.,]00$/, "");
         lineTotalWeightElement.value = lineTotal;
 
-        //TODO add logic to convert/calculate TPW and BPW.
-
         updateListItem(lineTotalWeightElement);
+
 
     }
     this.window.convertMeasurement = function convertMeasurement(row, convert = false){
@@ -228,11 +251,6 @@ window.addEventListener("DOMContentLoaded", function(e) {
     function getBooleanData(columnName){
 
         let data = {};
-        data['in_ounces'] = false;
-        data['in_lbs'] = false;
-        data['in_grams'] = false;
-        data['in_kilos'] = false;
-
         switch(columnName){
             case 'in_ounces':
                 data['in_ounces'] = true;
@@ -263,44 +281,84 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let itemIdValue = itemId.value;
         let listId = document.getElementById('listId').value;
         let deleteBtn = document.getElementById('deleteBtn-'+row);
-        let url = '/list-item'
-        let update = false;
+        let url = '/list-item/'+itemIdValue;
+        // let update = false;
         let data = {};
-        let tdCell = document.getElementById('btn-td-'+row);
+        // let tdCell = document.getElementById('btn-td-'+row);
         let userId = document.getElementById('userId').value;
-        let deleteLink = document.createElement('a');
-        deleteLink.id = 'deleteBtn-'+row;
-        deleteLink.className = 'btn btn-primary btn-sm  py-2';
-        deleteLink.innerHTML = 'x';
+        // let deleteLink = document.createElement('a');
+        // deleteLink.id = 'deleteBtn-'+row;
+        // deleteLink.className = 'btn btn-primary btn-sm  py-2';
+        // deleteLink.innerHTML = 'x';
 
         data[columnName] = value;
-        data['user_id'] = userId
 
         if(columnName.substring(0,3) === 'in_'){
             data = getBooleanData(columnName);
         }
 
-        if(itemIdValue.substring(0,3) !== 'new'){
-            update = true;
-            url = url+'/'+itemIdValue;
-        }
-
         data['list_id'] = listId;
+        data['user_id'] = userId;
+        data['id'] = itemIdValue;
 
         axios.post(url, data, itemId)
             .then((res) => {
-               if(!update){
-                itemId.value = res.data.newId;
-                deleteLink.href = '/destroy-list-item/'+res.data.newId;
-                deleteBtn.remove();
-                tdCell.appendChild(deleteLink);
-               }
 
             }).catch((err) => {
             alert('Failed to update list item. Please try again later.');
             console.error(err);
         });
 
+        updateTotalListWeights();
+
+    }
+    function updateTotalListWeights(){
+
+        let weightsForPW = document.querySelectorAll('.for-total-list-weight');
+        let baseWeight = 0;
+        let totalPackWeight = 0;
+        weightsForPW.forEach(function (weightForPW){
+
+            let id = weightForPW.id;
+            let idArr = id.split('-');
+            console.log('id in  TPW: '+id);
+            let arrLength = idArr.length
+            let row = idArr[arrLength-1];
+            let packedAmount = document.getElementById('packedAmount-'+row).value
+            let converter = 1;
+            let rowWeight = +weightForPW.value;
+            console.log('row weight in  TPW: '+rowWeight);
+            let uom = document.getElementById('uom').value;
+            let itemCategoryElement = document.getElementById('itemCategory-'+row);
+            let itemCategory = '';
+            if(itemCategoryElement){
+                itemCategory = itemCategoryElement.value;
+            }
+
+            console.log('row in TPW: '+row);
+            if(itemCategory === undefined || itemCategory === null){
+                itemCategory = '';
+            }
+
+
+            if(uom === 'us'){
+                if(document.getElementById('uom-oz-'+row).checked === true){
+                    converter = ounceConverter;
+                }
+            }else{
+                if(document.getElementById('uom-oz-'+row).checked === true){
+                    converter = gramConverter;
+                }
+            }
+
+            totalPackWeight = totalPackWeight + (+packedAmount *  (+rowWeight/converter));
+            if(itemCategory !== 'consumables'){
+                baseWeight = baseWeight + (+packedAmount * (+rowWeight/converter));
+            }
+
+        });
+        document.getElementById('baseWeight'). value = baseWeight.toFixed(2);
+        document.getElementById('totalPackWeight').value = totalPackWeight.toFixed(2);
     }
     function  createListItemInput(type,nameBase,row,columnName){
         let element = document.createElement("input");
@@ -309,7 +367,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
         element.id = nameBase+'-'+row;
         element.value = '';
         element.setAttribute('data-column-name',columnName);
-        element.addEventListener('blur', function() {
+        element.addEventListener('change', function() {
             updateListItem(element);
         });
 
@@ -424,9 +482,6 @@ window.addEventListener("DOMContentLoaded", function(e) {
         if(uom === 'gram' || uom === 'oz'){
             radio.checked = true;
         }
-
-        // radio.classList.add('for-weight');
-        radio.classList.add('for-conversion');
         radio.addEventListener('change', function() {
             convertMeasurement(row);
         });

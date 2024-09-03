@@ -49,9 +49,8 @@ class GearListItemsController extends Controller
         }
 
         GearLists::checkWeight($gearList);
-        // Log::debug('gearlist with weights: '.print_r($gearList,true));
 
-        return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
+         return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
     }
 
     public function itemsMaster()
@@ -70,27 +69,6 @@ class GearListItemsController extends Controller
             return redirect()->back()->with('error','Unable to find list info.');
         }
         return view('gear-lists.all-list-items',['gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
-        // return $gearListItems;
-
-        // if(empty($gearList)){
-        //     return redirect()->back()->with('error','Unable to find list.');
-        // }
-
-        // $uom = $gearList->uom;
-        // $sort = DB::table('list_sorting_options')->where('value',$gearList->sort)->first('order_by');
-        // $sort = explode(' ',$sort->order_by);
-
-        // try{
-        //     $gearListItems = GearListItems::getSortedListItems($listId, $sort, $uom);
-        // }catch(\Exception $e){
-        //     Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-        //     $gearListItems = [];
-        // }
-
-        // GearLists::checkWeight($gearList);
-        // // Log::debug('gearlist with weights: '.print_r($gearList,true));
-
-        // return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
     }
     /**
      * Show the form for creating a new resource.
@@ -105,6 +83,7 @@ class GearListItemsController extends Controller
      */
     public function store(Request $request)
     {
+        Log::debug(__FILE__.' '.__LINE__.' request: '.print_r($request->input(),true));
         $gearListItem = new GearListItems();
         $inputs = $request->except(['_token','q','id']);
 
