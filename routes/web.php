@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', function () {
@@ -9,7 +10,12 @@ Route::get('/', function () {
 });
 //view routs
 Route::get('/dashboard', function () {
-     return view('dashboard');
+    if(Auth::check()){
+        return  view('dashboard');
+    }else{
+        return redirect('/login');
+    }
+    //  return view('dashboard');
 
 });
 

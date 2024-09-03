@@ -19,7 +19,7 @@
                     <a href="/" class="nav-link">Home</a>
                     <a href="/register" class="nav-link">Sign Up</a>
                     <a href="/login" class="nav-link">Login</a>
-                    <a href="/gear-lists" class="nav-link">My Gear Lists</a>
+                    <a href="/dashboard" class="nav-link">Dashboard</a>
                     <a href="/about" class="nav-link">About</a>
                     <a href="/logout" class="nav-link">Log Out</a>
                 </nav>
