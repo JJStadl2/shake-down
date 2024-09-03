@@ -32,8 +32,10 @@ class ItemCategorySeeder extends Seeder
              'tech',
              'cooking',
              'tools',
-             'emergency'
+             'emergency',
+             'sleep_system'
          ];
+         sort($categories);
 
          $sql = "INSERT INTO item_categories('value','category','ordinal') VALUES (?,?,?) ";
 

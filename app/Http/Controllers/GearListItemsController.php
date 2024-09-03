@@ -49,6 +49,7 @@ class GearListItemsController extends Controller
         }
 
         GearLists::checkWeight($gearList);
+        Log::debug('gearlist with BW: '.print_r($gearList,true));
 
          return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
     }
@@ -83,7 +84,6 @@ class GearListItemsController extends Controller
      */
     public function store(Request $request)
     {
-        Log::debug(__FILE__.' '.__LINE__.' request: '.print_r($request->input(),true));
         $gearListItem = new GearListItems();
         $inputs = $request->except(['_token','q','id']);
 
@@ -122,7 +122,6 @@ class GearListItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Log::debug('Request in update line item: '.print_r($request->input(), true));
         $list_id = $request->list_id;
         $inputs = $request->except(['_token','q','list_id']);
 
@@ -177,6 +176,24 @@ class GearListItemsController extends Controller
         }
 
         return redirect()->back()->with('success','Item deleted.');
+    }
+    public function remove(Request $request, $id)
+    {
+        $gearListItem = GearListItems::where('id',$id)->first();
+
+        if(empty($gearListItem)){
+            return redirect()->back()->with('error','No item found to remove.');
+        }
+
+        try{
+            $gearListItem->list_id = '';
+            $gearListItem->save();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return redirect()->back()->with('error','Failed to remove item from list.');
+        }
+
+        return redirect()->back()->with('success','Item removed.');
     }
     public function getCategories(Request $request){
 

@@ -57,6 +57,8 @@ Route::post('/list-item', [App\Http\Controllers\GearListItemsController::class, 
 )->name('item-store');
 Route::get('/destroy-list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'destroy']
 )->name('item-destroy');
+Route::get('/remove-list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'remove']
+)->name('item-remove');
 
 //js helpers
 Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsController::class, 'getCategories']

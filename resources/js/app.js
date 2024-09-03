@@ -251,6 +251,10 @@ window.addEventListener("DOMContentLoaded", function(e) {
     function getBooleanData(columnName){
 
         let data = {};
+        data['in_ounces'] = false;
+        data['in_lbs'] = false;
+        data['in_grams'] = false;
+        data['in_kilos'] = false;
         switch(columnName){
             case 'in_ounces':
                 data['in_ounces'] = true;
@@ -280,16 +284,9 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let itemId = document.getElementById('id-'+row);
         let itemIdValue = itemId.value;
         let listId = document.getElementById('listId').value;
-        let deleteBtn = document.getElementById('deleteBtn-'+row);
         let url = '/list-item/'+itemIdValue;
-        // let update = false;
         let data = {};
-        // let tdCell = document.getElementById('btn-td-'+row);
         let userId = document.getElementById('userId').value;
-        // let deleteLink = document.createElement('a');
-        // deleteLink.id = 'deleteBtn-'+row;
-        // deleteLink.className = 'btn btn-primary btn-sm  py-2';
-        // deleteLink.innerHTML = 'x';
 
         data[columnName] = value;
 
@@ -317,17 +314,17 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let weightsForPW = document.querySelectorAll('.for-total-list-weight');
         let baseWeight = 0;
         let totalPackWeight = 0;
+        let maxPackWeight = document.getElementById('maxPackWeight').value;
+        let uomText = 'LBS';
         weightsForPW.forEach(function (weightForPW){
 
             let id = weightForPW.id;
             let idArr = id.split('-');
-            console.log('id in  TPW: '+id);
             let arrLength = idArr.length
             let row = idArr[arrLength-1];
             let packedAmount = document.getElementById('packedAmount-'+row).value
             let converter = 1;
             let rowWeight = +weightForPW.value;
-            console.log('row weight in  TPW: '+rowWeight);
             let uom = document.getElementById('uom').value;
             let itemCategoryElement = document.getElementById('itemCategory-'+row);
             let itemCategory = '';
@@ -335,7 +332,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
                 itemCategory = itemCategoryElement.value;
             }
 
-            console.log('row in TPW: '+row);
+
             if(itemCategory === undefined || itemCategory === null){
                 itemCategory = '';
             }
@@ -348,15 +345,25 @@ window.addEventListener("DOMContentLoaded", function(e) {
             }else{
                 if(document.getElementById('uom-oz-'+row).checked === true){
                     converter = gramConverter;
+                    uomText = 'KG';
                 }
             }
 
             totalPackWeight = totalPackWeight + (+packedAmount *  (+rowWeight/converter));
+            
             if(itemCategory !== 'consumables'){
                 baseWeight = baseWeight + (+packedAmount * (+rowWeight/converter));
             }
 
         });
+
+        if(+baseWeight > +maxPackWeight){
+            let divElement =  document.getElementById('weightWarning-div');
+            divElement.innerText = 'The base weight ('+baseWeight.toFixed(2) +' '+ uomText+') of the items on this list have exceeded the weight for the type/style of hike selected for this list.'
+            divElement.style.display = 'block';
+        }else{
+            document.getElementById('weightWarning-div').style.display = 'none';
+        }
         document.getElementById('baseWeight'). value = baseWeight.toFixed(2);
         document.getElementById('totalPackWeight').value = totalPackWeight.toFixed(2);
     }

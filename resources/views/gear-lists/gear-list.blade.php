@@ -6,6 +6,7 @@
     <div class="form-container">
         <h2 class="mb-4" style="text-align: center; margin-right: -5%"> Edit Your List</h2>
         <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
+        <input type="hidden" id="maxPackWeight" value="{{ $gearList->maxPackWeight }}"/>
         <div class="row">
             <div class="col-md-1"></div>
             <input type="hidden" name="listId" id="listId" data-column-name="list_id" value="{{ $gearList->id }}"/>
@@ -52,7 +53,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-3 mb-3" style="margin-right: 12.5%;" ></div>
+                <div class="col-md-3 mb-3" style="margin-right: 12.5%;" ></div>
             <div class="col-md-2 mt-2">
                 <input style="width: 30%; margin-left: 75.5%" class="form-control" type="number" id='linesToAdd' name="linesToAdd" min='1' value="1"/>
             </div>
@@ -63,14 +64,22 @@
         </div>
 
     </div>
-    @if($gearList->baseWeight > $gearList->maxPackWeight)
+    {{-- @if($gearList->baseWeight > $gearList->maxPackWeight)
         <div class="row">
             <div class="col-md-4" style="margin-right: 5%"></div>
             <div class="col-md-4 alert alert-warning" style="text-align: center"> The base weight  ({{  number_format($gearList->baseWeight,2,'.',',') }}  @if($gearList->uom === 'us') LBS @else (KG) @endif ) of the items on this list have exceeded the weight for the type/style of hike selected for this list.</div>
             <div class="col-md-4"></div>
 
         </div>
-    @endif
+    @endif --}}
+
+    <div class="row">
+        <div class="col-md-4" style="margin-right: 5%"></div>
+        <div id="weightWarning-div" class="col-md-4 alert alert-warning" style="text-align: center;@if($gearList->baseWeight > $gearList->maxPackWeight) display:block; @else display:none;@endif"> The base weight  ({{  number_format($gearList->baseWeight,2,'.',',') }}  @if($gearList->uom === 'us') LBS @else (KG) @endif ) of the items on this list have exceeded the weight for the type/style of hike selected for this list.</div>
+        <div class="col-md-4"></div>
+
+    </div>
+
     </div>
 
     <form class="list-item-form">
@@ -97,7 +106,6 @@
                             <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[]" value="{{ $item->id}}"/>
                             <th scope="row">{{ $i }}</th>
                             <td>
-
                                 <input class="form-control" type="text" data-column-name="item_name" id="itemName-{{ $i }}" name="itemName[]" placeholder="Item Name"  value="{{ $item->item_name ?? ''}}" onblur="updateListItem(this)"/>
                             </td>
                             <td>
@@ -140,7 +148,7 @@
                                 <input  class="form-control for-total-list-weight" type="number" data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}" name="totalLineWeight[]" value="{{floatval($item->total_line_weight) ?? floatval(($item->item_weight * $item->amount))}}" readonly />
                             </td>
                             <td id="btn-td-{{ $i }}">
-                                <a id="deleteBtn-{{ $i }}" href="/destroy-list-item/{{ $item->id }}" class="btn btn-primary btn-sm  py-2">x</a>
+                                <a id="deleteBtn-{{ $i }}" href="/remove-list-item/{{ $item->id }}" class="btn btn-primary btn-sm  py-2">x</a>
                             </td>
 
                         </tr>
