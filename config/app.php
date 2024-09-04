@@ -122,6 +122,7 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
-    'search_api_key' => env('SERPAPI_KEY'),
+    'serp_api_key' => env('SERPAPI_KEY'),
+    'asin_api_key' => env('ASIN_API_KEY'),
 
 ];

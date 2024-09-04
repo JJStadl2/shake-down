@@ -16,6 +16,7 @@
  const axios = require('axios');
  const dev = process.env.NODE_ENV !== 'production';
 
+
  _mix.webpackConfig ({
      devtool: dev ? 'inline-source-map' : false,
  });

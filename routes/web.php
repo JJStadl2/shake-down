@@ -66,6 +66,9 @@ Route::get('/destroy-list-item/{id}', [App\Http\Controllers\GearListItemsControl
 Route::get('/remove-list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'remove']
 )->name('item-remove');
 
+//gear item API search
+Route::get('/search-api', [App\Http\Controllers\GearSearchController::class, 'search'])->name('gear-api-search');
+
 //js helpers
 Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsController::class, 'getCategories']
 )->name('get-categories');

@@ -1,12 +1,24 @@
 @extends('layouts.header-footer')
 @section('title','Grear List with items | ')
 @section('content')
+<div class="row">
+
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <canvas id="myChart" width="10" height="5"></canvas>
+    </div>
+    <div class="col-md-4"></div>
+
+
+
+</div>
 <div class="list-item-form-container">
     {{-- add header update form --}}
     <div class="form-container">
-        <h2 class="mb-4" style="text-align: center; margin-right: -5%"> Edit Your List</h2>
+        <h2 class="mb-4" style="text-align: center; margin-right: -5%"> NEW Your List</h2>
         <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
         <input type="hidden" id="maxPackWeight" value="{{ $gearList->maxPackWeight }}"/>
+        <input type="hidden" id="chartData" value="{{ $chartData }}"/>
         <div class="row">
             <div class="col-md-1"></div>
             <input type="hidden" name="listId" id="listId" data-column-name="list_id" value="{{ $gearList->id }}"/>
@@ -152,5 +164,12 @@
             </tbody>
         </table>
     </form>
+
 </div>
+<button id="searchGearBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productSearchModal">
+    Search for gear
+  </button>
+
+@include('modals.search-modal')
+
 @endsection

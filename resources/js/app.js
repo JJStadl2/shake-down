@@ -1,5 +1,9 @@
-import './bootstrap';
-
+// import './bootstrap' ;
+import  {Modal}  from 'bootstrap';
+// import  'bootstrap';
+import '@popperjs/core';
+import Chart from 'chart.js/auto'
+const bootstrap = require('./bootstrap')
 const gramConverter = 1000;
 const ounceConverter = 16;
 window.addEventListener("DOMContentLoaded", function(e) {
@@ -154,10 +158,11 @@ window.addEventListener("DOMContentLoaded", function(e) {
             row.appendChild(cell0);
             row.appendChild(cell1);
             row.appendChild(selectCell);
-            row.appendChild(cell3);
+            // row.appendChild(cell3);
             row.appendChild(cell2);
             row.appendChild(cell4);
             row.appendChild(cell5);
+            row.appendChild(cell3);
             row.appendChild(cell6);
 
 
@@ -350,7 +355,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
             }
 
             totalPackWeight = totalPackWeight + (+packedAmount *  (+rowWeight/converter));
-            
+
             if(itemCategory !== 'consumables'){
                 baseWeight = baseWeight + (+packedAmount * (+rowWeight/converter));
             }
@@ -561,8 +566,49 @@ window.addEventListener("DOMContentLoaded", function(e) {
     // selectInputs.forEach(function(selectInput) {
     //     selectInput.disabled = true;
     // });
+    document.getElementById('searchGearBtn').addEventListener('click', function () {
+        // var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+        //     keyboard: false
+        // });
+        var myModal = document.getElementById('productSearchModal');
+        myModal.show();
+    });
+    const ctx = document.getElementById('myChart');
+    let chartData = JSON.parse( document.getElementById('chartData').value);
 
+    let listName = document.getElementById('listName').value
+    const myChart = new Chart(ctx, {
+        type: 'doughnut', // Chart type
+        data: {
+              labels: chartData.labels,
+            datasets: [{
+                label: listName + 'Break Down',
+                data: chartData.data,
+                // backgroundColor: [
+                //     'rgba(255, 99, 132, 0.2)',
+                //     'rgba(54, 162, 235, 0.2)',
+                //     'rgba(255, 206, 86, 0.2)',
+                //     'rgba(75, 192, 192, 0.2)',
 
+                // ],
+                // borderColor: [
+                //     'rgba(255, 99, 132, 1)',
+                //     'rgba(54, 162, 235, 1)',
+                //     'rgba(255, 206, 86, 1)',
+                //     'rgba(75, 192, 192, 1)',
+
+                // ],
+                borderWidth: 1,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            animation:{
+                animateRotate:true,
+                animateScale:true
+            }
+        }
+    });
 
 
 });

@@ -47,11 +47,12 @@ class GearListItemsController extends Controller
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             $gearListItems = [];
         }
+        $chartData = GearLists::getChartData($gearListItems);
 
         GearLists::checkWeight($gearList);
-        Log::debug('gearlist with BW: '.print_r($gearList,true));
+        return view('gear-lists.new-gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses,'chartData'=>$chartData]);
 
-         return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
+        //  return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
     }
 
     public function itemsMaster()

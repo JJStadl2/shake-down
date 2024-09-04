@@ -149,4 +149,41 @@ class GearLists extends Model
         $gearList->maxPackWeight = $maxListWeight;
 
     }
+    public static function getChartData($gearListItems){
+        $categories = DB::table('item_categories')->orderBy('category','asc')->get(['category','value']);
+        // Log::debug(__FILE__.' '.__LINE__.' cat: '.print_r($categoryNames,true));
+        $listData = [];
+        $labels = [];
+        $weights =[];
+
+        foreach($categories as $category){
+
+             $listData[ $category->value] = ['label'=>$category->category,'weight'=>0];
+
+        }
+
+        $listData[ 'unassigned'] =['label'=>'Unassigned','weight'=>0];
+
+        foreach($gearListItems as $item){
+            $category = 'unassigned';
+            if(array_key_exists($item->item_category,$listData)){
+                $category = $item->item_category;
+            }
+            $weight = $listData[$category]['weight'];
+            $weight += $item->total_line_weight;
+            $listData[$category]['weight'] = $weight;
+
+        }
+        foreach($listData as $data){
+            if($data['weight'] > 0){
+                $labels[] = $data['label'];
+                $weights[] = $data['weight'];
+            }
+
+        }
+
+        $chartData = ['labels'=>$labels,'data'=>$weights];
+        Log::debug(__FILE__.' '.__LINE__.' list array: '.print_r($chartData,true));
+        return json_encode($chartData);
+    }
 }

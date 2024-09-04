@@ -107,5 +107,6 @@ class GearListItems extends Model
         return $gearListItems;
 
     }
+  
 }
 

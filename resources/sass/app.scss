@@ -1,4 +1,5 @@
 /* Reset some default styles */
+@import "~bootstrap/scss/bootstrap";
 body, h1, h2, p, ul {
     margin: 0;
     padding: 0;
@@ -11,6 +12,7 @@ body {
     background-color: #1a1a1a;
     line-height: 1.6;
 }
+
 // .registration-form{
 //    padding-bottom: 350px;
 // }
