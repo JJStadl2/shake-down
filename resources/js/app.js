@@ -580,36 +580,30 @@ window.addEventListener("DOMContentLoaded", function(e) {
     const myChart = new Chart(ctx, {
         type: 'doughnut', // Chart type
         data: {
-              labels: chartData.labels,
+            labels: chartData.labels,
             datasets: [{
-                label: listName + 'Break Down',
+                // label: listName + 'Break Down',
                 data: chartData.data,
-                // backgroundColor: [
-                //     'rgba(255, 99, 132, 0.2)',
-                //     'rgba(54, 162, 235, 0.2)',
-                //     'rgba(255, 206, 86, 0.2)',
-                //     'rgba(75, 192, 192, 0.2)',
-
-                // ],
-                // borderColor: [
-                //     'rgba(255, 99, 132, 1)',
-                //     'rgba(54, 162, 235, 1)',
-                //     'rgba(255, 206, 86, 1)',
-                //     'rgba(75, 192, 192, 1)',
-
-                // ],
+                backgroundColor: chartData.colors,
                 borderWidth: 1,
                 hoverOffset: 4
             }]
         },
         options: {
+            cutout: 45,// Adjust the cutout percentage here
+            radius: 150,
+            legend: {
+                display: false
+            },
+            plugins: {
+                datalabels: false // Removing this line shows the datalabels again
+              },
             animation:{
                 animateRotate:true,
                 animateScale:true
             }
         }
     });
-
 
 });
 
