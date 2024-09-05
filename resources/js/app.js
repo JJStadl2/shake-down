@@ -573,7 +573,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
         var myModal = document.getElementById('productSearchModal');
         myModal.show();
     });
-    const ctx = document.getElementById('myChart');
+    const ctx = document.getElementById('gearChart');
     let chartData = JSON.parse( document.getElementById('chartData').value);
 
     let listName = document.getElementById('listName').value
