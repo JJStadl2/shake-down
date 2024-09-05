@@ -1,5 +1,5 @@
 @extends('layouts.header-footer')
-@section('title','Grear List with items | ')
+@section('title','Grear | ')
 @section('content')
 <div class="list-item-form-container">
     {{-- add header update form --}}

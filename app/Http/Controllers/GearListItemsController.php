@@ -47,7 +47,7 @@ class GearListItemsController extends Controller
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             $gearListItems = [];
         }
-        $chartData = GearLists::getChartData($gearListItems);
+        $chartData = json_encode(GearLists::getChartData($gearList, $sort));
 
         GearLists::checkWeight($gearList);
         return view('gear-lists.new-gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses,'chartData'=>$chartData]);

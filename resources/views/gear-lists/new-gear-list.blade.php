@@ -1,7 +1,9 @@
 @extends('layouts.header-footer')
-@section('title','Grear List with items | ')
+@section('title','Grear | ')
 @section('content')
-<div class="row">
+@include('modals.search-modal')
+@include('modals.gear-list-chart-modal')
+{{-- <div class="row">
 
     <div class="col-md-4"></div>
     <div class="col-md-4">
@@ -11,7 +13,7 @@
 
 
 
-</div>
+</div> --}}
 <div class="list-item-form-container">
     {{-- add header update form --}}
     <div class="form-container">
@@ -65,13 +67,19 @@
             </div>
         </div>
         <div class="row">
-                <div class="col-md-3 mb-3" style="margin-right: 12.5%;" ></div>
+                <div class="col-md-3 mb-3" style="margin-right: 8%;" ></div>
             <div class="col-md-2 mt-2">
                 <input style="width: 30%; margin-left: 75.5%" class="form-control" type="number" id='linesToAdd' name="linesToAdd" min='1' value="1"/>
             </div>
             <div class="col-md-2 mb-3">
                 <button class="btn btn-primary btn-sm mt-2 py-2 px-3" onclick="addListItem();">+ Lines</button>
             </div>
+            <div class="col-md-2 mb-3">
+                <button class="btn btn-primary btn-sm mt-2 py-2 px-3" style="margin-left: -72%" id="listChartBtn" data-bs-toggle="modal" data-bs-target="#gearListChartModal">
+                    Analytics
+                   </button>
+            </div>
+
 
         </div>
 
@@ -170,6 +178,6 @@
     Search for gear
   </button>
 
-@include('modals.search-modal')
+{{-- @include('modals.search-modal') --}}
 
 @endsection

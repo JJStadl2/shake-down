@@ -1,9 +1,10 @@
 @extends('layouts.header-footer')
+@section('title','Login | ')
 @section('content')
 <div class="container">
-    <h1>Log In</h1>
     <div class="form-container">
         <form class="login-form" method="post" action="{{ route('login') }}">
+            <h1 style="text-align: center;">Log In</h1>
             @csrf
             <div class="mb-3">
               <label for="email" class="form-label">Email address</label>

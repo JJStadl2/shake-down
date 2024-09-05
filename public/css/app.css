@@ -12046,25 +12046,35 @@ body {
   margin-left: 30%;
 }
 
-.nav-header {
-  margin-left: 22.5%;
-}
-
 .nav ul {
   list-style: none;
 }
 
 .nav-link {
   text-decoration: none;
-  color: #f5f5f5;
+  color: #FF851B;
   font-size: 1rem;
   font-weight: 400;
   margin-left: 20px;
   transition: color 0.3s ease;
 }
 
+.nav-link-text {
+  text-decoration: none;
+  color: #FF851B;
+  font-size: 1rem;
+  font-weight: 400;
+  margin-left: 20px;
+  transition: color 0.3s ease;
+  margin-top: 2%;
+}
+
+.nav-text-link:hover {
+  color: whitesmoke;
+}
+
 .nav-link:hover {
-  color: #c0392b;
+  color: whitesmoke;
 }
 
 /* Hero Section */

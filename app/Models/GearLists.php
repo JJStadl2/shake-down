@@ -126,6 +126,7 @@ class GearLists extends Model
         $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
         $maxListWeight = self::getlistClassByKey($gearList->list_class);
         $maxListWeight = $maxListWeight->max_weight;
+        $weightUom = 'LBS';
 
         foreach($gearListItems as $item){
             if($item->item_category !== 'consumables' ){
@@ -142,27 +143,54 @@ class GearLists extends Model
             $baseWeight = $baseWeight/GearListItems::$metricConversionFactor;
             $totalPackWeight = $totalPackWeight/GearListItems::$metricConversionFactor;
             $maxListWeight = $maxListWeight * self::$metricMaxWeightConversionFactor;
+            $weightUom = 'KG';
         }
 
         $gearList->totalPackWeight = $totalPackWeight;
         $gearList->baseWeight = $baseWeight;
         $gearList->maxPackWeight = $maxListWeight;
+        $gearList->weightUom = $weightUom;
 
     }
-    public static function getChartData($gearListItems){
+    public static function getChartData($gearList, $sort){
+
+        $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
         $categories = DB::table('item_categories')->orderBy('category','asc')->get(['category','value']);
-        // Log::debug(__FILE__.' '.__LINE__.' cat: '.print_r($categoryNames,true));
         $listData = [];
         $labels = [];
         $weights =[];
+        $colors = [
+            '#FF851B',
+            '#FF5733',
+            '#FFC300',
+            '#DFFF00',
+            '#00FF7F',
+            '#00CED1',
+            '#4682B4',
+            '#7B68EE',
+            '#9400D3',
+            // '#FF69B4',
+            '#FF4500',
+            '#A52A2A',
+            // '#708090',
+            '#2E8B57'
+        ];
 
+        $unassignedColor =  '#FF69B4';
+        $consumableColor = '#708090';
+
+        $i = 0;
         foreach($categories as $category){
-
-             $listData[ $category->value] = ['label'=>$category->category,'weight'=>0];
+            if($category->value === 'consumables'){
+                $listData[ $category->value] = ['label'=>$category->category,'weight'=>0, 'color'=>$consumableColor];
+            }else{
+                $listData[ $category->value] = ['label'=>$category->category,'weight'=>0, 'color'=>$colors[$i]];
+                $i++;
+            }
 
         }
 
-        $listData[ 'unassigned'] =['label'=>'Unassigned','weight'=>0];
+        $listData[ 'unassigned'] =['label'=>'Unassigned','weight'=>0,'color' =>  $unassignedColor];
 
         foreach($gearListItems as $item){
             $category = 'unassigned';
@@ -174,16 +202,18 @@ class GearLists extends Model
             $listData[$category]['weight'] = $weight;
 
         }
+
+        $chartColors = [];
         foreach($listData as $data){
             if($data['weight'] > 0){
                 $labels[] = $data['label'];
                 $weights[] = $data['weight'];
+                $chartColors[] = $data['color'];
             }
 
         }
 
-        $chartData = ['labels'=>$labels,'data'=>$weights];
-        Log::debug(__FILE__.' '.__LINE__.' list array: '.print_r($chartData,true));
-        return json_encode($chartData);
+        $chartData = ['labels'=>$labels,'data'=>$weights,'colors'=> $chartColors];
+        return $chartData;
     }
 }

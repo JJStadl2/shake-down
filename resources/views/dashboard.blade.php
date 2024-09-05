@@ -3,7 +3,7 @@
 <div class="container">
 
     <div class="container">
-        <div style="padding-top: 5%; padding-bottom: 2.5%;" class="row">
+        <div class="row" style="padding-top: 2.5%; padding-bottom: 2.5%;" >
             <div class="col-lg-4">
                 <div class="card" style="width: 18rem;">
                     <div class="card-img-top create-card"></div>
@@ -33,7 +33,7 @@
             </div>
 
         </div>
-        <div  class="row">
+        <div  class="row" style="padding-top: 2.5%; padding-bottom: 2.5%;" >
             <div class="col-lg-4">
 
             </div>

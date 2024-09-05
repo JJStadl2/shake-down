@@ -7,6 +7,7 @@ use App\Models\GearListItems;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GearListsController extends Controller
 {
@@ -74,6 +75,29 @@ class GearListsController extends Controller
     public function show(GearLists $gearLists)
     {
         //
+    }
+
+    public function getListChartData($id){
+
+        try{
+            $gearList = GearLists::where('id',$id)->first();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Error fetching analytics.']);
+        }
+
+        if(empty($gearList)){
+            return response()->json(['status'=>'0','msg'=>'No gear list found.']);
+        }
+
+        $sort = DB::table('list_sorting_options')->where('value',$gearList->sort)->first('order_by');
+        $sort = explode(' ',$sort->order_by);
+        $chartData = json_encode(GearLists::getChartData($gearList, $sort));
+
+        $test = response()->json(['status'=>'1','data'=>$chartData]);
+        Log::debug(__FILE__.' '.__LINE__.' test array: '.print_r($test,true));
+        return $test;
+
     }
 
     /**
