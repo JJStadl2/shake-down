@@ -95,7 +95,7 @@ class GearListsController extends Controller
         $chartData = json_encode(GearLists::getChartData($gearList, $sort));
 
         $test = response()->json(['status'=>'1','data'=>$chartData]);
-        Log::debug(__FILE__.' '.__LINE__.' test array: '.print_r($test,true));
+        // Log::debug(__FILE__.' '.__LINE__.' test array: '.print_r($test,true));
         return $test;
 
     }

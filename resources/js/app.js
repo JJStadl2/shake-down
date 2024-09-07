@@ -567,12 +567,11 @@ window.addEventListener("DOMContentLoaded", function(e) {
     //     selectInput.disabled = true;
     // });
     document.getElementById('searchGearBtn').addEventListener('click', function () {
-        // var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
-        //     keyboard: false
-        // });
-        var myModal = document.getElementById('productSearchModal');
-        myModal.show();
+        let searchModal = document.getElementById('productSearchModal');
+        searchModal.show();
     });
+
+
     const ctx = document.getElementById('gearChart');
     let chartData = JSON.parse( document.getElementById('chartData').value);
 
@@ -604,6 +603,13 @@ window.addEventListener("DOMContentLoaded", function(e) {
             }
         }
     });
+
+
+    let baseWeight = document.getElementById('baseWeight').value;
+    let totalPackWeight = document.getElementById('totalPackWeight').value;
+    document.getElementById('modalBaseWeight').textContent = baseWeight;
+    document.getElementById('modalTotalWeight').textContent = totalPackWeight;
+
 
 });
 
