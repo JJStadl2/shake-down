@@ -38,8 +38,9 @@ class GearListItemsController extends Controller
         }
 
         $uom = $gearList->uom;
-        $sort = DB::table('list_sorting_options')->where('value',$gearList->sort)->first('order_by');
-        $sort = explode(' ',$sort->order_by);
+        // $sort = DB::table('list_sorting_options')->where('value',$gearList->sort)->first('order_by');
+        // $sort = explode(' ',$sort->order_by);
+        $sort = ['item_category','ASC'];
 
         try{
             $gearListItems = GearListItems::getSortedListItems($listId, $sort, $uom);
@@ -47,12 +48,13 @@ class GearListItemsController extends Controller
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             $gearListItems = [];
         }
+
         $chartData = json_encode(GearLists::getChartData($gearList, $sort));
+        $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
 
         GearLists::checkWeight($gearList);
-        return view('gear-lists.new-gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses,'chartData'=>$chartData]);
-
-        //  return view('gear-lists.gear-list',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
+        return view('gear-lists.gear-list-by-category',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses,'chartData'=>$chartData, 'selectedCategories'=>$selectedCategories]);
+        //return view('gear-lists.gear-list-by-item',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses,'chartData'=>$chartData]);
     }
 
     public function itemsMaster()

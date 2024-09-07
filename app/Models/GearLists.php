@@ -183,17 +183,21 @@ class GearLists extends Model
         foreach($categories as $category){
             if($category->value === 'consumables'){
                 $listData[ $category->value] = ['label'=>$category->category,'weight'=>0, 'color'=>$consumableColor];
-            }else{
+            }
+            elseif( $category->value === 'unassigned'){
+                $listData[ $category->value] =['label'=>'Unassigned','weight'=>0,'color' =>  $unassignedColor];
+
+            }
+            else{
                 $listData[ $category->value] = ['label'=>$category->category,'weight'=>0, 'color'=>$colors[$i]];
                 $i++;
             }
 
         }
 
-        $listData[ 'unassigned'] =['label'=>'Unassigned','weight'=>0,'color' =>  $unassignedColor];
-
+        //TODO fix unassigned
         foreach($gearListItems as $item){
-            $category = 'unassigned';
+             $category = 'unassigned';
             if(array_key_exists($item->item_category,$listData)){
                 $category = $item->item_category;
             }

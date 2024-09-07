@@ -107,6 +107,17 @@ class GearListItems extends Model
         return $gearListItems;
 
     }
-  
+    public static function getListSelectedCategories($gearListItems){
+
+        $selectedCategories = [];
+
+        foreach($gearListItems as $item){
+            $selectedCategories[] = $item->item_category;
+        }
+
+        return array_unique($selectedCategories);
+
+    }
+
 }
 

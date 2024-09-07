@@ -14,6 +14,7 @@ class ItemCategorySeeder extends Seeder
      */
     public function run(): void
     {
+        //TODO add unassigned
         $categoryCheck = DB::table('item_categories')->get();
 
         if(count($categoryCheck)){

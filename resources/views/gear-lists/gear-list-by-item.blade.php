@@ -62,7 +62,7 @@
             </div>
 
             <div class="col-md-2 mb-3">
-                <label class="form-control-label">Total Pack Weight @if($gearList->uom === 'us') (LBS) @else ((KG)) @endif</label>
+                <label class="form-control-label">Total Pack Weight ({{ $gearList->weightUom }})</label>
                 <input type="text" class="form-control" id="totalPackWeight" name="totalPackWeight" value="{{ number_format( $gearList->totalPackWeight,2,'.',',') ?? 0 }}" readonly/>
             </div>
         </div>

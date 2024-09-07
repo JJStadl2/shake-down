@@ -566,10 +566,10 @@ window.addEventListener("DOMContentLoaded", function(e) {
     // selectInputs.forEach(function(selectInput) {
     //     selectInput.disabled = true;
     // });
-    document.getElementById('searchGearBtn').addEventListener('click', function () {
-        let searchModal = document.getElementById('productSearchModal');
-        searchModal.show();
-    });
+    // document.getElementById('searchGearBtn').addEventListener('click', function () {
+    //     let searchModal = document.getElementById('productSearchModal');
+    //     searchModal.show();
+    // });
 
 
     const ctx = document.getElementById('gearChart');
