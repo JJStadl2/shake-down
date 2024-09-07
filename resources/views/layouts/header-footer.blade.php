@@ -20,13 +20,15 @@
                 <nav class="nav nav-header">
                     <a href="/" class="nav-link"><img src="/images/Logos/logo-no-background.png" alt="ShakeDown"
                         style="width: 100px;"></a>
-                    <a href="/register" class="nav-link-text">Sign Up</a>
-                    <a href="/login" class="nav-link-text">Login</a>
                     @if(Auth::check())
                         <a href="/dashboard" class="nav-link-text">Dashboard</a>
+                        <a href="/logout" class="nav-link-text">Log Out</a>
+                    @else
+                        <a href="/login" class="nav-link-text">Login</a>
                     @endif
+                    <a href="/register" class="nav-link-text">Sign Up</a>
                     <a href="/about" class="nav-link-text">About</a>
-                    <a href="/logout" class="nav-link-text">Log Out</a>
+
                 </nav>
 
         </header>
