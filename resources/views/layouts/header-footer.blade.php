@@ -34,12 +34,14 @@
         </header>
         @include('messages.alerts')
         @yield('content')
-        <footer class="footer">
-             <p>&copy; 2024 ShakeDown. All rights reserved.</p>
-
-        </footer>
+        <div class="push"></div>
     </div>
+    <footer class="footer">
+        <p>&copy; 2024 ShakeDown. All rights reserved.</p>
+
+    </footer>
     @stack('footerscripts')
     @yield('js')
 </body>
+
 </html>
