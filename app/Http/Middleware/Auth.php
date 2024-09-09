@@ -23,6 +23,9 @@ class Auth
             return redirect()->intended('dashboard');
         }
 
+        $inputs = $request->input();
+        $inputs['email'] = strtolower($inputs['email']);
+        $request = $request->replace($inputs);
         $credentials = $request->only('email', 'password');
 
         if (PackAuth::attempt($credentials)) {
