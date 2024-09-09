@@ -52,7 +52,7 @@ class GearListItemsController extends Controller
         $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
         GearLists::checkWeight($gearList);
 
-        // $gearList->list_items = false;
+        $gearList->list_items = false;
         return view('gear-lists.gear-list-view', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories]);
     }
 
