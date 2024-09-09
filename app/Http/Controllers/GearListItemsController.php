@@ -139,9 +139,6 @@ class GearListItemsController extends Controller
             return response()->json(['status'=>'0','msg'=>'Error fetching list item']);
         }
 
-        //TODO fix calcuation bug
-        $uomArray = GearListItems::$uomArray;
-
         foreach($inputs as $key => $value){
             $gearListItem->$key = $value;
         }
