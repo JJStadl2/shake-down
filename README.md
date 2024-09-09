@@ -5,7 +5,8 @@ This Laravel application replaces the Excel spreadsheets we all use to weigh and
 ### Key Features:
 - **Trip Planning and Gear Management**: Create and update multiple packing lists with gear specific to the trip you are planning.
 - **Multiple Sorting Options**: Sort your lists based on your preference.
-- **Analytics**: Visualizations that break down pack weight by item category. 
+- **Analytics**: See a running total of your base pack weight and total pack weight.
+- **Visualizations**: See exactly what is weighing you down by item category. 
 
 
 ### Getting Started:
