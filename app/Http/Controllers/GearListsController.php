@@ -54,8 +54,7 @@ class GearListsController extends Controller
         $gearList->sort = $request->sortBy ?? 'cat_asc';
         $gearList->uom = $request->uom ?? 'us';
         $gearList->list_class = $request->listClass ?? 'hvy';
-        $gearList->list_items = $request->list_items;
-        Log::debug('request: '.print_r($request->input(),true));
+        $gearList->list_items = $request->list_items ?? true;
 
         try{
             $gearList->save();
@@ -63,12 +62,12 @@ class GearListsController extends Controller
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             return redirect()->back()->with('error','Unable to save list at this time.')->withInput();
         }
-
+        $gearList->weightUom = ($gearList->uom === 'us' ? 'LBS' : 'KG');
         $gearListItems = [];
         $listSortingOptions = GearLists::getSortingOptions();
         $listClasses = GearLists::getListClasses();
 
-        return view('gear-lists.gear-list',['gearList'=>$gearList,'listItems'=>$gearListItems,'user'=>$user, 'listClasses'=>$listClasses,'sortingOptions'=> $listSortingOptions ]);
+        return view('gear-lists.gear-list-by-item',['gearList'=>$gearList,'listItems'=>$gearListItems,'user'=>$user, 'listClasses'=>$listClasses,'sortingOptions'=> $listSortingOptions ]);
     }
 
     /**

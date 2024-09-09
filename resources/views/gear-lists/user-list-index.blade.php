@@ -7,11 +7,7 @@
         <div class="col-md-7">
             <h1 style="margin-bottom: 5px;">{{ ucwords( $user->name)."'s"}} Gear Lists</h1>
         </div>
-        <div class="col-md-2"></div>
-        <div class="col-md-3"> <a href="/all-list-items" class="btn btn-primary py-2" style="float: right;">View All Items</a></div>
-
     </div>
-    {{-- <div class="spacer"></div> --}}
     <table class="table table-dark">
         <thead>
           <tr>

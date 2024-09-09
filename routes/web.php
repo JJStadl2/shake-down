@@ -59,8 +59,6 @@ Route::get('/list-items/{listId}', [App\Http\Controllers\GearListItemsController
 
 Route::post('/list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'update']
 )->name('item-update');
-Route::post('/list-items/{listId}', [App\Http\Controllers\GearListItemsController::class, 'updateByCategory']
-)->name('item-update-by-category');
 Route::get('/list-item', [App\Http\Controllers\GearListItemsController::class, 'create']
 )->name('item-create');
 Route::post('/list-item', [App\Http\Controllers\GearListItemsController::class, 'store']
@@ -77,8 +75,3 @@ Route::get('/search-api', [App\Http\Controllers\GearSearchController::class, 'se
 Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsController::class, 'getCategories']
 )->name('get-categories');
 
-//about/housekeeping
-Route::get('/about', [App\Http\Controllers\GearListsController::class, 'index']
-)->name('about');
-Route::get('/gallery', [App\Http\Controllers\GearListsController::class, 'index']
-)->name('gallery');

@@ -7,10 +7,10 @@
 <div class="list-item-form-container">
 
     <div class="form-container">
-        <h2 class="mb-4" style="text-align: center; margin-right: -5%"> List By Items</h2>
+        <h2 class="mb-4" style="text-align: center; margin-right: -5%">{{ $gearList->name }}</h2>
         <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
         <input type="hidden" id="maxPackWeight" value="{{ $gearList->maxPackWeight }}"/>
-        <input type="hidden" id="chartData" value="{{ $chartData }}"/>
+       
         <div class="row">
             <div class="col-md-1"></div>
             <input type="hidden" name="listId" id="listId" data-column-name="list_id" value="{{ $gearList->id }}"/>

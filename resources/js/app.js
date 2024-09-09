@@ -581,15 +581,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
     inputs.forEach(function(input) {
         input.disabled = true;
     });
-    // selectInputs.forEach(function(selectInput) {
-    //     selectInput.disabled = true;
-    // });
-    // document.getElementById('searchGearBtn').addEventListener('click', function () {
-    //     let searchModal = document.getElementById('productSearchModal');
-    //     searchModal.show();
-    // });
 
-    //listChartBtn
     document.getElementById('listChartBtn').addEventListener('click', function () {
 
         let listId = document.getElementById('listId').value;
@@ -647,44 +639,6 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
             });
     });
-    // const ctx = document.getElementById('gearChart');
-    // let chartData = JSON.parse( document.getElementById('chartData').value);
-
-    // let listName = document.getElementById('listName').value
-    // const myChart = new Chart(ctx, {
-    //     type: 'doughnut', // Chart type
-    //     data: {
-    //         labels: chartData.labels,
-    //         datasets: [{
-    //             // label: listName + 'Break Down',
-    //             data: chartData.weights,
-    //             backgroundColor: chartData.colors,
-    //             borderWidth: 1,
-    //             hoverOffset: 4
-    //         }]
-    //     },
-    //     options: {
-    //         cutout: 45,// Adjust the cutout percentage here
-    //         radius: 150,
-    //         legend: {
-    //             display: false
-    //         },
-    //         plugins: {
-    //             datalabels: false // Removing this line shows the datalabels again
-    //           },
-    //         animation:{
-    //             animateRotate:true,
-    //             animateScale:true
-    //         }
-    //     }
-    // });
-
-
-    // let baseWeight = document.getElementById('baseWeight').value;
-    // let totalPackWeight = document.getElementById('totalPackWeight').value;
-    // document.getElementById('modalBaseWeight').textContent = baseWeight;
-    // document.getElementById('modalTotalWeight').textContent = totalPackWeight;
-
 
 });
 
