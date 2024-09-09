@@ -91,9 +91,7 @@ class GearListsController extends Controller
             return response()->json(['status'=>'0','msg'=>'No gear list found.']);
         }
 
-        $sort = DB::table('list_sorting_options')->where('value',$gearList->sort)->first('order_by');
-        $sort = explode(' ',$sort->order_by);
-        $chartData = json_encode(GearLists::getChartData($gearList, $sort));
+        $chartData = json_encode(GearLists::getChartData($gearList));
         return response()->json(['status'=>'1','chartData'=>$chartData]);
     }
 
