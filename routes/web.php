@@ -59,6 +59,8 @@ Route::get('/list-items/{listId}', [App\Http\Controllers\GearListItemsController
 
 Route::post('/list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'update']
 )->name('item-update');
+Route::post('/list-items/{listId}', [App\Http\Controllers\GearListItemsController::class, 'updateByCategory']
+)->name('item-update-by-category');
 Route::get('/list-item', [App\Http\Controllers\GearListItemsController::class, 'create']
 )->name('item-create');
 Route::post('/list-item', [App\Http\Controllers\GearListItemsController::class, 'store']

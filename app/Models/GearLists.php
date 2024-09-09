@@ -160,9 +160,9 @@ class GearLists extends Model
         }else{
             $conversionFactor = GearListItems::$metricConversionFactor;
         }
+        
         $sort = ['item_weight','ASC'];
         $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
-        Log::debug('gear list items with weight for chart: '.print_r($gearListItems,true));
         $categories = DB::table('item_categories')->orderBy('category','asc')->get(['category','value']);
         $listData = [];
         $labels = [];

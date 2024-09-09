@@ -553,12 +553,12 @@ window.addEventListener("DOMContentLoaded", function(e) {
     }
 
 
-    const headers = document.querySelectorAll('.form-collapsible-header');
+    const headers = document.querySelectorAll('.item-collapsible-header');
 
     headers.forEach(header => {
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
-            const arrow = header.querySelector('.form-arrow');
+            const arrow = header.querySelector('.item-arrow');
             if (content.classList.contains('open')) {
                 content.classList.remove('open');
                 content.style.maxHeight = null;
