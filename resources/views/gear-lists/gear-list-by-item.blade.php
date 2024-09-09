@@ -1,10 +1,5 @@
-@extends('layouts.header-footer')
-@section('title','Gear | ')
-@section('content')
-@include('modals.search-modal')
-@include('modals.gear-list-chart-modal')
 
-<div class="list-item-form-container">
+{{-- <div class="list-item-form-container">
 
     <div class="form-container">
         <h2 class="mb-4" style="text-align: center; margin-right: -5%"> List By Items</h2>
@@ -73,7 +68,7 @@
 
         </div>
 
-    </div>
+    </div> --}}
     <div class="row">
         <div class="col-md-4" style="margin-right: 5%"></div>
         <div id="weightWarning-div" class="col-md-4 alert alert-warning" style="text-align: center;@if($gearList->baseWeight > $gearList->maxPackWeight) display:block; @else display:none;@endif"> The base weight  ({{  number_format($gearList->baseWeight,2,'.',',') }}  @if($gearList->uom === 'us') LBS @else (KG) @endif ) of the items on this list have exceeded the weight for the type/style of hike selected for this list.</div>
@@ -185,8 +180,4 @@
     </form>
 
 </div>
-{{-- <button id="searchGearBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productSearchModal">
-    Search for gear
-  </button> --}}
 
-@endsection

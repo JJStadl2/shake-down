@@ -26,38 +26,37 @@ class GearListItemsController extends Controller
         $listSortingOptions = GearLists::getSortingOptions();
         $listClasses = GearLists::getListClasses();
 
-        try{
-            $gearList = GearLists::where('id',$listId)->first();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return redirect()->back()->with('error','Unable to find list info.');
+        try {
+            $gearList = GearLists::where('id', $listId)->first();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Unable to find list info.');
         }
 
-        if(empty($gearList)){
-            return redirect()->back()->with('error','Unable to find list.');
+        if (empty($gearList)) {
+            return redirect()->back()->with('error', 'Unable to find list.');
         }
 
         $uom = $gearList->uom;
-        $sort = DB::table('list_sorting_options')->where('value',$gearList->sort)->first('order_by');
-        $sort = explode(' ',$sort->order_by);
+        $sort = DB::table('list_sorting_options')->where('value', $gearList->sort)->first('order_by');
+        $sort = explode(' ', $sort->order_by);
         //$sort = ['item_category','ASC'];
 
-        try{
+        try {
             $gearListItems = GearListItems::getSortedListItems($listId, $sort, $uom);
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             $gearListItems = [];
         }
 
-        $chartData = json_encode(GearLists::getChartData($gearList));
         $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
 
         GearLists::checkWeight($gearList);
-        Log::debug('gear list itemst: '.print_r($gearListItems,true));
-        // $gearList->list_items = false;
-        //return view('gear-lists.gear-list-view',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses,'chartData'=>$chartData, 'selectedCategories'=>$selectedCategories]);
-        return view('gear-lists.gear-list-by-category',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses,'chartData'=>$chartData, 'selectedCategories'=>$selectedCategories]);
-         //return view('gear-lists.gear-list-by-item',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses,'chartData'=>$chartData]);
+        Log::debug('gear list itemst: ' . print_r($gearListItems, true));
+        $gearList->list_items = false;
+        return view('gear-lists.gear-list-view', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories]);
+        //return view('gear-lists.gear-list-by-category',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses, 'selectedCategories'=>$selectedCategories]);
+        //return view('gear-lists.gear-list-by-item',['gearList'=>$gearList,'gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses,'chartData'=>$chartData]);
     }
 
     public function itemsMaster()
@@ -69,13 +68,13 @@ class GearListItemsController extends Controller
         $listSortingOptions = GearLists::getSortingOptions();
         $listClasses = GearLists::getListClasses();
 
-        try{
-            $gearListItems = GearListItems::where('user_id',$userId)->get();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return redirect()->back()->with('error','Unable to find list info.');
+        try {
+            $gearListItems = GearListItems::where('user_id', $userId)->get();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Unable to find list info.');
         }
-        return view('gear-lists.all-list-items',['gearListItems'=>$gearListItems,'user'=>$user, 'itemCategories'=>$itemCategories,'sortingOptions'=> $listSortingOptions,'listClasses'=>$listClasses]);
+        return view('gear-lists.all-list-items', ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses]);
     }
     /**
      * Show the form for creating a new resource.
@@ -91,20 +90,20 @@ class GearListItemsController extends Controller
     public function store(Request $request)
     {
         $gearListItem = new GearListItems();
-        $inputs = $request->except(['_token','q','id']);
+        $inputs = $request->except(['_token', 'q', 'id']);
 
-        foreach($inputs as $key => $value){
+        foreach ($inputs as $key => $value) {
             $gearListItem->$key = $value;
         }
 
-        try{
+        try {
             $gearListItem->save();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Error Saving list item']);;
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status' => '0', 'msg' => 'Error Saving list item']);;
         }
 
-        return response()->json( ['status'=>'1','newId'=>$gearListItem->id]);
+        return response()->json(['status' => '1', 'newId' => $gearListItem->id]);
     }
 
     /**
@@ -129,38 +128,38 @@ class GearListItemsController extends Controller
     public function update(Request $request, $id)
     {
         $list_id = $request->list_id;
-        $inputs = $request->except(['_token','q','list_id']);
+        $inputs = $request->except(['_token', 'q', 'list_id']);
 
 
-        try{
-            $gearList = GearLists::where('id',$list_id)->first();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Error fetching list.']);
+        try {
+            $gearList = GearLists::where('id', $list_id)->first();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
         }
 
-        try{
-            $gearListItem = GearListItems::where('id',$id)->where('list_id',$list_id)->first();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Error fetching list item']);
+        try {
+            $gearListItem = GearListItems::where('id', $id)->where('list_id', $list_id)->first();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status' => '0', 'msg' => 'Error fetching list item']);
         }
 
         //TODO fix calcuation bug
         $uomArray = GearListItems::$uomArray;
 
-        foreach($inputs as $key => $value){
+        foreach ($inputs as $key => $value) {
             $gearListItem->$key = $value;
         }
 
-        try{
+        try {
             $gearListItem->save();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Error updating list item']);
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status' => '0', 'msg' => 'Error updating list item']);
         }
 
-        return response()->json( ['status'=>'1','msg'=>'updated']);
+        return response()->json(['status' => '1', 'msg' => 'updated']);
     }
 
     /**
@@ -168,48 +167,47 @@ class GearListItemsController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $gearListItem = GearListItems::where('id',$id)->first();
+        $gearListItem = GearListItems::where('id', $id)->first();
 
-        if(empty($gearListItem)){
-            return redirect()->back()->with('error','No item found to delete.');
+        if (empty($gearListItem)) {
+            return redirect()->back()->with('error', 'No item found to delete.');
         }
 
-        try{
+        try {
             $gearListItem->delete();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return redirect()->back()->with('error','Failed to delete item.');
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to delete item.');
         }
 
-        return redirect()->back()->with('success','Item deleted.');
+        return redirect()->back()->with('success', 'Item deleted.');
     }
     public function remove(Request $request, $id)
     {
-        $gearListItem = GearListItems::where('id',$id)->first();
+        $gearListItem = GearListItems::where('id', $id)->first();
 
-        if(empty($gearListItem)){
-            return redirect()->back()->with('error','No item found to remove.');
+        if (empty($gearListItem)) {
+            return redirect()->back()->with('error', 'No item found to remove.');
         }
 
-        try{
+        try {
             $gearListItem->list_id = '';
             $gearListItem->save();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return redirect()->back()->with('error','Failed to remove item from list.');
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to remove item from list.');
         }
 
-        return redirect()->back()->with('success','Item removed.');
+        return redirect()->back()->with('success', 'Item removed.');
     }
-    public function getCategories(Request $request){
+    public function getCategories(Request $request)
+    {
 
-        $itemCategories = DB::table('item_categories')->orderBy('ordinal','ASC')->get(['category','value']);
+        $itemCategories = DB::table('item_categories')->orderBy('ordinal', 'ASC')->get(['category', 'value']);
 
-        if($request->expectsJson()){
+        if ($request->expectsJson()) {
             return response()->json($itemCategories);
         }
-         return $itemCategories;
-
-
+        return $itemCategories;
     }
 }
