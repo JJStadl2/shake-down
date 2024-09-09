@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('sort');
             $table->string('uom');
             $table->string('list_class');
+            $table->boolean('list_items')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

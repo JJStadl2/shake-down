@@ -12179,6 +12179,10 @@ body {
   margin-left: -10%;
 }
 
+.uom-td {
+  padding-top: 15px !important;
+}
+
 .list-item-form-container {
   width: 95%;
 }

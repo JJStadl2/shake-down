@@ -1,23 +1,13 @@
 @extends('layouts.header-footer')
-@section('title','Grear | ')
+@section('title','Gear | ')
 @section('content')
 @include('modals.search-modal')
 @include('modals.gear-list-chart-modal')
-{{-- <div class="row">
 
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <canvas id="myChart" width="10" height="5"></canvas>
-    </div>
-    <div class="col-md-4"></div>
-
-
-
-</div> --}}
 <div class="list-item-form-container">
-    {{-- add header update form --}}
+
     <div class="form-container">
-        <h2 class="mb-4" style="text-align: center; margin-right: -5%"> NEW Your List</h2>
+        <h2 class="mb-4" style="text-align: center; margin-right: -5%"> List By Items</h2>
         <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
         <input type="hidden" id="maxPackWeight" value="{{ $gearList->maxPackWeight }}"/>
         <input type="hidden" id="chartData" value="{{ $chartData }}"/>
@@ -35,7 +25,7 @@
                 <textarea type="text" class="form-control" id="listNotes" name="listNotes" data-column-name="notes"  onblur="updateList(this,{{ $gearList->id }})">{{ $gearList->notes ?? '' }}</textarea>
             </div>
             <div class="col-md-2">
-                <label class="form-control-label">Base Weight  @if($gearList->uom === 'us') (LBS) @else (KG) @endif </label>
+                <label class="form-control-label">Base Weight ({{ $gearList->weightUom }})</label>
                 <input type="text" class="form-control" id="baseWeight" name="baseWeight" value="{{ number_format($gearList->baseWeight,2,'.',',') ?? 0 }}" readonly/>
             </div>
         </div>
@@ -100,10 +90,11 @@
                 <th scope="col">#</th>
                 <th scope="col">Item</th>
                 <th scope="col">Category</th>
+                <th scope="col">UOM</th>
                 <th scope="col">Weight</th>
                 <th scope="col"># Packed</th>
                 <th scope="col">Total Packed Weight</th>
-                <th scope="col">UOM</th>
+                <th scope="col"></th>
                 <th scope="col">Remove</th>
 
             </tr>
@@ -127,16 +118,7 @@
                                         @endforeach
                                 </select>
                             </td>
-                            <td>
-                                <input  class="form-control" type="number" data-column-name="item_weight" id="itemWeight-{{ $i }}" name="itemWeight[]" value="{{ $item->item_weight ?? 0}}" onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
-                            </td>
-                            <td>
-                                <input  class="form-control" type="number" data-column-name="amount" id="packedAmount-{{ $i }}" name="pakedAmount[]" value="{{ $item->amount ?? 1}}" onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
-                            </td>
-                            <td>
-                                <input  class="form-control for-total-list-weight" type="number" data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}" name="totalLineWeight[]" value="{{floatval($item->total_line_weight) ?? floatval(($item->item_weight * $item->amount))}}" readonly />
-                            </td>
-                            <td>
+                            <td class="uom-td">
                                 @if($item->in_ounces || $item->in_lbs)
                                     <input class="form-check-input us-radio for-conversion" type="radio" data-column-name="in_ounces" name="uom-{{ $i }}-[]" id="uom-oz-{{ $i }}" @if($item->in_ounces) checked  @endif onchange="convertMeasurement({{ $i }});"/>
                                     <label class="form-check-label us-radio" id="uom-oz-label-{{ $i }}" for="uom-oz-{{ $i }}">
@@ -158,6 +140,35 @@
                                 @endif
 
                             </td>
+                            <td>
+                                <input  class="form-control" type="number" data-column-name="item_weight" id="itemWeight-{{ $i }}" name="itemWeight[]" value="{{ $item->item_weight ?? 0}}" onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
+                            </td>
+                            <td>
+                                <input  class="form-control" type="number" data-column-name="amount" id="packedAmount-{{ $i }}" name="pakedAmount[]" value="{{ $item->amount ?? 1}}" onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
+                            </td>
+                            <td>
+                                <input  class="form-control for-total-list-weight" type="number" data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}" name="totalLineWeight[]" value="{{floatval($item->total_line_weight) ?? floatval(($item->item_weight * $item->amount))}}" readonly />
+                            </td>
+                            <td class="uom-td">
+                                @if($item->in_ounces)
+                                    <label class="form-check-label us-radio" id="line-uom-label-{{ $i }}" for="uom-oz-{{ $i }}">
+                                        OZ
+                                    </label>
+                                @elseif( $item->in_lbs)
+                                    <label class="form-check-label us-radio" id="line-uom-label-{{ $i }}" for="uom-lbs-{{ $i }}">
+                                        LBS
+                                    </label>
+                                @elseif($item->in_grams)
+                                    <label class="form-check-label metric-radio" id="line-uom-label-{{ $i }}" for="uom-gram-{{ $i }}">
+                                        Grams
+                                    </label>
+                                @else
+                                    <label class="form-check-label metric-radio" id="line-uom-label-{{ $i }}" for="uom-kg-{{ $i }}">
+                                        KG
+                                    </label>
+                                @endif
+
+                            </td>
 
                             <td id="btn-td-{{ $i }}">
                                 <a id="deleteBtn-{{ $i }}" href="/remove-list-item/{{ $item->id }}" class="btn btn-primary btn-sm  py-2">x</a>
@@ -174,10 +185,8 @@
     </form>
 
 </div>
-<button id="searchGearBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productSearchModal">
+{{-- <button id="searchGearBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productSearchModal">
     Search for gear
-  </button>
-
-{{-- @include('modals.search-modal') --}}
+  </button> --}}
 
 @endsection

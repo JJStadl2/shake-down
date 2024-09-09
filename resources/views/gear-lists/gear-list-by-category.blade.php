@@ -25,7 +25,7 @@
                 <textarea type="text" class="form-control" id="listNotes" name="listNotes" data-column-name="notes"  onblur="updateList(this,{{ $gearList->id }})">{{ $gearList->notes ?? '' }}</textarea>
             </div>
             <div class="col-md-2">
-                <label class="form-control-label">Base Weight  @if($gearList->uom === 'us') (LBS) @else (KG) @endif </label>
+                <label class="form-control-label">Base Weight ({{ $gearList->weightUom }}) </label>
                 <input type="text" class="form-control" id="baseWeight" name="baseWeight" value="{{ number_format($gearList->baseWeight,2,'.',',') ?? 0 }}" readonly/>
             </div>
         </div>

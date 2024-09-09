@@ -50,8 +50,16 @@
                                 </select>
 
                             </div>
+                            <div class="mb-3">
+                                <label for="list_items" class="form-label">View</label>
+                                <select class="form-control" id="list_items" name="list_items">
+                                    <option value="1" selected>List By Item</option>
+                                    <option value="0" >List By Category</option>
+                                </select>
+
+                            </div>
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button type="submit" class="btn btn-primary">Create</button>
                             </div>
 
                     </div>

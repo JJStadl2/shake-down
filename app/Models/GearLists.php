@@ -27,6 +27,7 @@ class GearLists extends Model
         'notes',
         'uom',
         'sort',
+        'list_items'
     ];
 
     /**
@@ -152,9 +153,16 @@ class GearLists extends Model
         $gearList->weightUom = $weightUom;
 
     }
-    public static function getChartData($gearList, $sort){
+    public static function getChartData($gearList){
 
+        if($gearList->uom === 'us'){
+            $conversionFactor = GearListItems::$usConversionFactor;
+        }else{
+            $conversionFactor = GearListItems::$metricConversionFactor;
+        }
+        $sort = ['item_weight','ASC'];
         $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
+        Log::debug('gear list items with weight for chart: '.print_r($gearListItems,true));
         $categories = DB::table('item_categories')->orderBy('category','asc')->get(['category','value']);
         $listData = [];
         $labels = [];
@@ -202,7 +210,7 @@ class GearLists extends Model
                 $category = $item->item_category;
             }
             $weight = $listData[$category]['weight'];
-            $weight += $item->total_line_weight;
+            $weight += ($item->item_unit_weight * $item->amount)/$conversionFactor;
             $listData[$category]['weight'] = $weight;
 
         }
@@ -217,7 +225,7 @@ class GearLists extends Model
 
         }
 
-        $chartData = ['labels'=>$labels,'data'=>$weights,'colors'=> $chartColors];
+        $chartData = ['labels'=>$labels,'weights'=>$weights,'colors'=> $chartColors];
         return $chartData;
     }
 }

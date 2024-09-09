@@ -96,10 +96,14 @@ window.addEventListener("DOMContentLoaded", function(e) {
             cell2.classList.add('number-col');
 
             let cell3 = document.createElement("td");
+            let lineUomCell = document.createElement("td");
+            cell3.classList.add('uom-td');
+            lineUomCell.classList.add('uom-td');
             let radio1;
             let radio2;
             let radioLabel1;
             let radioLabel2;
+            let radioLabel3;
 
             if(listUOM === 'us'){
 
@@ -107,13 +111,14 @@ window.addEventListener("DOMContentLoaded", function(e) {
                 radioLabel1 = createLabel('OZ',  'uom-oz-'+finalI, 'oz', finalI);
                 radio2 = createRadio('in_lbs', '', 'lbs', finalI);
                 radioLabel2 = createLabel('LBS',  'uom-lbs-'+finalI, 'lbs', finalI);
-
+                radioLabel3 = createLabel('OZ',  'uom-oz-'+finalI, 'oz', finalI,true);
             }else{
 
                 radio1 = createRadio('in_grams', '', 'gram', finalI);
                 radioLabel1 =  createLabel('Grams',  'uom-gram-'+finalI, 'gram', finalI);
                 radio2 =  createRadio('in_kilos', '', 'kg', finalI);
                 radioLabel2 = createLabel('KG',  'uom-kg-'+finalI, 'kg', finalI);
+                radioLabel3 = createLabel('Grams',  'uom-gram-'+finalI, 'gram', finalI,true);
             }
 
             let cell4 = document.createElement("td");
@@ -151,6 +156,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
 
             cell4.appendChild(packedAmount);
             cell5.appendChild(totalLineWeight);
+            lineUomCell.appendChild(radioLabel3);
             cell6.appendChild(deleteBtn);
 
 
@@ -158,11 +164,11 @@ window.addEventListener("DOMContentLoaded", function(e) {
             row.appendChild(cell0);
             row.appendChild(cell1);
             row.appendChild(selectCell);
-            // row.appendChild(cell3);
+            row.appendChild(cell3);
             row.appendChild(cell2);
             row.appendChild(cell4);
             row.appendChild(cell5);
-            row.appendChild(cell3);
+            row.appendChild(lineUomCell);
             row.appendChild(cell6);
 
 
@@ -219,6 +225,8 @@ window.addEventListener("DOMContentLoaded", function(e) {
         let small;
         let large;
         let element;
+        let label = document.getElementById('line-uom-label-'+row);
+        let labelHTML;
 
         if(uom === 'us'){
             small = document.getElementById('uom-oz-'+row);
@@ -226,9 +234,11 @@ window.addEventListener("DOMContentLoaded", function(e) {
             if(small.checked === true){
                 weightValue = +weightValue * 16;
                 element = small;
+                labelHTML = 'OZ';
             }else{
                 weightValue = +weightValue / 16;
                 element = large
+                labelHTML = 'LBS';
             }
 
         }else{
@@ -238,9 +248,11 @@ window.addEventListener("DOMContentLoaded", function(e) {
             if(small.checked === true){
                 weightValue = +weightValue * 1000;
                 element = small;
+                labelHTML = 'Grams';
             }else{
                 weightValue = +weightValue /1000;
                 element = large
+                let labelHTML = 'KG';
             }
 
         }
@@ -248,6 +260,7 @@ window.addEventListener("DOMContentLoaded", function(e) {
         totalLineWeightValue = +weightValue * +packedAmount;
         weight.value = weightValue.toFixed(2).replace(/[.,]00$/, "");
         totalWeight.value = totalLineWeightValue.toFixed(2).replace(/[.,]00$/, "");
+        label.innerHTML = labelHTML;
         updateListItem(element);
         updateListItem(weight);
         updateListItem(totalWeight);
@@ -499,13 +512,18 @@ window.addEventListener("DOMContentLoaded", function(e) {
         });
         return radio;
     }
-    function createLabel(innerHtml, htmlFor, uom, row) {
+    function createLabel(innerHtml, htmlFor, uom, row,lineLabel=false) {
 
         let label = document.createElement("label");
         label.className = 'form-check-label' + (uom === 'gram' || uom === 'kg' ? ' metric-radio' : ' us-radio');
         label.htmlFor = htmlFor;
         label.innerHTML = innerHtml;
-        label.id = 'uom-' + uom + '-label-' + row;
+        if(!lineLabel){
+            label.id = 'uom-' + uom + '-label-' + row;
+        }else{
+            label.id = 'line-uom-label-'+ row;
+        }
+
         return label;
     }
 
@@ -571,44 +589,101 @@ window.addEventListener("DOMContentLoaded", function(e) {
     //     searchModal.show();
     // });
 
+    //listChartBtn
+    document.getElementById('listChartBtn').addEventListener('click', function () {
 
-    const ctx = document.getElementById('gearChart');
-    let chartData = JSON.parse( document.getElementById('chartData').value);
+        let listId = document.getElementById('listId').value;
+        let url = '/gear-list-analytics/'+listId;
 
-    let listName = document.getElementById('listName').value
-    const myChart = new Chart(ctx, {
-        type: 'doughnut', // Chart type
-        data: {
-            labels: chartData.labels,
-            datasets: [{
-                // label: listName + 'Break Down',
-                data: chartData.data,
-                backgroundColor: chartData.colors,
-                borderWidth: 1,
-                hoverOffset: 4
-            }]
-        },
-        options: {
-            cutout: 45,// Adjust the cutout percentage here
-            radius: 150,
-            legend: {
-                display: false
-            },
-            plugins: {
-                datalabels: false // Removing this line shows the datalabels again
-              },
-            animation:{
-                animateRotate:true,
-                animateScale:true
-            }
-        }
+        axios.get(url)
+            .then((res) => {
+                let chartStatus = Chart.getChart("gearChart");
+
+                if(chartStatus != undefined){
+                    console.log('chart status');
+                    chartStatus.destroy();
+                }
+
+                const ctx = document.getElementById('gearChart');
+                let chartData = JSON.parse(res.data.chartData);
+
+                let myChart = new Chart(ctx, {
+                    type: 'doughnut', // Chart type
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            // label: listName + 'Break Down',
+                            data: chartData.weights,
+                            backgroundColor: chartData.colors,
+                            borderWidth: 1,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        cutout: 45,// Adjust the cutout percentage here
+                        radius: 150,
+                        legend: {
+                            display: false
+                        },
+                        plugins: {
+                            datalabels: false // Removing this line shows the datalabels again
+                          },
+                        animation:{
+                            animateRotate:true,
+                            animateScale:true
+                        }
+                    }
+                });
+
+
+                let baseWeight = document.getElementById('baseWeight').value;
+                let totalPackWeight = document.getElementById('totalPackWeight').value;
+                document.getElementById('modalBaseWeight').textContent = baseWeight;
+                document.getElementById('modalTotalWeight').textContent = totalPackWeight;
+
+            }).catch((err) => {
+
+                alert(err);
+
+            });
     });
+    // const ctx = document.getElementById('gearChart');
+    // let chartData = JSON.parse( document.getElementById('chartData').value);
+
+    // let listName = document.getElementById('listName').value
+    // const myChart = new Chart(ctx, {
+    //     type: 'doughnut', // Chart type
+    //     data: {
+    //         labels: chartData.labels,
+    //         datasets: [{
+    //             // label: listName + 'Break Down',
+    //             data: chartData.weights,
+    //             backgroundColor: chartData.colors,
+    //             borderWidth: 1,
+    //             hoverOffset: 4
+    //         }]
+    //     },
+    //     options: {
+    //         cutout: 45,// Adjust the cutout percentage here
+    //         radius: 150,
+    //         legend: {
+    //             display: false
+    //         },
+    //         plugins: {
+    //             datalabels: false // Removing this line shows the datalabels again
+    //           },
+    //         animation:{
+    //             animateRotate:true,
+    //             animateScale:true
+    //         }
+    //     }
+    // });
 
 
-    let baseWeight = document.getElementById('baseWeight').value;
-    let totalPackWeight = document.getElementById('totalPackWeight').value;
-    document.getElementById('modalBaseWeight').textContent = baseWeight;
-    document.getElementById('modalTotalWeight').textContent = totalPackWeight;
+    // let baseWeight = document.getElementById('baseWeight').value;
+    // let totalPackWeight = document.getElementById('totalPackWeight').value;
+    // document.getElementById('modalBaseWeight').textContent = baseWeight;
+    // document.getElementById('modalTotalWeight').textContent = totalPackWeight;
 
 
 });

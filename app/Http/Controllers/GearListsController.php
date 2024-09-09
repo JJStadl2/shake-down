@@ -54,6 +54,8 @@ class GearListsController extends Controller
         $gearList->sort = $request->sortBy ?? 'cat_asc';
         $gearList->uom = $request->uom ?? 'us';
         $gearList->list_class = $request->listClass ?? 'hvy';
+        $gearList->list_items = $request->list_items;
+        Log::debug('request: '.print_r($request->input(),true));
 
         try{
             $gearList->save();
@@ -93,11 +95,7 @@ class GearListsController extends Controller
         $sort = DB::table('list_sorting_options')->where('value',$gearList->sort)->first('order_by');
         $sort = explode(' ',$sort->order_by);
         $chartData = json_encode(GearLists::getChartData($gearList, $sort));
-
-        $test = response()->json(['status'=>'1','data'=>$chartData]);
-        // Log::debug(__FILE__.' '.__LINE__.' test array: '.print_r($test,true));
-        return $test;
-
+        return response()->json(['status'=>'1','chartData'=>$chartData]);
     }
 
     /**
