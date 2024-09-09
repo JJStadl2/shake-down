@@ -1,4 +1,4 @@
-# ShakeDown Backing list and geear manager
+# ShakeDown Backpacking list and gear manager
 
 This Laravel application replaces the Excel spreadsheets we all use to weigh and manager packs for multi-day backpacking.
 
