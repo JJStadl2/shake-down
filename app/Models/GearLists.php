@@ -56,7 +56,7 @@ class GearLists extends Model
      *
      * @return array<int, object>
      */
-    public static function getSortingOptions(){
+    public static function getSortingOptions($key = false){
 
         $sql = 'SELECT *
                 FROM list_sorting_options
@@ -68,7 +68,18 @@ class GearLists extends Model
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             return [];
         }
-        return $options;
+       
+        if(!$key){
+            return $options;
+        }else{
+            foreach($options as $option){
+                if($option->value === $key){
+                    return $option;
+                }
+            }
+        }
+
+
 
     }
 
@@ -160,7 +171,7 @@ class GearLists extends Model
         }else{
             $conversionFactor = GearListItems::$metricConversionFactor;
         }
-        
+
         $sort = ['item_weight','ASC'];
         $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
         $categories = DB::table('item_categories')->orderBy('category','asc')->get(['category','value']);

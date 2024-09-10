@@ -76,7 +76,8 @@
     @if($gearList->list_items)
         @include('gear-lists.gear-list-by-item')
     @else
-        @include('gear-lists.gear-list-by-category')
+        {{-- @include('gear-lists.gear-list-by-category') --}}
+        @include('gear-lists.sortable-gear-by-category')
     @endif
 </div>
 @endsection

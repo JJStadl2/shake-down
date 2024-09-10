@@ -56,6 +56,9 @@ Route::get('/list-items/{listId}', [App\Http\Controllers\GearListItemsController
 )->name('item-index');
 // Route::get('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 'show']
 // )->name('show');
+Route::post('/update-list-order',  [App\Http\Controllers\GearListItemsController::class, 'sortGearItems']
+)->name('item-sort');
+
 
 Route::post('/list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'update']
 )->name('item-update');

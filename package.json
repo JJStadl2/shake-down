@@ -20,6 +20,7 @@
     "dependencies": {
         "@popperjs/core": "^2.11.8",
         "bootstrap": "^5.0.1",
-        "chart.js": "^4.4.4"
+        "chart.js": "^4.4.4",
+        "sortablejs": "^1.15.3"
     }
 }

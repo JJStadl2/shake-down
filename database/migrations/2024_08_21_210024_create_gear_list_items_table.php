@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('in_lbs')->default(false);
             $table->float('amount')->default(1);
             $table->float('total_line_weight')->default(0);
+            $table->integer('list_order')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

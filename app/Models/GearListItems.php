@@ -15,8 +15,8 @@ class GearListItems extends Model
 
     public static int $usConversionFactor = 16;
     public static int $metricConversionFactor = 1000;
-    public static $uomArray = ['in_ounces'=> false, 'in_lbs'=>false,'in_grams'=>false,'in_kilos'=>false];
-     /**
+    public static $uomArray = ['in_ounces' => false, 'in_lbs' => false, 'in_grams' => false, 'in_kilos' => false];
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -31,7 +31,8 @@ class GearListItems extends Model
         'in_ounces',
         'in_lbs',
         'in_kilos',
-        'amount'
+        'amount',
+        'list_order'
     ];
 
     /**
@@ -39,9 +40,7 @@ class GearListItems extends Model
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-
-    ];
+    protected $hidden = [];
 
     /**
      * Get the attributes that should be cast.
@@ -50,9 +49,7 @@ class GearListItems extends Model
      */
     protected function casts(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     /**
@@ -64,22 +61,23 @@ class GearListItems extends Model
      * Uses raw sql because it is more readable than Eloquent for this specific query.
      * SOrts based on smallest scale unit of measure when sorting by weight.
      */
-    public static function getSortedListItems($listId, $sort, $uom){
+    public static function getSortedListItems($listId, $sort, $uom)
+    {
 
         $by = $sort[0];
         $order = $sort[1];
 
-        if($uom === 'us'){
+        if ($uom === 'us') {
             $conversionFactor = self::$usConversionFactor;
-        }else{
+        } else {
             $conversionFactor = self::$metricConversionFactor;
         }
 
-        if(!str_contains($by,'weight')){
+        if (!str_contains($by, 'weight')) {
 
-            $sql =' SELECT *
+            $sql = ' SELECT *
                     FROM gear_list_items';
-        }else{
+        } else {
             $sql = " SELECT *,
                     CASE
                         WHEN (in_grams = 1 OR in_ounces = 1) THEN item_weight
@@ -91,33 +89,48 @@ class GearListItems extends Model
             $by = 'item_unit_weight';
         }
 
-        $sql.= ' WHERE list_id = ? AND deleted_at IS NULL';
+        $sql .= ' WHERE list_id = ? AND deleted_at IS NULL';
 
-        $sql.=" ORDER BY $by COLLATE NOCASE $order";
+        $sql .= " ORDER BY $by COLLATE NOCASE $order";
 
         $params = [$listId];
 
-        try{
-           $gearListItems = DB::select($sql,$params);
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+        try {
+            $gearListItems = DB::select($sql, $params);
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return [];
         }
 
         return $gearListItems;
-
     }
-    public static function getListSelectedCategories($gearListItems){
+    public static function getListSelectedCategories($gearListItems)
+    {
 
         $selectedCategories = [];
 
-        foreach($gearListItems as $item){
+        foreach ($gearListItems as $item) {
             $selectedCategories[] = $item->item_category;
         }
 
         return array_unique($selectedCategories);
-
     }
+    public static function sortItemsForListView($orderedIds)
+    {
 
+        foreach ($orderedIds as $order => $id) {
+            if (!empty($id)) {
+
+                try {
+                    DB::table('gear_list_items')
+                        ->where('id', $id)
+                        ->update(['list_order' => $order]);
+                } catch (\Exception $e) {
+                    Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
-

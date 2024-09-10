@@ -40,7 +40,6 @@ class GearListItemsController extends Controller
         $uom = $gearList->uom;
         $sort = DB::table('list_sorting_options')->where('value', $gearList->sort)->first('order_by');
         $sort = explode(' ', $sort->order_by);
-        //$sort = ['item_category','ASC'];
 
         try {
             $gearListItems = GearListItems::getSortedListItems($listId, $sort, $uom);
@@ -51,9 +50,10 @@ class GearListItemsController extends Controller
 
         $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
         GearLists::checkWeight($gearList);
-
-        $gearList->list_items = false;
+        $gearList->list_items = true;
+        
         return view('gear-lists.gear-list-view', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories]);
+        //return view('gear-lists.sortable-gear-by-category', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories]);
     }
 
     public function itemsMaster()
@@ -142,11 +142,15 @@ class GearListItemsController extends Controller
             return response()->json(['status' => '0', 'msg' => 'Error fetching list item']);
         }
 
-        //TODO fix calcuation bug
-        $uomArray = GearListItems::$uomArray;
 
         foreach ($inputs as $key => $value) {
             $gearListItem->$key = $value;
+            // if(!$gearList->list_items && $key === 'item_category' ){
+            if ($key === 'item_category') {
+                $listOrder = DB::table('item_categories')->where('value', $value)->get('ordinal')[0];
+
+                $gearListItem->list_order = (!empty($listOrder)) ? $listOrder->ordinal : 0;
+            }
         }
 
         try {
@@ -200,11 +204,42 @@ class GearListItemsController extends Controller
     public function getCategories(Request $request)
     {
 
-        $itemCategories = DB::table('item_categories')->orderBy('ordinal', 'ASC')->get(['category', 'value']);
+        $itemCategories = DB::table('item_categories')->orderBy('ordinal', 'ASC')->get(['category', 'value', 'ordinal']);
 
         if ($request->expectsJson()) {
             return response()->json($itemCategories);
         }
         return $itemCategories;
+    }
+
+    public function sortGearItems(Request $request)
+    {
+        $response = [];
+
+        $categoryId = $request->category_id;
+        $orderedIds = $request->ordered_ids;
+        $listId = $request->list_id;
+
+        if ($categoryId === 'list-items') {
+
+            $gearList = GearLists::where('id', $listId)->first();
+
+            try {
+                $gearList->sort = 'drag_drop';
+                $gearList->save();
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                return response()->json(['status' => '0', 'msg' => 'Failed to update the sortign attribute of the Gear list for these items.']);
+            }
+
+            $sortItemsInListView = GearListItems::sortItemsForListView($orderedIds);
+            if (!$sortItemsInListView) {
+                $response = ['status' => '0', 'msg' => 'Failed to update the order of one or more items.'];
+            } else {
+                $response = ['status' => '1', 'msg' => 'Order of items updated!'];
+            }
+        }
+
+        return response()->json($response);
     }
 }
