@@ -6,9 +6,19 @@
 <div class="list-item-form-container">
 
     <div class="gear-list-container">
-        <h2 class="mb-4" style="text-align: center; margin-right: -5%"> {{ $gearList->name }}</h2>
-        <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
-        <input type="hidden" id="maxPackWeight" value="{{ $gearList->maxPackWeight }}"/>
+        <div class="row">
+            <div class="col-md-4">
+                <a href="/gear-lists" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:left;margin-left:2%">Back to Gear Lists</a>
+
+            </div>
+            <div class="col-md-4">
+                <h2 class="mb-4" style="text-align: center; margin-right: -5%"> {{ $gearList->name }}</h2>
+            </div>
+            <div class="col-md-4">
+                <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
+                <input type="hidden" id="maxPackWeight" value="{{ $gearList->maxPackWeight }}"/>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-md-1"></div>

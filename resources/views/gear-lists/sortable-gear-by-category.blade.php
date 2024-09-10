@@ -8,6 +8,7 @@
             <table class="table table-dark sortable" data-category-id="{{ $itemCat->value }}">
                 <thead>
                     <tr>
+                        <th scope="col">#</th>
                         <th scope="col">Item</th>
                         <th scope="col">Category</th>
                         <th scope="col">UOM</th>
@@ -15,7 +16,7 @@
                         <th scope="col"># Packed</th>
                         <th scope="col">Total Packed Weight</th>
                         <th scope="col"></th>
-                        <th scope="col"></th>
+                        <th scope="col">Remove</th>
                     </tr>
                 </thead>
                 <tbody>
