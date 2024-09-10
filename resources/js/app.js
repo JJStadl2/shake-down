@@ -19,7 +19,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
     this.window.addListItem = function addListItem() {
         let numberOfItemsToAdd = document.getElementById("linesToAdd");
         let linesToAdd = 1;
-        if (+numberOfItemsToAdd.value < 1) {
+        if ( numberOfItemsToAdd=== null || +numberOfItemsToAdd.value < 1) {
             numberOfItemsToAdd.value = linesToAdd;
         } else {
             linesToAdd = +numberOfItemsToAdd.value;
@@ -28,7 +28,19 @@ window.addEventListener("DOMContentLoaded", function (e) {
         for (let i = 0; i < linesToAdd; i++) {
             let listUOM = document.getElementById("uom").value;
             let finalIElement = document.getElementById("final-i");
-            let itemTable = document.getElementById("item-table-body");
+            let listByItems = document.getElementById('listByItems').value;
+            console.log('list by item: '+listByItems);
+            let itemTable;
+            if(+listByItems == 1){
+                console.log('list by item 2: '+listByItems);
+                itemTable = document.getElementById("item-table-body");
+            }else{
+                let tableCategory = document.getElementById('categoryForTable').value;
+                console.log('table cat: '+tableCategory);
+                itemTable = document.getElementById('categoryTable-'+tableCategory)
+            }
+
+
             let userId = document.getElementById("userId").value;
             let listId = document.getElementById("listId").value;
             let finalI = finalIElement.value;
@@ -768,7 +780,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         axios
             .post(url, data)
             .then((res) => {
-               
+
                 if(res.data.status != '1'){
                     alert(res.data.msg);
                 }
