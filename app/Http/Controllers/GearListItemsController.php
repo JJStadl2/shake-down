@@ -145,12 +145,6 @@ class GearListItemsController extends Controller
 
         foreach ($inputs as $key => $value) {
             $gearListItem->$key = $value;
-            // if(!$gearList->list_items && $key === 'item_category' ){
-            if ($key === 'item_category') {
-                $listOrder = DB::table('item_categories')->where('value', $value)->get('ordinal')[0];
-
-                $gearListItem->list_order = (!empty($listOrder)) ? $listOrder->ordinal : 0;
-            }
         }
 
         try {
@@ -214,8 +208,8 @@ class GearListItemsController extends Controller
 
     public function sortGearItems(Request $request)
     {
+        Log::debug(__FILE__ . ' ' . __LINE__ . ' request in sort for catess: ' . print_r($request->input(), true));
         $response = [];
-
         $categoryId = $request->category_id;
         $orderedIds = $request->ordered_ids;
         $listId = $request->list_id;

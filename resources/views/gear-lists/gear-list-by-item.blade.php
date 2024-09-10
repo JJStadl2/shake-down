@@ -8,6 +8,7 @@
     </div>
 
     <form class="list-item-form">
+        <input type="hidden" id="listItems" data-column-name="list_items" value="{{ $gearList->list_items }}"/>
         <table class="table table-dark sortable" data-category-id="list-items">
             <thead>
             <tr>
@@ -30,7 +31,6 @@
 
                         <tr data-id="{{ $item->id }}">
                             <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[]" value="{{ $item->id}}"/>
-                            {{-- <th scope="row">{{ $i }}</th> --}}
                             <th scope="row"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-grip-vertical" viewBox="0 0 16 16">
                                 <path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
                               </svg></th>
