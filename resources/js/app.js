@@ -19,7 +19,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
     this.window.addListItem = function addListItem() {
         let numberOfItemsToAdd = document.getElementById("linesToAdd");
         let linesToAdd = 1;
-        if ( numberOfItemsToAdd=== null || +numberOfItemsToAdd.value < 1) {
+        if (numberOfItemsToAdd === null || +numberOfItemsToAdd.value < 1) {
             numberOfItemsToAdd.value = linesToAdd;
         } else {
             linesToAdd = +numberOfItemsToAdd.value;
@@ -28,18 +28,26 @@ window.addEventListener("DOMContentLoaded", function (e) {
         for (let i = 0; i < linesToAdd; i++) {
             let listUOM = document.getElementById("uom").value;
             let finalIElement = document.getElementById("final-i");
-            let listByItems = document.getElementById('listByItems').value;
-            console.log('list by item: '+listByItems);
+            let listByItems = document.getElementById("listByItems").value;
+            console.log("list by item: " + listByItems);
             let itemTable;
-            if(+listByItems == 1){
-                console.log('list by item 2: '+listByItems);
+            let groupCategory = null;
+            if (+listByItems == 1) {
+                listByItems = true;
+                console.log("list by item 2: " + listByItems);
                 itemTable = document.getElementById("item-table-body");
-            }else{
-                let tableCategory = document.getElementById('categoryForTable').value;
-                console.log('table cat: '+tableCategory);
-                itemTable = document.getElementById('categoryTable-'+tableCategory)
+            } else {
+                listByItems = false;
+                let tableCategory =
+                    document.getElementById("categorycounter").value;
+                console.log("table cat: " + tableCategory);
+                itemTable = document.getElementById(
+                    "categoryTable-" + tableCategory
+                );
+                groupCategory = document.getElementById(
+                    "listSectionCategory"
+                ).value;
             }
-
 
             let userId = document.getElementById("userId").value;
             let listId = document.getElementById("listId").value;
@@ -66,7 +74,8 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 "text",
                 "itemName",
                 finalI,
-                "item_name"
+                "item_name",
+                listByItems
             );
             itemName.placeholder = "Item Name";
             itemName.classList.add("form-control");
@@ -94,6 +103,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
             updateItem = async function () {
                 try {
                     const response = await axios.post(url, data);
+                    alert(
+                        "response fro new input: " + JSON.stringify(response)
+                    );
                     return response.data;
                 } catch (error) {
                     // handle error
@@ -214,12 +226,42 @@ window.addEventListener("DOMContentLoaded", function (e) {
             totalLineWeight.classList.add("for-total-list-weight");
 
             //append inputs to cells.
-            cell1.appendChild(counter);
+
+            // Define the SVG namespace
+            const svgNamespace = "http://www.w3.org/2000/svg";
+            let iconCell =  document.createElement("th");
+            // Create a new SVG element
+            let icon = document.createElementNS(svgNamespace, "svg");
+            icon.setAttribute("width", "16");
+            icon.setAttribute("height", "16");
+            icon.setAttribute("fill", "currentColor");
+            icon.setAttribute("class", "bi bi-grip-vertical");
+            icon.setAttribute("viewBox", "0 0 16 16");
+
+            // Create the <path> element
+            let path = document.createElementNS(svgNamespace, "path");
+            path.setAttribute(
+                "d",
+                "M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+            );
+
+            // Append the path to the SVG
+            icon.appendChild(path);
+
+            // // Create a new table cell
+            // let iconCell = document.createElement("td");
+
+            // // Append the SVG icon to the cell
+            iconCell.appendChild(icon);
+
+           // cell1.appendChild(counter);
+            // cell1.appendChild(icon);
             cell1.appendChild(itemName);
             cell2.appendChild(itemWeight);
 
             let selectCell = document.createElement("td");
-            let categorySelect = getCategroySelect(finalI);
+            let categorySelect = getCategroySelect(finalI, groupCategory);
+            //listSectionCategory
             selectCell.append(categorySelect);
 
             cell3.appendChild(radio1);
@@ -233,7 +275,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             cell6.appendChild(deleteBtn);
 
             // Append cells to the row.
-            row.appendChild(cell0);
+            row.appendChild(iconCell);
             row.appendChild(cell1);
             row.appendChild(selectCell);
             row.appendChild(cell3);
@@ -464,20 +506,23 @@ window.addEventListener("DOMContentLoaded", function (e) {
         document.getElementById("totalPackWeight").value =
             totalPackWeight.toFixed(2);
     }
-    function createListItemInput(type, nameBase, row, columnName) {
+    function createListItemInput(type, nameBase, row, columnName, listItems = true) {
         let element = document.createElement("input");
         element.type = type;
         element.name = nameBase + "[]";
         element.id = nameBase + "-" + row;
         element.value = "";
         element.setAttribute("data-column-name", columnName);
-        element.addEventListener("change", function () {
-            updateListItem(element);
-        });
+        if(listItems){
+            element.addEventListener("change", function () {
+                updateListItem(element);
+            });
+        }
+
 
         return element;
     }
-    function getCategroySelect(row) {
+    function getCategroySelect(row, groupCategory = null) {
         let select = document.createElement("select");
         select.id = "ItemCategory-" + row;
         select.name = "itemCategory-" + row;
@@ -507,6 +552,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 let option = document.createElement("option");
                 option.value = data[i].value;
                 option.text = data[i].category;
+                if (groupCategory != null && data[i].value === groupCategory) {
+                    option.selected = true;
+                }
                 select.appendChild(option);
             }
         });
@@ -780,11 +828,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
         axios
             .post(url, data)
             .then((res) => {
-
-                if(res.data.status != '1'){
+                if (res.data.status != "1") {
                     alert(res.data.msg);
                 }
-
             })
             .catch((err) => {
                 alert(err);

@@ -8,24 +8,23 @@
 
     </div>
     <div class="col-md-2 mb-3">
-        {{-- <button class="btn btn-primary btn-sm mt-2 py-2 px-3" style="margin-left: -72%" id="listChartBtn" data-bs-toggle="modal" data-bs-target="#gearListChartModal">
-        Analytics
-       </button> --}}
+
     </div>
 
 
 </div>
 @include('includes.weight-warning')
 
-
+@php $categoryCounter = 1; @endphp
 @foreach ($itemCategories as $itemCat)
     @if (in_array($itemCat->value, $selectedCategories))
         <div class="item-collapsible-header">
-            {{ $itemCat->category }}
+            <input type="hidden" id="listSectionCategory" value="{{ $itemCat->value }}" />
+            {{ $itemCat->category . ' counter: ' . $categoryCounter . ' value: ' . $itemCat->value }}
             <span class="item-arrow">&#9660;</span>
         </div>
         <div class="item-collapsible-content">
-            <input type="hidden" id="categoryForTable" value="{{ $itemCat->value }}" />
+            <input type="hidden" id="categorycounter" value="{{ $categoryCounter }}" />
             <input type="hidden" id="listByItems" data-column-name="list_items" value="{{ $gearList->list_items }}" />
             <table class="table table-dark sortable" data-category-id="list-items">
                 <thead>
@@ -41,19 +40,10 @@
                         <th scope="col">Remove</th>
                     </tr>
                 </thead>
-                <tbody id="categoryTable-{{ $itemCat->value }}">
+                <tbody id="categoryTable-{{ $categoryCounter }}">
                     @php $i = 1; @endphp
                     @foreach ($gearListItems as $item)
                         @if ($item->item_category === $itemCat->value)
-                            {{-- <tr data-id="{{ $item->id }}">
-                                <td>
-                                    <input type="text" class="form-control" id="itemName-{{ $i }}" name="itemName[]" value="{{ $item->item_name ?? '' }}" onblur="updateListItem(this)" />
-                                </td>
-                                <!-- Add the rest of your form fields here -->
-                                <td id="btn-td-{{ $i }}">
-                                    <a id="deleteBtn-{{ $i }}" href="/remove-list-item/{{ $item->id }}" class="btn btn-primary btn-sm py-2">x</a>
-                                </td>
-                            </tr> --}}
                             <tr data-id="{{ $item->id }}">
                                 <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[]"
                                     value="{{ $item->id }}" />
@@ -177,6 +167,8 @@
                                 </td>
 
                             </tr>
+                            <div class="row">{{ $categoryCounter }}</div>
+                            <div class="row">{{ $i }}</div>
                         @endif
                         @php $i++; @endphp
                     @endforeach
@@ -194,6 +186,7 @@
                 <div class="col-md-3"> <button type="submit" class="btn btn-primary"> Save</button></div>
             </div>
         </div>
+        @php $categoryCounter++; @endphp
     @endif
 @endforeach
 <input type="hidden" id='final-i' value="{{ $i }}" />
