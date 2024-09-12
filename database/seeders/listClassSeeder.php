@@ -21,12 +21,12 @@ class ListClassSeeder extends Seeder
         }
          //seed list classes table for dropdown
          $classes = [
-           ['type'=>'sul','display'=>'Super Ultra Light','description'=>'5LBS or Less BPW','ordinal'=>1, 'max_weight'=>5],
-           ['type'=>'ul','display'=>'Ultra Light','description'=>'10LBS or Less BPW','ordinal'=>2, 'max_weight'=>10],
-           ['type'=>'lw','display'=>'Light','description'=>'20LBS or Less BPW','ordinal'=>3, 'max_weight'=>20],
-           ['type'=>'tr','display'=>'Traditional','description'=>'30LBS or Less BPW','ordinal'=>4, 'max_weight'=>30],
-           ['type'=>'hvy','display'=>'Heavy','description'=>'Less than 40LBS BPW','ordinal'=>5, 'max_weight'=>40],
-           ['type'=>'mule','display'=>'Pack Mule','description'=>'40LBS or More BPW','ordinal'=>6, 'max_weight'=>100],
+           ['type'=>'sul','display'=>'Super Ultra Light','description'=>'5LBS/2.4KG or Less BPW','ordinal'=>1, 'us_max_weight'=>5,'metric_max_weight'=>2.4],
+           ['type'=>'ul','display'=>'Ultra Light','description'=>'10LBS/4.5KG or Less BPW','ordinal'=>2, 'us_max_weight'=>10, 'metric_max_weight'=>4.5],
+           ['type'=>'lw','display'=>'Light','description'=>'20LBS/9KG or Less BPW','ordinal'=>3, 'us_max_weight'=>20, 'metric_max_weight'=>9],
+           ['type'=>'tr','display'=>'Traditional','description'=>'30LBS/13.5KG or Less BPW','ordinal'=>4, 'us_max_weight'=>30, 'metric_max_weight'=>13.5],
+           ['type'=>'hvy','display'=>'Heavy','description'=>'Less than 40LBS/18KG BPW','ordinal'=>5, 'us_max_weight'=>40, 'metric_max_weight'=>18],
+           ['type'=>'mule','display'=>'Pack Mule','description'=>'40LBS/18KG or More BPW','ordinal'=>6, 'us_max_weight'=>100, 'metric_max_weight'=>45.4],
 
          ];
 

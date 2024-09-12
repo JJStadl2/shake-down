@@ -68,7 +68,7 @@ class GearLists extends Model
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             return [];
         }
-       
+
         if(!$key){
             return $options;
         }else{
@@ -137,16 +137,25 @@ class GearLists extends Model
         $sort = ['item_weight','ASC'];
         $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
         $maxListWeight = self::getlistClassByKey($gearList->list_class);
-        $maxListWeight = $maxListWeight->max_weight;
-        $weightUom = 'LBS';
+        $listClassWarning = $maxListWeight->display;
+    
+        if($gearList->uom === 'us'){
+            $maxListWeight = $maxListWeight->us_max_weight;
+            $weightUom = 'LBS';
+        }else{
+            $maxListWeight = $maxListWeight->metric_max_weight;
+            $weightUom = 'KG';
+        }
 
         foreach($gearListItems as $item){
-            if($item->item_category !== 'consumables' ){
-                $baseWeight+= $item->item_unit_weight;
-            }
+            $line_weight = ($item->item_unit_weight * $item->amount);
+            $totalPackWeight+= $line_weight;
 
-            $totalPackWeight+= $item->item_unit_weight;
+            if($item->item_category !== 'consumables' ){
+                $baseWeight+= $line_weight;
+            }
         }
+
 
         if($gearList->uom === 'us'){
             $baseWeight = $baseWeight/GearListItems::$usConversionFactor;
@@ -154,14 +163,14 @@ class GearLists extends Model
         }else{
             $baseWeight = $baseWeight/GearListItems::$metricConversionFactor;
             $totalPackWeight = $totalPackWeight/GearListItems::$metricConversionFactor;
-            $maxListWeight = $maxListWeight * self::$metricMaxWeightConversionFactor;
-            $weightUom = 'KG';
+
         }
 
         $gearList->totalPackWeight = $totalPackWeight;
         $gearList->baseWeight = $baseWeight;
         $gearList->maxPackWeight = $maxListWeight;
         $gearList->weightUom = $weightUom;
+        $gearList->classWarningValue = $listClassWarning;
 
     }
     public static function getChartData($gearList){

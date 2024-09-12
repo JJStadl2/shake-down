@@ -44,7 +44,7 @@
                                 <label for="uom" class="form-label">Measurement</label>
                                 <select class="form-control" id="uom" name="uom">
                                     <option value="us"  @if(old('uom') === 'us') selected @endif>US(OZ/LBS)</option>
-                                    <option value="metric"  @if(old('uom') === 'metric') selected @endif >Metric(GR/KG)</option>
+                                    <option value="metric"  @if(old('uom') === 'metric') selected @endif >Metric(G/KG)</option>
                                 </select>
 
                             </div>

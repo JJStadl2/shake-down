@@ -103,9 +103,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
             updateItem = async function () {
                 try {
                     const response = await axios.post(url, data);
-                    alert(
-                        "response fro new input: " + JSON.stringify(response)
-                    );
+                    // alert(
+                    //     "response fro new input: " + JSON.stringify(response)
+                    // );
                     return response.data;
                 } catch (error) {
                     // handle error
@@ -229,7 +229,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             // Define the SVG namespace
             const svgNamespace = "http://www.w3.org/2000/svg";
-            let iconCell =  document.createElement("th");
+            let iconCell = document.createElement("th");
             // Create a new SVG element
             let icon = document.createElementNS(svgNamespace, "svg");
             icon.setAttribute("width", "16");
@@ -254,7 +254,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             // // Append the SVG icon to the cell
             iconCell.appendChild(icon);
 
-           // cell1.appendChild(counter);
+            cell1.appendChild(counter);
             // cell1.appendChild(icon);
             cell1.appendChild(itemName);
             cell2.appendChild(itemWeight);
@@ -444,6 +444,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let baseWeight = 0;
         let totalPackWeight = 0;
         let maxPackWeight = document.getElementById("maxPackWeight").value;
+        let classWarningValue = document.getElementById('classWarningValue').value;
         let uomText = "LBS";
         weightsForPW.forEach(function (weightForPW) {
             let id = weightForPW.id;
@@ -454,11 +455,13 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 "packedAmount-" + row
             ).value;
             let converter = 1;
-            let rowWeight = +weightForPW.value;
+            let rowWeight = 0;
+            let itemWeight = document.getElementById("itemWeight-" + row).value;
             let uom = document.getElementById("uom").value;
             let itemCategoryElement = document.getElementById(
                 "itemCategory-" + row
             );
+
             let itemCategory = "";
             if (itemCategoryElement) {
                 itemCategory = itemCategoryElement.value;
@@ -473,31 +476,26 @@ window.addEventListener("DOMContentLoaded", function (e) {
                     converter = ounceConverter;
                 }
             } else {
+                uomText = "KG";
                 if (
                     document.getElementById("uom-gram-" + row).checked === true
                 ) {
                     converter = gramConverter;
-                    uomText = "KG";
                 }
             }
 
-            totalPackWeight =
-                totalPackWeight + +packedAmount * (+rowWeight / converter);
+            rowWeight = +packedAmount * (+itemWeight / converter);
+            totalPackWeight = totalPackWeight + rowWeight;
 
             if (itemCategory !== "consumables") {
-                baseWeight =
-                    baseWeight + +packedAmount * (+rowWeight / converter);
+                baseWeight = baseWeight + rowWeight;
             }
         });
 
         if (+baseWeight > +maxPackWeight) {
             let divElement = document.getElementById("weightWarning-div");
-            divElement.innerText =
-                "The base weight (" +
-                baseWeight.toFixed(2) +
-                " " +
-                uomText +
-                ") of the items on this list have exceeded the weight for the type/style of hike selected for this list.";
+            divElement.innerText ="Base weight (" +  baseWeight.toFixed(2) +" " +uomText +") exceedes the weight for the '" +classWarningValue+"' style of hiking.";
+
             divElement.style.display = "block";
         } else {
             document.getElementById("weightWarning-div").style.display = "none";
@@ -506,19 +504,24 @@ window.addEventListener("DOMContentLoaded", function (e) {
         document.getElementById("totalPackWeight").value =
             totalPackWeight.toFixed(2);
     }
-    function createListItemInput(type, nameBase, row, columnName, listItems = true) {
+    function createListItemInput(
+        type,
+        nameBase,
+        row,
+        columnName,
+        listItems = true
+    ) {
         let element = document.createElement("input");
         element.type = type;
         element.name = nameBase + "[]";
         element.id = nameBase + "-" + row;
         element.value = "";
         element.setAttribute("data-column-name", columnName);
-        if(listItems){
+        if (listItems) {
             element.addEventListener("change", function () {
                 updateListItem(element);
             });
         }
-
 
         return element;
     }

@@ -62,12 +62,10 @@ class GearListsController extends Controller
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             return redirect()->back()->with('error','Unable to save list at this time.')->withInput();
         }
+
         $gearList->weightUom = ($gearList->uom === 'us') ? 'LBS' : 'KG';
-        $gearListItems = [];
-        $listSortingOptions = GearLists::getSortingOptions();
-        $listClasses = GearLists::getListClasses();
         return redirect('/list-items/'.$gearList->id);
-       // return view('gear-lists.gear-list-by-item',['gearList'=>$gearList,'listItems'=>$gearListItems,'user'=>$user, 'listClasses'=>$listClasses,'sortingOptions'=> $listSortingOptions ]);
+
     }
 
     /**
