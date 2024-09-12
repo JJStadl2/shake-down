@@ -138,7 +138,7 @@ class GearLists extends Model
         $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
         $maxListWeight = self::getlistClassByKey($gearList->list_class);
         $listClassWarning = $maxListWeight->display;
-    
+
         if($gearList->uom === 'us'){
             $maxListWeight = $maxListWeight->us_max_weight;
             $weightUom = 'LBS';
@@ -171,6 +171,7 @@ class GearLists extends Model
         $gearList->maxPackWeight = $maxListWeight;
         $gearList->weightUom = $weightUom;
         $gearList->classWarningValue = $listClassWarning;
+        Log::debug(__FILE__.' '.__LINE__.' gear list: '.print_r($gearList,true));
 
     }
     public static function getChartData($gearList){
