@@ -4,15 +4,13 @@
 
 <div class="container">
 
-    <div class="row">
-        <div class="col-md-4">
-        </div>
-        <div class="col-md-4">
+    {{-- <div class="row"> --}}
+
             <form method="post" action="{{ route('list-store') }}">
 
                     <div class="create-list-form-header">
-                        <h1 class="form-h1" style="text-align: center;">Create a Gear List</h1>
-                        <div id="listHelp" class="list-form-text">You can add items once it is created.</div>
+                        <h1 class="form-h1" style="text-align: center;">Create Your Pack List</h1>
+                        <div id="listHelp" class="list-form-text">Add items once it is created.</div>
 
                             @csrf
                             <div class="mb-3">
@@ -64,8 +62,7 @@
 
                     </div>
             </form>
-        </div>
-    </div>
+
     <div class="form-footer"></div>
 </div>
 @endsection
