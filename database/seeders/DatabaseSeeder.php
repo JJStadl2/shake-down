@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ItemCategorySeeder::class,
-            // ListClassSeeder::class,
-            // ListSortingOptionsSeeder::class,
+            ListClassSeeder::class,
+            ListSortingOptionsSeeder::class,
 
         ]);
 
