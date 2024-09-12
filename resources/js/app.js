@@ -16,7 +16,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             password.type = "password";
         }
     };
-    this.window.addListItem = function addListItem() {
+    this.window.addListItem = function addListItem(categorycounter = null, groupCategory = null) {
         let numberOfItemsToAdd = document.getElementById("linesToAdd");
         let linesToAdd = 1;
         if (numberOfItemsToAdd === null || +numberOfItemsToAdd.value < 1) {
@@ -31,22 +31,23 @@ window.addEventListener("DOMContentLoaded", function (e) {
             let listByItems = document.getElementById("listByItems").value;
             console.log("list by item: " + listByItems);
             let itemTable;
-            let groupCategory = null;
+
             if (+listByItems == 1) {
                 listByItems = true;
                 console.log("list by item 2: " + listByItems);
                 itemTable = document.getElementById("item-table-body");
             } else {
                 listByItems = false;
-                let tableCategory =
-                    document.getElementById("categorycounter").value;
+                // let tableCategory =
+                //     document.getElementById("categorycounter").value;
+                let tableCategory = categorycounter;
                 console.log("table cat: " + tableCategory);
                 itemTable = document.getElementById(
                     "categoryTable-" + tableCategory
                 );
-                groupCategory = document.getElementById(
-                    "listSectionCategory"
-                ).value;
+                // groupCategory = document.getElementById(
+                //     "listSectionCategory"
+                // ).value;
             }
 
             let userId = document.getElementById("userId").value;
@@ -526,6 +527,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         return element;
     }
     function getCategroySelect(row, groupCategory = null) {
+    console.log('group cat in get select: '+ groupCategory)
         let select = document.createElement("select");
         select.id = "ItemCategory-" + row;
         select.name = "itemCategory-" + row;

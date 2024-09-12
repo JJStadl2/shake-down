@@ -19,8 +19,7 @@
 @foreach ($itemCategories as $itemCat)
     @if (in_array($itemCat->value, $selectedCategories))
         <div class="item-collapsible-header">
-            <input type="hidden" id="listSectionCategory" value="{{ $itemCat->value }}" />
-            {{ $itemCat->category . ' counter: ' . $categoryCounter . ' value: ' . $itemCat->value }}
+            {{ $itemCat->category }}
             <span class="item-arrow">&#9660;</span>
         </div>
         <div class="item-collapsible-content">
@@ -177,8 +176,7 @@
             <div class="row">
                 <div class="col-md-3"></div>
                 <div class="col-md-3">
-
-                    <button class="btn btn-secondary btn-sm mt-2 py-2 px-3" onclick="addListItem();">+ Line</button>
+                    <button class="btn btn-secondary btn-sm mt-2 py-2 px-3" onclick="addListItem('{{ $categoryCounter }}','{{ $itemCat->value }}');">+ Line</button>
 
 
                 </div>
