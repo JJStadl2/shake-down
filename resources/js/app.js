@@ -674,7 +674,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             .catch((err) => {
                 alert("Failed to update list. Please try again later.");
             });
-        if (columnName === "sort" || columnName === "list_class") {
+        if (columnName === "sort" || columnName === "list_class" || columnName === 'list_items') {
             location.reload();
         }
     };

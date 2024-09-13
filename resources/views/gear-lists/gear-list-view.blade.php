@@ -10,7 +10,7 @@
 
 
     </div>
-    @if($gearList->list_items)
+    @if((bool) $gearList->list_items)
         @include('gear-lists.gear-list-by-item')
     @else
         {{-- @include('gear-lists.test') --}}

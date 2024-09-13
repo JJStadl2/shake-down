@@ -4,7 +4,6 @@
 
     </div>
     <div class="col-md-4">
-        <h2 class="mb-4" style="text-align: center; margin-left:25%;"> {{ $gearList->name }}</h2>
     </div>
     <div class="col-md-4">
         <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
@@ -62,3 +61,4 @@
         <input type="text" class="form-control" id="totalPackWeight" name="totalPackWeight" value="{{ number_format( $gearList->totalPackWeight,2,'.',',') ?? 0 }}" readonly/>
     </div>
 </div>
+

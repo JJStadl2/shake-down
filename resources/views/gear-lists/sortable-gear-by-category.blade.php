@@ -1,10 +1,19 @@
 <div class="row">
-
-    <div class="col-md-3 mb-3"></div>
-    <div class="col-md-2 mt-2">
+    <div class="col-md-1 mb-3"></div>
+    <div class="col-md-1 mt-2">
         <input  type="hidden" id='linesToAdd' name="linesToAdd"
         min='1' value="1" />
     </div>
+    <div class="col-md-3 mb-3">
+        <label class="form-control-label" for="viewOption" class="form-label">View Options</label>
+        <select class="form-control" id="viewOptions" name="viewOptions" data-column-name="list_items" onchange="updateList(this,{{ $gearList->id }})">
+
+            <option value="1"  @if($gearList->list_items) selected @endif>List by Items</option>
+            <option value="0"  @if(!$gearList->list_items) selected @endif>Group by Category</option>
+        </select>
+
+    </div>
+
     <div class="col-md-3 mb-3">
         <label class="form-control-label">Add a Category</label>
         <select class="form-control" id="addCategory"

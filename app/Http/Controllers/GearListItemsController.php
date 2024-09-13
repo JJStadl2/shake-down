@@ -38,7 +38,6 @@ class GearListItemsController extends Controller
         }
 
         $uom = $gearList->uom;
-        $gearList->list_items = false;
         $sort = ['category_order', 'ASC'];
 
         if($gearList->list_items){
