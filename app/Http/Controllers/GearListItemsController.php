@@ -25,7 +25,7 @@ class GearListItemsController extends Controller
         $itemCategories = $this->getCategories($request);
         $listSortingOptions = GearLists::getSortingOptions();
         $listClasses = GearLists::getListClasses();
-
+        $sortedItemCategories = [];
         try {
             $gearList = GearLists::where('id', $listId)->first();
         } catch (\Exception $e) {
@@ -38,8 +38,13 @@ class GearListItemsController extends Controller
         }
 
         $uom = $gearList->uom;
-        $sort = DB::table('list_sorting_options')->where('value', $gearList->sort)->first('order_by');
-        $sort = explode(' ', $sort->order_by);
+        $gearList->list_items = false;
+        $sort = ['category_order', 'ASC'];
+
+        if($gearList->list_item){
+            $sort = DB::table('list_sorting_options')->where('value', $gearList->sort)->first('order_by');
+            $sort = explode(' ', $sort->order_by);
+        }
 
         try {
             $gearListItems = GearListItems::getSortedListItems($listId, $sort, $uom);
@@ -49,11 +54,14 @@ class GearListItemsController extends Controller
         }
 
         $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
-        GearLists::checkWeight($gearList);
-        $gearList->list_items = false;
 
-        return view('gear-lists.gear-list-view', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories]);
-        //return view('gear-lists.sortable-gear-by-category', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories]);
+        if(!$gearList->list_items){
+            $sortedItemCategories = $this->getCategories($request, $selectedCategories);
+        }
+
+        GearLists::checkWeight($gearList);
+
+        return view('gear-lists.gear-list-view', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
     }
 
     public function itemsMaster()
@@ -144,6 +152,9 @@ class GearListItemsController extends Controller
 
 
         foreach ($inputs as $key => $value) {
+            if($key === 'item_category' && empty($value)){
+                $value = 'unassigned';
+            }
             $gearListItem->$key = $value;
         }
 
@@ -177,6 +188,7 @@ class GearListItemsController extends Controller
 
         return redirect()->back()->with('success', 'Item deleted.');
     }
+
     public function remove(Request $request, $id)
     {
         $gearListItem = GearListItems::where('id', $id)->first();
@@ -195,7 +207,8 @@ class GearListItemsController extends Controller
 
         return redirect()->back()->with('success', 'Item removed.');
     }
-    public function getCategories(Request $request)
+
+    public function getCategories(Request $request, $selectedCategories = [])
     {
 
         $itemCategories = DB::table('item_categories')->orderBy('ordinal', 'ASC')->get(['category', 'value', 'ordinal']);
@@ -203,12 +216,25 @@ class GearListItemsController extends Controller
         if ($request->expectsJson()) {
             return response()->json($itemCategories);
         }
+
+        if(!empty($selectedCategories)){
+
+            return $itemCategories->sortBy(function ($itemCategory) use ($selectedCategories) {
+                if(in_array($itemCategory->value, $selectedCategories)){
+                    return array_search($itemCategory->value, $selectedCategories);
+                }else{
+                    return [];
+                }
+
+            })->values();
+
+        }
+
         return $itemCategories;
     }
 
     public function sortGearItems(Request $request)
     {
-        Log::debug(__FILE__ . ' ' . __LINE__ . ' request in sort for catess: ' . print_r($request->input(), true));
         $response = [];
         $categoryId = $request->category_id;
         $orderedIds = $request->ordered_ids;
@@ -235,5 +261,34 @@ class GearListItemsController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    public function sortGearListCategories(Request $request){
+
+        $categories = $request->category_order ?? [];
+
+        if(empty($categories)){
+            return response()->json(['status'=>'1','msg'=>'No change in category sort.']);
+        }
+
+        try{
+            $gearListItems = GearListItems::where('list_id', $request->list_id)->get();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Error getting Gear item data. Please try again later.']);
+        }
+
+        if(empty($gearListItems)){
+            return response()->json(['status'=>'0','msg'=>'No items associacted with gear list. Please add gear items.']);
+        }
+
+        $sortedForCategoryView = GearListItems::sortItemsForCategoryView($gearListItems,$categories);
+
+        if(!$sortedForCategoryView){
+            return response()->json(['status'=>'0','msg'=>'Failed to sort gear items by category. Please try again later.']);
+        }
+
+        return response()->json(['status'=>'1','msg'=>'Category sort updates.']);
+
     }
 }

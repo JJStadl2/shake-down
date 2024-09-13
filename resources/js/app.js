@@ -38,16 +38,11 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 itemTable = document.getElementById("item-table-body");
             } else {
                 listByItems = false;
-                // let tableCategory =
-                //     document.getElementById("categorycounter").value;
                 let tableCategory = categorycounter;
                 console.log("table cat: " + tableCategory);
                 itemTable = document.getElementById(
                     "categoryTable-" + tableCategory
                 );
-                // groupCategory = document.getElementById(
-                //     "listSectionCategory"
-                // ).value;
             }
 
             let userId = document.getElementById("userId").value;
@@ -87,43 +82,45 @@ window.addEventListener("DOMContentLoaded", function (e) {
             deleteBtn.id = "deleteBtn-" + finalI;
             deleteBtn.className = "btn btn-primary btn-sm  py-2";
             deleteBtn.innerHTML = "x";
+            if(listItems){
+                let data = {};
+                let url = "/list-item";
 
-            let data = {};
-            let url = "/list-item";
-
-            if (listUOM == "us") {
-                data = getBooleanData("in_ounces");
-            } else {
-                data = getBooleanData("in_grams");
-            }
-            data["list_id"] = listId;
-            data["user_id"] = userId;
-            data["item_name"] = "";
-
-            let updateItem;
-            updateItem = async function () {
-                try {
-                    const response = await axios.post(url, data);
-                    // alert(
-                    //     "response fro new input: " + JSON.stringify(response)
-                    // );
-                    return response.data;
-                } catch (error) {
-                    // handle error
-                    console.log(error);
+                if (listUOM == "us") {
+                    data = getBooleanData("in_ounces");
+                } else {
+                    data = getBooleanData("in_grams");
                 }
-            };
+                data["list_id"] = listId;
+                data["user_id"] = userId;
+                data["item_name"] = "";
 
-            // To use the function and handle the response data
-            updateItem().then((data) => {
-                // Do something with the response data
-                counter.value = data.newId;
-                row.setAttribute("data-id", data.newId);
-                deleteBtn.setAttribute(
-                    "href",
-                    "/destroy-list-item/" + data.newId
-                );
-            });
+                let updateItem;
+                updateItem = async function () {
+                    try {
+                        const response = await axios.post(url, data);
+                        // alert(
+                        //     "response fro new input: " + JSON.stringify(response)
+                        // );
+                        return response.data;
+                    } catch (error) {
+                        // handle error
+                        console.log(error);
+                    }
+                };
+
+                // To use the function and handle the response data
+                updateItem().then((data) => {
+                    // Do something with the response data
+                    counter.value = data.newId;
+                    row.setAttribute("data-id", data.newId);
+                    deleteBtn.setAttribute(
+                        "href",
+                        "/destroy-list-item/" + data.newId
+                    );
+                });
+            }
+
 
             let cell2 = document.createElement("td");
             let itemWeight = createListItemInput(
@@ -796,7 +793,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         });
     });
     function updateItemOrder(categoryId, orderedIds) {
-        // Use AJAX to send the reordered item IDs to the backend
+
         let listId = document.getElementById("listId").value;
 
         let data = {
@@ -832,88 +829,53 @@ window.addEventListener("DOMContentLoaded", function (e) {
     }
 
 
-
-    // let nestedSortables = document.querySelectorAll(".nested-sortable");
-
-    // nestedSortables.forEach((nestedSortable, index) => {
-    //     console.log('index: '+index);
-    //     let content = nestedSortable.nextElementSibling;
-    //     let categoryOrder = nestedSortable.getAttribute('data-category-order');
-    //     let categoryValue = nestedSortable.getAttribute('data-category-value');
-    //     console.log('cat order: '+ categoryOrder);
-    //     console.log('cat value: '+ categoryValue);
-    //     // console.dir(nestedSortable);
-    //     // console.dir(content);
-    //     Sortable.create(nestedSortable, {
-    //         animation: 150,
-    //         group: 'nested',
-    //         animation: 150,
-    //         fallbackOnBody: true,
-    //         swapThreshold: 0.65,
-    //         handle:'.item-collapsible-header',
-    //         onEnd: function (/**Event*/evt) {
-    //             let catOrderArray = {};
-    //             let oldIndex = evt.oldIndex;
-
-    //             // Get the new index (after the item is dropped)
-    //             let newIndex = evt.newIndex;
-    //             catOrderArray['item_category'] = categoryValue;
-    //             catOrderArray['old'] =  categoryOrder;
-    //             catOrderArray['new'] =  newIndex;
+    Sortable.create(document.querySelector('.parent-container'), {
+        animation: 150,
+        handle: '.item-collapsible-header',
+        ghostClass: 'sortable-ghost',
+        onEnd: function (evt) {
+            // After sorting is completed, update the positions in the database
+            updateCategoryOrder();
+        }
+    });
 
 
-    //             // Optional: handle the event when the drag ends, if needed
-    //             console.log('Moved item from index', categoryOrder, 'to', newIndex);
-    //             console.log('Array: '+ JSON.stringify(catOrderArray));
-    //         }
-    //       });
-    // });
+    function updateCategoryOrder() {
 
-    // Initialize sortable on the parent container
-Sortable.create(document.querySelector('.parent-container'), {
-    animation: 150,
-    handle: '.item-collapsible-header',
-    ghostClass: 'sortable-ghost',
-    onEnd: function (evt) {
-        // After sorting is completed, update the positions in the database
-        updateCategoryOrder();
-    }
-});
+        const newOrder = [];
+        document.querySelectorAll('.draggable-container').forEach((item, index) => {
 
-// Function to capture the new order and send it to the server
-function updateCategoryOrder() {
-    // Create an array to store the new order
-    const newOrder = [];
+            newOrder.push({
+                item_category: item.getAttribute('data-category-value'),
+                category_order: index
+            });
 
-    // Get all the sortable elements (collapsible-container)
-    document.querySelectorAll('.draggable-container').forEach((item, index) => {
-        // Get the data-id attribute and store it with the new index (position)
-        newOrder.push({
-            item_category: item.getAttribute('data-category-value'),
-            category_order: index + 1 // Assuming 1-based index for database storage
+
         });
 
-    });
-    console.log('order array: '+ JSON.stringify(newOrder));
-    // Send the new order to the server using Fetch (can also use jQuery's $.post if preferred)
-    // fetch('/update-order', {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // For Laravel, if you're using CSRF protection
-    //     },
-    //     body: JSON.stringify({order: newOrder})
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //     console.log('Order updated successfully:', data);
-    // })
-    // .catch(error => {
-    //     console.error('Error updating order:', error);
-    // });
-}
+        let url = "/update-caterogry-order";
+        let listId = document.getElementById("listId").value;
 
+        let data = {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute("content"),
+            category_order: newOrder,
+            list_id: listId,
+        };
+        //break out posts and get calls to own functions
+        axios
+            .post(url, data)
+            .then((res) => {
 
+                if (res.data.status != "1") {
+                    alert(res.data.msg);
+                }
+            })
+            .catch((err) => {
+                alert(err);
+            });
 
-
+    }
 });

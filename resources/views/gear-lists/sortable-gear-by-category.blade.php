@@ -30,7 +30,7 @@
 
 @php $categoryCounter = 1; @endphp
 <div class="parent-container">
-@foreach ($itemCategories as $itemCat)
+@foreach ($sortedItemCategories as $itemCat)
     @if (in_array($itemCat->value, $selectedCategories))
         <div class="draggable-container"  data-category-value="{{$itemCat->value}}">
 
@@ -181,8 +181,8 @@
                                 </td>
 
                             </tr>
-                            <div class="row">{{ $categoryCounter }}</div>
-                            <div class="row">{{ $i }}</div>
+                            {{-- <div class="row">{{ $categoryCounter }}</div>
+                            <div class="row">{{ $i }}</div> --}}
                         @endif
                         @php $i++; @endphp
                     @endforeach

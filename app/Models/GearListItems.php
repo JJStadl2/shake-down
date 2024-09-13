@@ -32,7 +32,8 @@ class GearListItems extends Model
         'in_lbs',
         'in_kilos',
         'amount',
-        'list_order'
+        'list_order',
+        'category_order'
     ];
 
     /**
@@ -61,7 +62,7 @@ class GearListItems extends Model
      * Uses raw sql because it is more readable than Eloquent for this specific query.
      * SOrts based on smallest scale unit of measure when sorting by weight.
      */
-    public static function getSortedListItems($listId, $sort, $uom)
+    public static function getSortedListItems($listId, $sort, $uom, $fromWeight = false)
     {
 
         $by = $sort[0];
@@ -91,7 +92,13 @@ class GearListItems extends Model
 
         $sql .= ' WHERE list_id = ? AND deleted_at IS NULL';
 
-        $sql .= " ORDER BY $by COLLATE NOCASE $order";
+        if($by === 'category_order'){
+            $sql .= " ORDER BY category_order $order, list_order ASC";
+
+        }else{
+            $sql .= " ORDER BY $by COLLATE NOCASE $order, list_order ASC ";
+
+        }
 
         $params = [$listId];
 
@@ -106,7 +113,6 @@ class GearListItems extends Model
     }
     public static function getListSelectedCategories($gearListItems)
     {
-
         $selectedCategories = [];
 
         foreach ($gearListItems as $item) {
@@ -128,6 +134,26 @@ class GearListItems extends Model
                 } catch (\Exception $e) {
                     Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                     return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static function sortItemsForCategoryView($gearListItems, $sortedCategories)
+    {
+
+        foreach($gearListItems as $item){
+            foreach($sortedCategories as $categoryOrder){
+                if($item->item_category === $categoryOrder['item_category']){
+                    try {
+                        DB::table('gear_list_items')
+                            ->where('id', $item->id)
+                            ->update(['category_order' => $categoryOrder['category_order']]);
+                    } catch (\Exception $e) {
+                        Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                        return false;
+                    }
                 }
             }
         }
