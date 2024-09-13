@@ -1,46 +1,37 @@
-<div class="row">
-    <div class="col-md-2 mb-3"></div>
-    <div class="col-md-3 mb-3">
-        <label class="form-control-label" for="viewOption" class="form-label">View Options</label>
-        <select class="form-control" id="viewOptions" name="viewOptions" data-column-name="list_items" onchange="updateList(this,{{ $gearList->id }})">
+    <div class="item-list-option-container">
+        <div class="row">
+            <div class="col-md-2 mb-3"></div>
+            <div class="col-md-3 mb-3">
+                <label class="form-control-label" for="viewOption" class="form-label">View Options</label>
+                <select class="form-control" id="viewOptions" name="viewOptions" data-column-name="list_items" onchange="updateList(this,{{ $gearList->id }})">
 
-            <option value="1"  @if($gearList->list_items) selected @endif>List by Items</option>
-            <option value="0"  @if(!$gearList->list_items) selected @endif>Group by Category</option>
-        </select>
+                    <option value="1"  @if($gearList->list_items) selected @endif>List by Items</option>
+                    <option value="0"  @if(!$gearList->list_items) selected @endif>Group by Category</option>
+                </select>
 
+            </div>
+
+            <div class="col-md-2 mt-2">
+                <input style="width: 30%; margin-top:7%; margin-left:35%;" class="form-control" type="number" id='linesToAdd' name="linesToAdd"
+                    min='1' value="1" />
+            </div>
+            <div class="col-md-2 mb-3">
+                <button style="margin-left: -150%; margin-top:10%;" class="btn btn-primary btn-sm py-2 px-3" onclick="addListItem();">+ Lines</button>
+            </div>
+            <div class="col-md-2 mb-3">
+
+            </div>
+
+
+        </div>
+    </div>
+    <div class="weight-warning-containter">
+        @include('includes.weight-warning')
     </div>
 
-    <div class="col-md-2 mt-2">
-        <input style="width: 30%; margin-top:7%; margin-left:35%;" class="form-control" type="number" id='linesToAdd' name="linesToAdd"
-            min='1' value="1" />
-    </div>
-    <div class="col-md-2 mb-3">
-        <button style="margin-left: -150%; margin-top:10%;" class="btn btn-primary btn-sm py-2 px-3" onclick="addListItem();">+ Lines</button>
-    </div>
-    <div class="col-md-2 mb-3">
-
-    </div>
 
 
-</div>
-@include('includes.weight-warning')
-{{-- <div class="row">
-    <div class="col-md-4" style="margin-right: 5%"></div>
-    <div id="weightWarning-div" class="col-md-4 alert alert-warning"
-        style="text-align: center;@if ($gearList->baseWeight > $gearList->maxPackWeight) display:block; @else display:none; @endif"> The base
-        weight ({{ number_format($gearList->baseWeight, 2, '.', ',') }} @if ($gearList->uom === 'us')
-            LBS
-        @else
-            (KG)
-        @endif ) of the items on this list have exceeded the weight for the type/style of hike
-        selected for this list.</div>
-    <div class="col-md-4"></div>
-
-</div> --}}
-
-</div>
-
-<form class="list-item-form">
+<div class="gear-items-container">
     <input type="hidden" id="listByItems" data-column-name="list_items" value="{{ $gearList->list_items }}" />
     <table class="table table-dark sortable" data-category-id="list-items">
         <thead>

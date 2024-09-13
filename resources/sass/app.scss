@@ -340,7 +340,9 @@ html,body {
     max-height: fit-content !important;
 
 }
-// .gear-list-container{
-//     align-items: center;
-//     text-align: center;
-// }
+.gear-list-container,.category-list-option-conatiner,.item-list-option-container{
+    margin-left: 8%;
+}
+.gear-items-container{
+    margin-right: -5%;
+}

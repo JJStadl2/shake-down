@@ -1,21 +1,6 @@
-<div class="row">
-    <div class="col-md-4">
-        <a href="/gear-lists" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:left;margin-left:12%">Back to Gear Lists</a>
-
-    </div>
-    <div class="col-md-4">
-    </div>
-    <div class="col-md-4">
-        <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
-        <input type="hidden" id="maxPackWeight" value="{{ $gearList->maxPackWeight }}"/>
-        <input type="hidden" id="listByItems" data-column-name="list_items" value="{{ $gearList->list_items }}" />
-        <button class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:right; margin-right -2%;" id="listChartBtn" data-bs-toggle="modal" data-bs-target="#gearListChartModal">
-           See Analytics
-           </button>
-    </div>
-</div>
 
 <div class="row">
+
     <div class="col-md-1"></div>
     <input type="hidden" name="listId" id="listId" data-column-name="list_id" value="{{ $gearList->id }}"/>
     <input type="hidden" name="userId" id="userId" data-column-name="user_id" value="{{ $user->id }}"/>
@@ -61,4 +46,5 @@
         <input type="text" class="form-control" id="totalPackWeight" name="totalPackWeight" value="{{ number_format( $gearList->totalPackWeight,2,'.',',') ?? 0 }}" readonly/>
     </div>
 </div>
+
 
