@@ -337,6 +337,8 @@ html,body {
 
 .item-collapsible-content.open {
     display: block;
+    max-height: fit-content !important;
+
 }
 // .gear-list-container{
 //     align-items: center;

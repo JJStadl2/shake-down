@@ -717,9 +717,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
     // });
 
     //listChartBtn
-    document
-        .getElementById("listChartBtn")
-        .addEventListener("click", function () {
+    document .getElementById("listChartBtn") .addEventListener("click", function () {
             let listId = document.getElementById("listId").value;
             let url = "/gear-list-analytics/" + listId;
 
@@ -779,25 +777,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 });
         });
 
-    document.querySelectorAll(".row-sortable").forEach(function (div) {
-        const categoryId = div.getAttribute("data-category-id");
-        console.log("in sort rows");
-        new Sortable(div, {
-            animation: 150,
-            onEnd: function (evt) {
-                // Get the new order of items
-                const orderedIds = [];
-                div.nextSibling.forEach(function (row) {
-                    let test = row.getAttribute("data-ordinal");
-                    console.log("test ordinal: " + test);
-                    orderedIds.push(row.getAttribute("data-ordinal"));
-                });
 
-                // Send the new order to the server via AJAX
-                updateItemOrder(categoryId, orderedIds);
-            },
-        });
-    });
     document.querySelectorAll(".sortable").forEach(function (table) {
         const categoryId = table.getAttribute("data-category-id");
 
@@ -850,4 +830,90 @@ window.addEventListener("DOMContentLoaded", function (e) {
             }
         }
     }
+
+
+
+    // let nestedSortables = document.querySelectorAll(".nested-sortable");
+
+    // nestedSortables.forEach((nestedSortable, index) => {
+    //     console.log('index: '+index);
+    //     let content = nestedSortable.nextElementSibling;
+    //     let categoryOrder = nestedSortable.getAttribute('data-category-order');
+    //     let categoryValue = nestedSortable.getAttribute('data-category-value');
+    //     console.log('cat order: '+ categoryOrder);
+    //     console.log('cat value: '+ categoryValue);
+    //     // console.dir(nestedSortable);
+    //     // console.dir(content);
+    //     Sortable.create(nestedSortable, {
+    //         animation: 150,
+    //         group: 'nested',
+    //         animation: 150,
+    //         fallbackOnBody: true,
+    //         swapThreshold: 0.65,
+    //         handle:'.item-collapsible-header',
+    //         onEnd: function (/**Event*/evt) {
+    //             let catOrderArray = {};
+    //             let oldIndex = evt.oldIndex;
+
+    //             // Get the new index (after the item is dropped)
+    //             let newIndex = evt.newIndex;
+    //             catOrderArray['item_category'] = categoryValue;
+    //             catOrderArray['old'] =  categoryOrder;
+    //             catOrderArray['new'] =  newIndex;
+
+
+    //             // Optional: handle the event when the drag ends, if needed
+    //             console.log('Moved item from index', categoryOrder, 'to', newIndex);
+    //             console.log('Array: '+ JSON.stringify(catOrderArray));
+    //         }
+    //       });
+    // });
+
+    // Initialize sortable on the parent container
+Sortable.create(document.querySelector('.parent-container'), {
+    animation: 150,
+    handle: '.item-collapsible-header',
+    ghostClass: 'sortable-ghost',
+    onEnd: function (evt) {
+        // After sorting is completed, update the positions in the database
+        updateCategoryOrder();
+    }
+});
+
+// Function to capture the new order and send it to the server
+function updateCategoryOrder() {
+    // Create an array to store the new order
+    const newOrder = [];
+
+    // Get all the sortable elements (collapsible-container)
+    document.querySelectorAll('.draggable-container').forEach((item, index) => {
+        // Get the data-id attribute and store it with the new index (position)
+        newOrder.push({
+            item_category: item.getAttribute('data-category-value'),
+            category_order: index + 1 // Assuming 1-based index for database storage
+        });
+
+    });
+    console.log('order array: '+ JSON.stringify(newOrder));
+    // Send the new order to the server using Fetch (can also use jQuery's $.post if preferred)
+    // fetch('/update-order', {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // For Laravel, if you're using CSRF protection
+    //     },
+    //     body: JSON.stringify({order: newOrder})
+    // })
+    // .then(response => response.json())
+    // .then(data => {
+    //     console.log('Order updated successfully:', data);
+    // })
+    // .catch(error => {
+    //     console.error('Error updating order:', error);
+    // });
+}
+
+
+
+
 });

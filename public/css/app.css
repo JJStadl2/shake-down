@@ -323,4 +323,6 @@ html, body {
 
 .item-collapsible-content.open {
   display: block;
+  max-height: -moz-fit-content !important;
+  max-height: fit-content !important;
 }

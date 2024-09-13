@@ -9,6 +9,7 @@
     <div class="col-md-4">
         <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
         <input type="hidden" id="maxPackWeight" value="{{ $gearList->maxPackWeight }}"/>
+        <input type="hidden" id="listByItems" data-column-name="list_items" value="{{ $gearList->list_items }}" />
         <button class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:right; margin-right -2%;" id="listChartBtn" data-bs-toggle="modal" data-bs-target="#gearListChartModal">
            See Analytics
            </button>

@@ -1,30 +1,45 @@
 <div class="row">
-    <div class="col-md-3 mb-3" style="margin-right: 8%;"></div>
+
+    <div class="col-md-3 mb-3"></div>
     <div class="col-md-2 mt-2">
-        <input style="width: 30%; margin-left: 75.5%" class="form-control" type="hidden" id='linesToAdd' name="linesToAdd"
-            min='1' value="1" />
+        <input  type="hidden" id='linesToAdd' name="linesToAdd"
+        min='1' value="1" />
+    </div>
+    <div class="col-md-3 mb-3">
+        <label class="form-control-label">Add a Category</label>
+        <select class="form-control" id="addCategory"
+                                        name="addCategory">
+                                        <option value="">Choose</option>
+                                        @foreach ($itemCategories as $category)
+                                        @if (!in_array($category->value, $selectedCategories))
+                                            <option value="{{ $category->value }}">
+                                                {{ $category->category }}
+                                            </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
     </div>
     <div class="col-md-2 mb-3">
-
+        <button class="btn btn-primary btn-sm mt-4 py-2 px-3" style="margin-left: -80%;">+</button>
     </div>
-    <div class="col-md-2 mb-3">
-
-    </div>
+    <div class="col-md-3 mb-3"></div>
 
 
 </div>
 @include('includes.weight-warning')
 
 @php $categoryCounter = 1; @endphp
+<div class="parent-container">
 @foreach ($itemCategories as $itemCat)
     @if (in_array($itemCat->value, $selectedCategories))
-        <div class="item-collapsible-header">
+        <div class="draggable-container"  data-category-value="{{$itemCat->value}}">
+
+        <div class="item-collapsible-header" >
+            <span class="item-arrow">&#9660;</span>
             {{ $itemCat->category }}
             <span class="item-arrow">&#9660;</span>
         </div>
         <div class="item-collapsible-content">
-            <input type="hidden" id="categorycounter" value="{{ $categoryCounter }}" />
-            <input type="hidden" id="listByItems" data-column-name="list_items" value="{{ $gearList->list_items }}" />
             <table class="table table-dark sortable" data-category-id="list-items">
                 <thead>
                     <tr>
@@ -185,6 +200,8 @@
             </div>
         </div>
         @php $categoryCounter++; @endphp
+        </div>
     @endif
 @endforeach
+</div>
 <input type="hidden" id='final-i' value="{{ $i }}" />
