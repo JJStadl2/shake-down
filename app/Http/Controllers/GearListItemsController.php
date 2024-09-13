@@ -41,7 +41,7 @@ class GearListItemsController extends Controller
         $gearList->list_items = false;
         $sort = ['category_order', 'ASC'];
 
-        if($gearList->list_item){
+        if($gearList->list_items){
             $sort = DB::table('list_sorting_options')->where('value', $gearList->sort)->first('order_by');
             $sort = explode(' ', $sort->order_by);
         }

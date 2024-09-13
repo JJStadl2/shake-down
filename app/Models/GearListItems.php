@@ -96,7 +96,7 @@ class GearListItems extends Model
             $sql .= " ORDER BY category_order $order, list_order ASC";
 
         }else{
-            $sql .= " ORDER BY $by COLLATE NOCASE $order, list_order ASC ";
+            $sql .= " ORDER BY $by COLLATE NOCASE $order";
 
         }
 
