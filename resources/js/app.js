@@ -82,7 +82,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             deleteBtn.id = "deleteBtn-" + finalI;
             deleteBtn.className = "btn btn-primary btn-sm  py-2";
             deleteBtn.innerHTML = "x";
-            if(listItems){
+            if(listByItems){
                 let data = {};
                 let url = "/list-item";
 
@@ -379,6 +379,10 @@ window.addEventListener("DOMContentLoaded", function (e) {
         updateListItem(weight);
         updateListItem(totalWeight);
     };
+    this.window.addCategoryGroup = function addCategoryGroup(listId,category){
+        console.log('id in add cat: '+listId);
+        console.log('cat in add cat: '+category);
+    }
     function getBooleanData(columnName) {
         let data = {};
         data["in_ounces"] = false;

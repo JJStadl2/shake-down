@@ -17,8 +17,7 @@
 
         <div class="col-md-3 mb-3">
             <label class="form-control-label">Add a Category</label>
-            <select class="form-control" id="addCategory"
-                                            name="addCategory">
+            <select class="form-control" id="addCategory"  name="addCategory" onchange="addCategoryGroup('{{ $gearList->id }}',this.value);">
                                             <option value="">Choose</option>
                                             @foreach ($itemCategories as $category)
                                             @if (!in_array($category->value, $selectedCategories))
@@ -194,22 +193,23 @@
                                     </td>
 
                                 </tr>
-                                {{-- <div class="row">{{ $categoryCounter }}</div>
-                                <div class="row">{{ $i }}</div> --}}
                             @endif
                             @php $i++; @endphp
                         @endforeach
                     </tbody>
                 </table>
                 <div class="row">
-                    <div class="col-md-3"></div>
                     <div class="col-md-3">
-                        <button class="btn btn-secondary btn-sm mt-2 py-2 px-3" onclick="addListItem('{{ $categoryCounter }}','{{ $itemCat->value }}');">+ Line</button>
-
-
+                        <button class="btn btn-primary" onclick="addListItem('{{ $categoryCounter }}','{{ $itemCat->value }}');">+ Line</button>
                     </div>
                     <div class="col-md-3"> </div>
-                    <div class="col-md-3"> <button type="submit" class="btn btn-primary"> Save</button></div>
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3">
+                         <button type="submit" class="btn btn-primary"> Save</button>
+                    </div>
+
+
+
                 </div>
             </div>
             @php $categoryCounter++; @endphp
