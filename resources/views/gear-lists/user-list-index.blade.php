@@ -5,12 +5,12 @@
 <div class="btn-header-container" >
     <div class="row">
         <div class="col-md-4">
-            <a href="/gear-list" class="btn btn-primary py-2" >Create new List</a>
+            <a href="/gear-list" class="btn btn-primary py-2" >Create Gear List</a>
         </div>
         <div class="col-md-4">
 
         </div>
-        <div class="col-md-4"> <a href="/all-list-items" class="btn btn-primary py-2" style="float: right;">View All Items</a></div>
+        <div class="col-md-4"> <a href="/all-list-items" class="btn btn-primary py-2" style="float: right;">View All Gear</a></div>
     </div>
 </div>
 
