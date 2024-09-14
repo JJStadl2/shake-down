@@ -72,7 +72,6 @@ html, body {
 
 .container {
   width: 90%;
-  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -333,4 +332,9 @@ html, body {
 
 .gear-items-container {
   margin-right: -5%;
+}
+
+.btn-header-container {
+  margin-right: 3%;
+  margin-left: 3%;
 }

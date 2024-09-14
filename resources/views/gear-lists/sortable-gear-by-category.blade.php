@@ -28,8 +28,13 @@
                                             @endforeach
                                         </select>
         </div>
-        <div class="col-md-2 mb-3">
-            <button class="btn btn-primary btn-sm mt-4 py-2 px-3" style="margin-left: -80%;">+</button>
+        <div class="col-md-2 mb-3 mt-3">
+            <button class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:left;" id="listChartBtn" data-bs-toggle="modal" data-bs-target="#gearListChartModal">
+                Analytics
+                </button>
+                <button id="searchGearBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:right;" data-bs-toggle="modal" data-bs-target="#productSearchModal">
+                    Search
+                    </button>
         </div>
         <div class="col-md-3 mb-3"></div>
 

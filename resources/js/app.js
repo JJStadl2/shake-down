@@ -832,16 +832,20 @@ window.addEventListener("DOMContentLoaded", function (e) {
         }
     }
 
+    let parentContainer = document.querySelector('.parent-container');
 
-    Sortable.create(document.querySelector('.parent-container'), {
-        animation: 150,
-        handle: '.item-collapsible-header',
-        ghostClass: 'sortable-ghost',
-        onEnd: function (evt) {
-            // After sorting is completed, update the positions in the database
-            updateCategoryOrder();
-        }
-    });
+    if(parentContainer !== null && parentContainer !== undefined){
+        Sortable.create(document.querySelector('.parent-container'), {
+            animation: 150,
+            handle: '.item-collapsible-header',
+            ghostClass: 'sortable-ghost',
+            onEnd: function (evt) {
+                // After sorting is completed, update the positions in the database
+                updateCategoryOrder();
+            }
+        });
+    }
+
 
 
     function updateCategoryOrder() {
