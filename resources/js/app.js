@@ -248,9 +248,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
             // Append the path to the SVG
             icon.appendChild(path);
 
-            // // Create a new table cell
-            // let iconCell = document.createElement("td");
-
             // // Append the SVG icon to the cell
             iconCell.appendChild(icon);
 
@@ -261,7 +258,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             let selectCell = document.createElement("td");
             let categorySelect = getCategroySelect(finalI, groupCategory);
-            //listSectionCategory
             selectCell.append(categorySelect);
 
             cell3.appendChild(radio1);
@@ -287,11 +283,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             // Append the row to the table.
             itemTable.appendChild(row);
-            // if (groupCategory != null){
-            //     //select.value = groupCategory;
-            //     updateListItem(categorySelect);
-            // }
-
             //add functions to calculate and convert total weight.
             addEventListenerWeightCalc(finalI);
         }
@@ -751,6 +742,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
                                     borderWidth: 1,
                                     hoverOffset: 4,
                                 },
+                               
                             ],
                         },
                         options: {
@@ -767,6 +759,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
                                 animateScale: true,
                             },
                         },
+
                     });
 
                     let baseWeight =
