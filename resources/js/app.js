@@ -82,44 +82,46 @@ window.addEventListener("DOMContentLoaded", function (e) {
             deleteBtn.id = "deleteBtn-" + finalI;
             deleteBtn.className = "btn btn-primary btn-sm  py-2";
             deleteBtn.innerHTML = "x";
-            if(listByItems){
-                let data = {};
-                let url = "/list-item";
 
-                if (listUOM == "us") {
-                    data = getBooleanData("in_ounces");
-                } else {
-                    data = getBooleanData("in_grams");
-                }
-                data["list_id"] = listId;
-                data["user_id"] = userId;
-                data["item_name"] = "";
+            let data = {};
+            let url = "/list-item";
 
-                let updateItem;
-                updateItem = async function () {
-                    try {
-                        const response = await axios.post(url, data);
-                        // alert(
-                        //     "response fro new input: " + JSON.stringify(response)
-                        // );
-                        return response.data;
-                    } catch (error) {
-                        // handle error
-                        console.log(error);
-                    }
-                };
-
-                // To use the function and handle the response data
-                updateItem().then((data) => {
-                    // Do something with the response data
-                    counter.value = data.newId;
-                    row.setAttribute("data-id", data.newId);
-                    deleteBtn.setAttribute(
-                        "href",
-                        "/destroy-list-item/" + data.newId
-                    );
-                });
+            if (listUOM == "us") {
+                data = getBooleanData("in_ounces");
+            } else {
+                data = getBooleanData("in_grams");
             }
+            data["list_id"] = listId;
+            data["user_id"] = userId;
+            data["item_name"] = "";
+            if(groupCategory !== null){
+                data['item_category'] = groupCategory;
+            }
+
+            let updateItem;
+            updateItem = async function () {
+                try {
+                    const response = await axios.post(url, data);
+                    // alert(
+                    //     "response fro new input: " + JSON.stringify(response)
+                    // );
+                    return response.data;
+                } catch (error) {
+                    // handle error
+                    console.log(error);
+                }
+            };
+
+            // To use the function and handle the response data
+            updateItem().then((data) => {
+                // Do something with the response data
+                counter.value = data.newId;
+                row.setAttribute("data-id", data.newId);
+                deleteBtn.setAttribute(
+                    "href",
+                    "/destroy-list-item/" + data.newId
+                );
+            });
 
 
             let cell2 = document.createElement("td");
@@ -285,6 +287,10 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             // Append the row to the table.
             itemTable.appendChild(row);
+            // if (groupCategory != null){
+            //     //select.value = groupCategory;
+            //     updateListItem(categorySelect);
+            // }
 
             //add functions to calculate and convert total weight.
             addEventListenerWeightCalc(finalI);
@@ -519,11 +525,10 @@ window.addEventListener("DOMContentLoaded", function (e) {
         element.id = nameBase + "-" + row;
         element.value = "";
         element.setAttribute("data-column-name", columnName);
-        if (listItems) {
-            element.addEventListener("change", function () {
-                updateListItem(element);
-            });
-        }
+        element.addEventListener("change", function () {
+            updateListItem(element);
+        });
+
 
         return element;
     }

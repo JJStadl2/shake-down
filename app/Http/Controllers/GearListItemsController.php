@@ -93,10 +93,31 @@ class GearListItemsController extends Controller
      */
     public function store(Request $request)
     {
+        $listId = $request->list_id;
+
+        try {
+            $gearList = GearLists::where('id', $listId)->first();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status' => '0', 'msg' => 'Error fetching list for adding item.']);
+        }
+        if(empty($gearList)){
+            return response()->json(['status' => '0', 'msg' => 'No list found for adding item.']);
+        }
+
+        $listItems = $gearList->list_items;
         $gearListItem = new GearListItems();
         $inputs = $request->except(['_token', 'q', 'id']);
 
         foreach ($inputs as $key => $value) {
+            if(!$listItems && $key === 'item_category'){
+                if(empty($value)){
+                    $value = 'unassigned';
+                }
+                $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->orderBy('list_order','desc')->first(['category_order','list_order']);
+                $gearListItem->category_order = $categoryOrder->category_order;
+                $gearListItem->list_order = $categoryOrder->list_order+1;
+            }
             $gearListItem->$key = $value;
         }
 
@@ -131,28 +152,32 @@ class GearListItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $list_id = $request->list_id;
+        $listId = $request->list_id;
         $inputs = $request->except(['_token', 'q', 'list_id']);
 
-
         try {
-            $gearList = GearLists::where('id', $list_id)->first();
+            $gearList = GearLists::where('id', $listId)->first();
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
         }
 
+        $listItems = $gearList->list_items;
+
         try {
-            $gearListItem = GearListItems::where('id', $id)->where('list_id', $list_id)->first();
+            $gearListItem = GearListItems::where('id', $id)->where('list_id', $listId)->first();
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error fetching list item']);
         }
 
-
         foreach ($inputs as $key => $value) {
-            if($key === 'item_category' && empty($value)){
-                $value = 'unassigned';
+            if(!$listItems && $key === 'item_category'){
+                if(empty($value)){
+                    $value = 'unassigned';
+                }
+                $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->first('category_order');
+                $gearListItem->category_order = $categoryOrder->category_order;
             }
             $gearListItem->$key = $value;
         }

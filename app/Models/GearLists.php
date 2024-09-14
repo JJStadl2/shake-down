@@ -184,7 +184,9 @@ class GearLists extends Model
 
         $sort = ['item_weight','ASC'];
         $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
+        Log::debug(__FILE__.' '.__LINE__.' list items for chart: '.print_r($gearListItems,true));
         $categories = DB::table('item_categories')->orderBy('category','asc')->get(['category','value']);
+        Log::debug(__FILE__.' '.__LINE__.' categories for chart: '.print_r($categories,true));
         $listData = [];
         $labels = [];
         $weights =[];
@@ -247,6 +249,7 @@ class GearLists extends Model
         }
 
         $chartData = ['labels'=>$labels,'weights'=>$weights,'colors'=> $chartColors];
+        Log::debug(__FILE__.' '.__LINE__.' chart data for chart: '.print_r($chartData,true));
         return $chartData;
     }
 }

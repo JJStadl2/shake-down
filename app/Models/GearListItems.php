@@ -159,4 +159,9 @@ class GearListItems extends Model
         }
         return true;
     }
+
+    public static function getCategoryPosition($listId,$value){
+        $spot = GearListItems::where('list_id',$listId)->where('item_category',$value)->orderBy('list_order','desc')->first(['category_order','list_order']);
+        Log::debug('test spot with list order and cat order: '.print_r($spot,true));
+    }
 }
