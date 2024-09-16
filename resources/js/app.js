@@ -399,7 +399,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             if(res.status === '1'){
                 location.reload();
             }else{
-               
+
                 alert(res.msg);
             }
 
@@ -532,6 +532,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         } else {
             document.getElementById("weightWarning-div").style.display = "none";
         }
+
         document.getElementById("baseWeight").value = baseWeight.toFixed(2);
         document.getElementById("totalPackWeight").value =
             totalPackWeight.toFixed(2);

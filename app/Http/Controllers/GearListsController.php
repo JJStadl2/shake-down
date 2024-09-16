@@ -170,8 +170,7 @@ class GearListsController extends Controller
 
     }
     public function removeCategory($listId,$category){
-        Log::debug(__FILE__.' '.__LINE__.' list id in remove cate: '.$listId);
-        Log::debug(__FILE__.' '.__LINE__.' cat in remove cate: '.$category);
+    
         try{
             $gearListItems = GearListItems::where('list_id',$listId)->where('item_category',$category)->get();
         }catch(\Exception $e){
