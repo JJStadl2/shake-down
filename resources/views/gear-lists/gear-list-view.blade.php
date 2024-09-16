@@ -14,10 +14,7 @@
             <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
             <input type="hidden" id="maxPackWeight" value="{{ $gearList->maxPackWeight }}"/>
             <input type="hidden" id="listByItems" data-column-name="list_items" value="{{ $gearList->list_items }}" />
-            <a href="/all-list-items" class="btn btn-primary py-2" style="float: right;">View All Gear</a>
-            {{-- <button class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:right; margin-right -2%;" id="listChartBtn" data-bs-toggle="modal" data-bs-target="#gearListChartModal">
-               See Analytics
-               </button> --}}
+            <a href="/all-list-items" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: right;">View All Your Gear</a>
         </div>
     </div>
     <div class="gear-list-container">
@@ -26,10 +23,9 @@
 
     </div>
     @if((bool)$gearList->list_items)
-        @include('gear-lists.gear-list-by-item')
+        @include('includes.gear-list-by-item')
     @else
-        {{-- @include('gear-lists.test') --}}
-         @include('gear-lists.sortable-gear-by-category')
+         @include('includes.sortable-gear-by-category')
     @endif
 </div>
 @endsection

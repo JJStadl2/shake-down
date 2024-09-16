@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use stdClass;
 
 class GearListItemsController extends Controller
 {
@@ -71,6 +72,9 @@ class GearListItemsController extends Controller
         $itemCategories = $this->getCategories($request);
         $listSortingOptions = GearLists::getSortingOptions();
         $listClasses = GearLists::getListClasses();
+        $options = new stdClass();
+        $options->list_items = true;
+        $options->sort = 'name_desc';
 
         try {
             $gearListItems = GearListItems::where('user_id', $userId)->get();
@@ -79,6 +83,7 @@ class GearListItemsController extends Controller
             return redirect()->back()->with('error', 'Unable to find list info.');
         }
         return view('gear-lists.all-list-items', ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses]);
+        //return view('gear-lists.user-item-view', ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'options'=>$options]);
     }
     /**
      * Show the form for creating a new resource.
@@ -153,7 +158,11 @@ class GearListItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Log::debug(__FILE__.' '.__LINE__.' request for update item: '.print_r($request->input(),true));
         $listId = $request->list_id;
+        if($listId === 'all'){
+            return response()->json(['status' => '0', 'msg' => 'update from all items.']);
+        }
         $inputs = $request->except(['_token', 'q', 'list_id']);
 
         try {
