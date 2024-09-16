@@ -17,7 +17,7 @@
 
         <div class="col-md-3 mb-3">
             <label class="form-control-label">Add a Category</label>
-            <select class="form-control" id="addCategory"  name="addCategory" onchange="addCategoryGroup('{{ $gearList->id }}',this.value);">
+            <select class="form-control" id="addCategory"  name="addCategory" onchange="addCategoryGroup('{{ $gearList->id }}',this.value, '{{ $gearList->uom }}','{{ $user->id }}');">
                                             <option value="">Choose</option>
                                             @foreach ($itemCategories as $category)
                                             @if (!in_array($category->value, $selectedCategories))
@@ -50,11 +50,18 @@
     @foreach ($sortedItemCategories as $itemCat)
         @if (in_array($itemCat->value, $selectedCategories))
             <div class="draggable-container"  data-category-value="{{$itemCat->value}}">
-
             <div class="item-collapsible-header" >
-                <span class="item-arrow">&#9660;</span>
+                {{-- <span class="item-arrow">&#9660;</span> --}}
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                    fill="currentColor" class="bi bi-grip-vertical" viewBox="0 0 16 16">
+                    <path
+                        d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                </svg>
+                </span>
                 {{ $itemCat->category }}
                 <span class="item-arrow">&#9660;</span>
+
             </div>
             <div class="item-collapsible-content">
                 <table class="table table-dark sortable" data-category-id="list-items">
@@ -210,7 +217,7 @@
                     <div class="col-md-3"> </div>
                     <div class="col-md-3"></div>
                     <div class="col-md-3">
-                         <button type="submit" class="btn btn-primary"> Save</button>
+                        <a href="/remove-category/{{ $gearList->id }}/{{ $itemCat->value}}" class="btn btn-primary"> Delete Category</a>
                     </div>
 
 

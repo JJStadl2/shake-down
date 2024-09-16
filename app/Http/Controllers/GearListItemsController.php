@@ -115,8 +115,9 @@ class GearListItemsController extends Controller
                     $value = 'unassigned';
                 }
                 $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->orderBy('list_order','desc')->first(['category_order','list_order']);
-                $gearListItem->category_order = $categoryOrder->category_order;
-                $gearListItem->list_order = $categoryOrder->list_order+1;
+                $gearListItem->category_order = $categoryOrder->category_order ?? 1;
+                $list_order = $categoryOrder->list_order ?? 0;
+                $gearListItem->list_order = $list_order +1;
             }
             $gearListItem->$key = $value;
         }
@@ -177,7 +178,7 @@ class GearListItemsController extends Controller
                     $value = 'unassigned';
                 }
                 $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->first('category_order');
-                $gearListItem->category_order = $categoryOrder->category_order;
+                $gearListItem->category_order = $categoryOrder->category_order ?? 1;
             }
             $gearListItem->$key = $value;
         }

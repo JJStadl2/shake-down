@@ -116,6 +116,9 @@ class GearListItems extends Model
         $selectedCategories = [];
 
         foreach ($gearListItems as $item) {
+            if(empty($item->item_category)){
+                $item->item_category = 'unassigned';
+            }
             $selectedCategories[] = $item->item_category;
         }
 

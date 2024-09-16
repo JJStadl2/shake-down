@@ -19,7 +19,7 @@
                 </div>
                 <div class="col-sm-2"></div>
                 <div class="col-sm-4">
-                    <label class="form-control-label">{{ 'Total Weight('.$gearList->weightUom.')' }}</label>
+                    <label class="form-control-label">{{ 'Total Weight ('.$gearList->weightUom.')' }}</label>
                     <span style="text-align: center; margin-left: 25%;" id="modalTotalWeight">{{ number_format($gearList->totalPackWeight,2,'.',',') ?? 0 }}</span>
                 </div>
                 <div class="col-sm-1"></div>

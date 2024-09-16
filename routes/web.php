@@ -45,9 +45,11 @@ Route::get('/gear-list', [App\Http\Controllers\GearListsController::class, 'crea
 Route::post('/gear-list', [App\Http\Controllers\GearListsController::class, 'store']
 )->name('list-store');
 Route::get('/destroy-list/{id}', [App\Http\Controllers\GearListsController::class, 'destroy']
-)->name('list-destroy');//getListChartData
+)->name('list-destroy');
 Route::get('/gear-list-analytics/{id}', [App\Http\Controllers\GearListsController::class, 'getListChartData']
 )->name('list-analytics');
+Route::get('/remove-category/{id}/{category}', [App\Http\Controllers\GearListsController::class, 'removeCategory']
+)->name('list-remove-category');
 
 //gear list item routes
 Route::get('/all-list-items', [App\Http\Controllers\GearListItemsController::class, 'itemsMaster']

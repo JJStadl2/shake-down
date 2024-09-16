@@ -169,5 +169,34 @@ class GearListsController extends Controller
         return redirect()->back()->with('success','List and items deleted.');
 
     }
+    public function removeCategory($listId,$category){
+        Log::debug(__FILE__.' '.__LINE__.' list id in remove cate: '.$listId);
+        Log::debug(__FILE__.' '.__LINE__.' cat in remove cate: '.$category);
+        try{
+            $gearListItems = GearListItems::where('list_id',$listId)->where('item_category',$category)->get();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return redirect()->back()->with('error','Failed to remove category from list.');
+        }
+
+        if(empty($gearListItems)){
+            return redirect()->back()->with('error','Category not found in list.');
+        }
+
+        foreach($gearListItems as $item){
+            //$listItem = GearListItems::where('id',$item->id)->first();
+            $item->list_id = '';
+
+            try{
+                $item->save();
+            }catch(\Exception $e){
+                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                return redirect()->back()->with('error','Failed to save changes to list.');
+            }
+
+        }
+
+        return redirect()->back()->with('success','Gear list updated.');
+    }
 
 }

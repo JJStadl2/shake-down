@@ -29,17 +29,14 @@ window.addEventListener("DOMContentLoaded", function (e) {
             let listUOM = document.getElementById("uom").value;
             let finalIElement = document.getElementById("final-i");
             let listByItems = document.getElementById("listByItems").value;
-            console.log("list by item: " + listByItems);
             let itemTable;
 
             if (+listByItems == 1) {
                 listByItems = true;
-                console.log("list by item 2: " + listByItems);
                 itemTable = document.getElementById("item-table-body");
             } else {
                 listByItems = false;
                 let tableCategory = categorycounter;
-                console.log("table cat: " + tableCategory);
                 itemTable = document.getElementById(
                     "categoryTable-" + tableCategory
                 );
@@ -376,9 +373,45 @@ window.addEventListener("DOMContentLoaded", function (e) {
         updateListItem(weight);
         updateListItem(totalWeight);
     };
-    this.window.addCategoryGroup = function addCategoryGroup(listId,category){
+    this.window.addCategoryGroup = function addCategoryGroup(listId,category, listUOM, userId){
+
+
+        let columnName;
+        if(listUOM === 'us'){
+            columnName = 'in_ounces';
+        }else{
+            columnName = 'in_grams';
+        }
+
+        let data = getBooleanData(columnName);
+        data['list_id'] = listId;
+        data['user_id'] = userId;
+        data['item_name'] = '';
+        data['item_weight'] = 0;
+        data['amount'] = 1;
+        data['item_category'] = category;
+        let url = '/list-item'
+
+        axios
+        .post(url, data)
+        .then((res) => {
+            res = res.data;
+            if(res.status === '1'){
+                location.reload();
+            }else{
+               
+                alert(res.msg);
+            }
+
+        })
+
+        .catch((err) => {
+
+        });
+
         console.log('id in add cat: '+listId);
         console.log('cat in add cat: '+category);
+        console.log('bool data in add cat: '+JSON.stringify(data));
     }
     function getBooleanData(columnName) {
         let data = {};
@@ -700,20 +733,10 @@ window.addEventListener("DOMContentLoaded", function (e) {
     });
 
     let inputs = document.querySelectorAll("#master-item-table input");
-    let selectInputs = document.querySelectorAll("select");
 
     inputs.forEach(function (input) {
         input.disabled = true;
     });
-    // selectInputs.forEach(function(selectInput) {
-    //     selectInput.disabled = true;
-    // });
-    // document.getElementById('searchGearBtn').addEventListener('click', function () {
-    //     let searchModal = document.getElementById('productSearchModal');
-    //     searchModal.show();
-    // });
-
-    //listChartBtn
     document .getElementById("listChartBtn") .addEventListener("click", function () {
             let listId = document.getElementById("listId").value;
             let url = "/gear-list-analytics/" + listId;
@@ -742,7 +765,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
                                     borderWidth: 1,
                                     hoverOffset: 4,
                                 },
-                               
+
                             ],
                         },
                         options: {
