@@ -10,7 +10,9 @@
         <div class="col-md-4">
 
         </div>
-        <div class="col-md-4"> <a href="/all-list-items" class="btn btn-primary py-2" style="float: right;">View All Gear</a></div>
+        <div class="col-md-4">
+            {{-- <a href="/all-list-items" class="btn btn-primary py-2" style="float: right;">View All Gear</a> --}}
+        </div>
     </div>
 </div>
 
@@ -30,7 +32,7 @@
 
         </div>
         <div class="col-md-4">
-            <h1 style="margin-bottom: 10%;">Your Gear Lists</h1>
+            {{-- <h1 style="margin-bottom: 10%;">Your Gear Lists</h1> --}}
         </div>
         <div class="col-md-4"></div>
 

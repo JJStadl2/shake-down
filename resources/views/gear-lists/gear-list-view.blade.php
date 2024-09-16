@@ -14,7 +14,7 @@
             <input type="hidden" data-column-name="uom" id="uom" name="uom" value="{{$gearList->uom}}"/>
             <input type="hidden" id="maxPackWeight" value="{{ $gearList->maxPackWeight }}"/>
             <input type="hidden" id="listByItems" data-column-name="list_items" value="{{ $gearList->list_items }}" />
-            <a href="/all-list-items" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: right;">View All Your Gear</a>
+            {{-- <a href="/all-list-items" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: right;">View All Your Gear</a> --}}
         </div>
     </div>
     <div class="gear-list-container">

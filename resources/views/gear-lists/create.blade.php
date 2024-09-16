@@ -2,6 +2,19 @@
 @section('title', 'Create Grear List | ')
 @section('content')
 
+<div class="btn-header-container" >
+    <div class="row">
+        <div class="col-md-4">
+            <a href="/gear-lists" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:left;margin-left:12%">Gear Lists</a>
+        </div>
+        <div class="col-md-4">
+
+        </div>
+        <div class="col-md-4">
+            {{-- <a href="/all-list-items" class="btn btn-primary py-2" style="float: right;">View All Gear</a> --}}
+        </div>
+    </div>
+</div>
 <div class="container">
 
     {{-- <div class="row"> --}}
@@ -9,7 +22,7 @@
             <form method="post" action="{{ route('list-store') }}">
 
                     <div class="create-list-form-header">
-                        <h1 class="form-h1" style="text-align: center;">Create Your Pack List</h1>
+                        <h1 class="form-h1" style="text-align: center;">Create a New Gear List</h1>
                         <div id="listHelp" class="list-form-text">Add items once it is created.</div>
 
                             @csrf
