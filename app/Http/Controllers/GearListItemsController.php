@@ -82,8 +82,8 @@ class GearListItemsController extends Controller
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return redirect()->back()->with('error', 'Unable to find list info.');
         }
-        return view('gear-lists.all-list-items', ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses]);
-        //return view('gear-lists.user-item-view', ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'options'=>$options]);
+       // return view('gear-lists.all-list-items', ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses]);
+        return view('gear-lists.user-item-view', ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'options'=>$options]);
     }
     /**
      * Show the form for creating a new resource.
@@ -158,7 +158,6 @@ class GearListItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        Log::debug(__FILE__.' '.__LINE__.' request for update item: '.print_r($request->input(),true));
         $listId = $request->list_id;
         if($listId === 'all'){
             return response()->json(['status' => '0', 'msg' => 'update from all items.']);
@@ -324,5 +323,12 @@ class GearListItemsController extends Controller
 
         return response()->json(['status'=>'1','msg'=>'Category sort updates.']);
 
+    }
+    public function addMasterGearItems(Request $request){
+        Log::debug(__FILE__.' '.__LINE__.' request for add master items: '.print_r($request->input(),true));
+        $inputs = $request->input();
+        $user = Auth::user();
+        GearListItems::createNewMasterItems($inputs, $user);
+        return redirect()->back();
     }
 }

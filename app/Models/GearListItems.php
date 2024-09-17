@@ -162,4 +162,30 @@ class GearListItems extends Model
         }
         return true;
     }
+    public static function createNewMasterItems($inputs, $user){
+
+        $itemCount = $inputs['newItemCount'] ?? 0;
+        for($i = 0; $i < $itemCount; $i++){
+         $uomArray = self::$uomArray;
+         $gearListItem = new GearListItems();
+         $gearListItem->user_id = $user->id;
+         $gearListItem->item_name = $inputs['itemName'][$i] ?? '';
+         $gearListItem->item_category = $inputs['itemCategory'][$i] ?? 'unassigned';
+         $gearListItem->item_weight = $inputs['itemWeight'][$i] ?? 0;
+         foreach($uomArray as $key => $value){
+             $gearListItem->$key = false;
+             if($inputs['uom'][$i] === $key){
+                 $gearListItem->$key = true;
+             }
+         }
+         try {
+             $gearListItem->save();
+         } catch (\Exception $e) {
+             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+             return false;
+         }
+
+        }
+        return true;
+     }
 }

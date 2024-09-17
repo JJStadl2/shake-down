@@ -14,22 +14,6 @@
                 </div>
             </div>
             <div class="col-lg-4">
-                {{-- <div class="card" style="width: 18rem;">
-                    <div class="card-img-top view-card"></div>
-                    <div class="card-body">
-                    <p class="card-text">View Saved Gear Lists</p>
-                    <a href="/gear-lists" class="btn btn-primary">View</a>
-                    </div>
-                </div> --}}
-            </div>
-            <div class="col-lg-4">
-                {{-- <div class="card" style="width: 18rem;">
-                    <div class="card-img-top item-card"></div>
-                    <div class="card-body">
-                    <p class="card-text">View All Gear</p>
-                    <a href="/all-list-items" class="btn btn-primary">View</a>
-                    </div>
-                </div> --}}
                 <div class="card" style="width: 18rem;">
                     <div class="card-img-top view-card"></div>
                     <div class="card-body">
@@ -37,6 +21,16 @@
                     <a href="/gear-lists" class="btn btn-primary">View</a>
                     </div>
                 </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-img-top item-card"></div>
+                    <div class="card-body">
+                    <p class="card-text">View All Gear</p>
+                    <a href="/all-list-items" class="btn btn-primary">View</a>
+                    </div>
+                </div>
+               
             </div>
 
         </div>

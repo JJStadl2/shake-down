@@ -63,8 +63,7 @@ Route::post('/update-list-order',  [App\Http\Controllers\GearListItemsController
 Route::post('/update-caterogry-order',  [App\Http\Controllers\GearListItemsController::class, 'sortGearListCategories']
 )->name('category-sort');
 
-
-
+//item routes
 Route::post('/list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'update']
 )->name('item-update');
 Route::post('/list-items/{listId}', [App\Http\Controllers\GearListItemsController::class, 'updateByCategory']
@@ -77,6 +76,8 @@ Route::get('/destroy-list-item/{id}', [App\Http\Controllers\GearListItemsControl
 )->name('item-destroy');
 Route::get('/remove-list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'remove']
 )->name('item-remove');
+Route::post('/add-gear-items',  [App\Http\Controllers\GearListItemsController::class, 'addMasterGearItems']
+)->name('add-master-items');
 
 //gear item API search
 Route::get('/search-api', [App\Http\Controllers\GearSearchController::class, 'search'])->name('gear-api-search');

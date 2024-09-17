@@ -1,7 +1,7 @@
 @extends('layouts.header-footer')
 @section('title','Gear | ')
 @section('content')
-
+@include('modals.add-list-item-modal')
 <div class="list-item-form-container">
     <div class="row">
         <div class="col-md-4">

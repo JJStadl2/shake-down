@@ -16,6 +16,136 @@ window.addEventListener("DOMContentLoaded", function (e) {
             password.type = "password";
         }
     };
+    this.window.addMasterListItem = function addMasterListItem() {
+        let numberOfItemsToAdd = document.getElementById("linesToAdd");
+        let linesToAdd = 1;
+        if (numberOfItemsToAdd === null || +numberOfItemsToAdd.value < 1) {
+            numberOfItemsToAdd.value = linesToAdd;
+        } else {
+            linesToAdd = +numberOfItemsToAdd.value;
+        }
+
+        for (let i = 0; i < linesToAdd; i++) {
+            let listByItems = true;
+            let listen = false;
+            let itemTable = document.getElementById('modal-item-table-body');
+            let row = document.createElement("tr");
+
+            // Create cells and input elements.
+            let cell1 = document.createElement("td");
+
+            let itemName = createListItemInput(
+                "text",
+                "itemName",
+                i,
+                "item_name",
+                listen
+            );
+            itemName.placeholder = "Item Name";
+            itemName.classList.add("form-control");
+
+            let cell6 = document.createElement("td");
+            cell6.id = "btn-td-" +i;
+            let deleteBtn = document.createElement("a");
+            deleteBtn.id = "deleteBtn-" + i;
+            deleteBtn.className = "btn btn-primary btn-sm  py-2";
+            deleteBtn.innerHTML = "x";
+
+
+            let cell2 = document.createElement("td");
+            let itemWeight = createListItemInput(
+                "number",
+                "itemWeight",
+                i,
+                "item_weight",
+                listen
+            );
+            itemWeight.value = 0;
+            itemWeight.classList.add("for-weight");
+            itemWeight.classList.add("number-input");
+            itemWeight.classList.add("form-control");
+            itemWeight.style.width = '40%';
+            cell2.classList.add("number-col");
+
+            let cell3 = document.createElement("td");
+            let select = document.createElement("select");
+            select.id = "uom-" + i;
+            select.name = "uom[]";
+            select.setAttribute("data-column-name", "uom");
+            select.className = "form-control";
+
+            let ozOption = document.createElement("option");
+            let lbsOption = document.createElement("option");
+            let grOption = document.createElement("option");
+            let kgOption = document.createElement("option");
+            ozOption.value = "in_ounces";
+            ozOption.text = "OZ";
+            lbsOption.value  = 'in_lbs';
+            lbsOption.text = 'LBS'
+
+            grOption.value = "in_grams";
+            grOption.text = "G";
+            kgOption.value  = 'in_kilos';
+            kgOption.text = 'KG';
+            select.appendChild(ozOption);
+            select.appendChild(lbsOption);
+            select.appendChild(grOption);
+            select.appendChild(kgOption);
+
+            //append inputs to cells.
+            // Define the SVG namespace
+            const svgNamespace = "http://www.w3.org/2000/svg";
+            let iconCell = document.createElement("th");
+            // Create a new SVG element
+            let icon = document.createElementNS(svgNamespace, "svg");
+            icon.setAttribute("width", "16");
+            icon.setAttribute("height", "16");
+            icon.setAttribute("fill", "currentColor");
+            icon.setAttribute("class", "bi bi-grip-vertical");
+            icon.setAttribute("viewBox", "0 0 16 16");
+
+            // Create the <path> element
+            let path = document.createElementNS(svgNamespace, "path");
+            path.setAttribute(
+                "d",
+                "M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+            );
+
+            // Append the path to the SVG
+            icon.appendChild(path);
+
+            // // Append the SVG icon to the cell
+            iconCell.appendChild(icon);
+
+            // cell1.appendChild(counter);
+            // cell1.appendChild(icon);
+            cell1.appendChild(itemName);
+            cell2.appendChild(itemWeight);
+
+            let selectCell = document.createElement("td");
+            let categorySelect = getCategroySelect(i,null, listen);
+            categorySelect.name = 'itemCategory[]'
+            selectCell.append(categorySelect);
+
+            cell3.appendChild(select);
+            cell6.appendChild(deleteBtn);
+
+            // Append cells to the row.
+            row.appendChild(iconCell);
+            row.appendChild(cell1);
+            row.appendChild(selectCell);
+            row.appendChild(cell3);
+            row.appendChild(cell2);
+            row.appendChild(cell6);
+
+            // Append the row to the table.
+            itemTable.appendChild(row);
+
+
+        }
+        document.getElementById('newItemCount').value = linesToAdd;
+        numberOfItemsToAdd.value = 1;
+    };
     this.window.addListItem = function addListItem(categorycounter = null, groupCategory = null) {
         let numberOfItemsToAdd = document.getElementById("linesToAdd");
         let linesToAdd = 1;
@@ -67,8 +197,8 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 "text",
                 "itemName",
                 finalI,
-                "item_name",
-                listByItems
+                "item_name"
+
             );
             itemName.placeholder = "Item Name";
             itemName.classList.add("form-control");
@@ -542,7 +672,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         nameBase,
         row,
         columnName,
-        listItems = true
+        listen = true
     ) {
         let element = document.createElement("input");
         element.type = type;
@@ -550,14 +680,14 @@ window.addEventListener("DOMContentLoaded", function (e) {
         element.id = nameBase + "-" + row;
         element.value = "";
         element.setAttribute("data-column-name", columnName);
-        element.addEventListener("change", function () {
-            updateListItem(element);
-        });
-
-
+        if(listen){
+            element.addEventListener("change", function () {
+                updateListItem(element);
+            });
+        }
         return element;
     }
-    function getCategroySelect(row, groupCategory = null) {
+    function getCategroySelect(row, groupCategory = null, listen = true) {
     console.log('group cat in get select: '+ groupCategory)
         let select = document.createElement("select");
         select.id = "ItemCategory-" + row;
@@ -594,10 +724,12 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 select.appendChild(option);
             }
         });
+        if(listen){
+            select.addEventListener("change", function () {
+                updateListItem(select);
+            });
+        }
 
-        select.addEventListener("change", function () {
-            updateListItem(select);
-        });
 
         return select;
     }
@@ -738,7 +870,10 @@ window.addEventListener("DOMContentLoaded", function (e) {
     inputs.forEach(function (input) {
         input.disabled = true;
     });
-    document .getElementById("listChartBtn") .addEventListener("click", function () {
+
+    let listChartbtn =  document.getElementById("listChartBtn");
+    if(listChartbtn !== null){
+        document .getElementById("listChartBtn").addEventListener("click", function () {
             let listId = document.getElementById("listId").value;
             let url = "/gear-list-analytics/" + listId;
 
@@ -799,6 +934,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
                     alert(err);
                 });
         });
+
+    }
+
 
 
     document.querySelectorAll(".sortable").forEach(function (table) {
