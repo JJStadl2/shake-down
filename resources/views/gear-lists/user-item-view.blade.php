@@ -5,7 +5,7 @@
 <div class="list-item-form-container">
     <div class="row">
         <div class="col-md-4">
-            <a href="/gear-lists" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:left;margin-left:12%">Back to Gear Lists</a>
+            <a href="/gear-lists" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:left;margin-left:12%">Gear Lists</a>
 
         </div>
         <div class="col-md-4"></div>
