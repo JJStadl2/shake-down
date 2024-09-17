@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GearListItems extends Model
@@ -170,12 +171,24 @@ class GearListItems extends Model
 
         $itemCount = $inputs['newItemCount'] ?? 0;
         for($i = 0; $i < $itemCount; $i++){
+
          $uomArray = self::$uomArray;
          $gearListItem = new GearListItems();
+         $gearListItem->list_id = '';
          $gearListItem->user_id = $user->id;
          $gearListItem->item_name = $inputs['itemName'][$i] ?? '';
          $gearListItem->item_category = $inputs['itemCategory'][$i] ?? 'unassigned';
          $gearListItem->item_weight = $inputs['itemWeight'][$i] ?? 0;
+         $gearListItem->master_list_order = 0;
+         $gearListItem->master_category_order = 0;
+
+         $listOrders = self::getCategoryOrder( $gearListItem->item_category);
+
+         if(!empty($listOrders)){
+            $gearListItem->master_list_order = $listOrders->max_list_order +1;
+            $gearListItem->master_category_order = $listOrders->max_category_order;
+         }
+
          foreach($uomArray as $key => $value){
              $gearListItem->$key = false;
              if($inputs['uom'][$i] === $key){
@@ -191,5 +204,27 @@ class GearListItems extends Model
 
         }
         return true;
+     }
+
+     public static function getCategoryOrder( $itemCategory){
+
+        $user = Auth::user();
+
+        $sql = 'SELECT MAX(master_list_order) AS max_list_order, MAX(master_category_order) AS max_category_order
+                FROM gear_list_items
+                WHERE deleted_at IS NULL
+                AND user_id = ?
+                AND item_category = ?';
+
+        $params = [$user->id, $itemCategory];
+
+        try{
+            $orders = DB::select($sql,$params);
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return [];
+        }
+
+        return $orders[0];
      }
 }

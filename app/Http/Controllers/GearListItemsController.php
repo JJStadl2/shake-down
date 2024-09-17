@@ -259,10 +259,6 @@ class GearListItemsController extends Controller
         return response()->json(['status' => '1', 'msg' => 'updated']);
     }
 
-    public function updateMasterItem(Request $request){
-
-    }
-
     /**
      * Remove the specified resource from storage.
      */
@@ -305,7 +301,6 @@ class GearListItemsController extends Controller
 
     public function getCategories(Request $request, $selectedCategories = [])
     {
-
         $itemCategories = DB::table('item_categories')->orderBy('ordinal', 'ASC')->get(['category', 'value', 'ordinal']);
 
         if ($request->expectsJson()) {
