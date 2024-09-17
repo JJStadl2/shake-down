@@ -107,7 +107,6 @@ class GearListsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        Log::debug(__FILE__.' '.__LINE__.' request for update list header: '.print_r($request->input(),true));
         $inputs = $request->input();
 
         try{
@@ -208,7 +207,7 @@ class GearListsController extends Controller
             $masterItemOptions->$key = $value;
         }
         Session::put('masterItemOptions',$masterItemOptions);
-      
+
         return response()->json(['status'=>'1','msg'=>'Updated session vars.']);;
     }
 

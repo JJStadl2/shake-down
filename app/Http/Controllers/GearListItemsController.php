@@ -96,7 +96,8 @@ class GearListItemsController extends Controller
         $order = $sort[1];
 
         try {
-            $gearListItems = GearListItems::where('user_id', $userId)->orderBy($by,$order)->get();
+             $gearListItems = GearListItems::where('user_id', $userId)->orderBy($by,$order)->get();
+           // $gearListItems = GearListItems::where('user_id', $userId)->orderBy($by,$order)->paginate();
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return redirect()->back()->with('error', 'Unable to find list info.');
