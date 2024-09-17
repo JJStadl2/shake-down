@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class GearListsController extends Controller
 {
@@ -134,7 +135,7 @@ class GearListsController extends Controller
             return response()->json(['status'=>'0','msg'=>'Error updating list.']);
         }
 
-        return response()->json(['status'=>'1','msg'=>'Updated list.']);;
+        return response()->json(['status'=>'1','msg'=>'Updated list.']);
     }
 
     /**
@@ -170,7 +171,7 @@ class GearListsController extends Controller
 
     }
     public function removeCategory($listId,$category){
-    
+
         try{
             $gearListItems = GearListItems::where('list_id',$listId)->where('item_category',$category)->get();
         }catch(\Exception $e){
@@ -196,6 +197,19 @@ class GearListsController extends Controller
         }
 
         return redirect()->back()->with('success','Gear list updated.');
+    }
+
+    public function updateSession(Request $request){
+
+        $masterItemOptions = Session::get('masterItemOptions') ?? [];
+
+        foreach($request->input() as $key => $value){
+
+            $masterItemOptions->$key = $value;
+        }
+        Session::put('masterItemOptions',$masterItemOptions);
+      
+        return response()->json(['status'=>'1','msg'=>'Updated session vars.']);;
     }
 
 }

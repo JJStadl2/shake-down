@@ -85,6 +85,8 @@ Route::get('/search-api', [App\Http\Controllers\GearSearchController::class, 'se
 //js helpers
 Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsController::class, 'getCategories']
 )->name('get-categories');
+Route::post('/update-session', [App\Http\Controllers\GearListsController::class, 'updateSession']
+)->name('update-session');
 
 //about/housekeeping
 Route::get('/about', [App\Http\Controllers\GearListsController::class, 'index']
