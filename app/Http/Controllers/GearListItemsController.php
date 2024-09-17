@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use stdClass;
-
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 class GearListItemsController extends Controller
 {
 
@@ -73,64 +74,63 @@ class GearListItemsController extends Controller
         $itemCategories = $this->getCategories($request);
         $listSortingOptions = GearLists::getSortingOptions();
         $userLists = GearLists::where('user_id',$userId)->orderBy('id','ASC')->get(['id','name']);
-        //Session::forget('masterItemOptions');
+        $sortedItemCategories = [];
+        $sortByCategory = false;
         $masterItemOptions = Session::get('masterItemOptions') ?? [];
+
         if(empty($masterItemOptions)){
             $masterItemOptions = new stdClass();
             $masterItemOptions->list_items = true;
             $masterItemOptions->sort = 'name_asc';
         }
 
-        $sort = ['category_order', 'ASC'];
+        $sort_2 = ['master_category_order', 'ASC'];
+        $sort_3 = ['master_list_order','ASC'];
+        $by_2 = $sort_2[0];
+        $order_2 = $sort_2[1];
+        $by_3 = $sort_3[0];
+        $order_3 = $sort_3[1];
 
         if($masterItemOptions->list_items){
             if($masterItemOptions->sort !== 'drag_drop'){
                 $sort = DB::table('list_sorting_options')->where('value', $masterItemOptions->sort)->first('order_by');
                 $sort = explode(' ', $sort->order_by);
+
             }else{
-                $sort = ['master_list_order','ASC'];
+                $sort = $sort_2;
             }
+        }else{
+            $sortByCategory = true;
+        }
+
+        if(empty($sort)){
+            $sort = $sort_3;
         }
 
         $by = $sort[0];
         $order = $sort[1];
 
         try {
-             $gearListItems = GearListItems::where('user_id', $userId)->orderBy($by,$order)->get();
-           // $gearListItems = GearListItems::where('user_id', $userId)->orderBy($by,$order)->paginate();
+            if(!$sortByCategory){
+                $gearListItems = GearListItems::where('user_id', $userId)->orderBy($by,$order)->orderBy($by_2,$order_2)->orderBy($by_3,$order_3)->get();
+            }else{
+
+                $gearListItems = GearListItems::where('user_id', $userId)->orderBy('master_category_order','ASC')->orderBy('master_list_order','ASC')->get();
+            }
+
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return redirect()->back()->with('error', 'Unable to find list info.');
         }
-        // $listIds = GearListItems::getUserListIds($userId);
-        // if(empty($listIds)){
-        //     return redirect()->back()->with('error', 'Unable any lists for user.');
-        // }
 
-        // $gearListItems = [];
+        $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
 
-        // foreach($listIds as $listId){
-
-        // }
-
-        // try {
-        //     $gearListItems = GearListItems::getSortedUserItems($userId, $sort);
-        // } catch (\Exception $e) {
-        //     Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-        //     $gearListItems = [];
-        // }
-
-        // $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
-
-        // if(!$masterItemOptions->list_items){
-        //     $sortedItemCategories = $this->getCategories($request, $selectedCategories);
-        // }
-
+        if(!$masterItemOptions->list_items){
+            $sortedItemCategories = $this->getCategories($request, $selectedCategories);
+        }
 
         Session::put('masterItemOptions',$masterItemOptions);
-
-        // return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions,  'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
-        return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions,'userLists'=>$userLists]);
+        return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions,'userLists'=>$userLists, 'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
 
     }
     /**
@@ -241,7 +241,7 @@ class GearListItemsController extends Controller
                 }
                 if($isMasterItem){
                     $categoryOrder = GearListItems::where('item_category',$value)->first('master_category_order');
-                    $gearListItem->category_order = $categoryOrder->category_order ?? 1;
+                    $gearListItem->master_category_order = $categoryOrder->master_category_order ?? 1;
                 }else{
                     $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->first('category_order');
                     $gearListItem->category_order = $categoryOrder->category_order ?? 1;
@@ -365,23 +365,35 @@ class GearListItemsController extends Controller
     public function sortGearListCategories(Request $request){
 
         $categories = $request->category_order ?? [];
-
+        $isMasterItem = ($request->list_id === 'master') ? true : false;
+        $userId = Auth::user()->id;
+        Log::debug(__FILE__.' '.__LINE__.' requwst in sort cats for master: '.print_r($request->input(),true) );
         if(empty($categories)){
             return response()->json(['status'=>'1','msg'=>'No change in category sort.']);
         }
 
-        try{
-            $gearListItems = GearListItems::where('list_id', $request->list_id)->get();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Error getting Gear item data. Please try again later.']);
+        if(!$isMasterItem){
+            try{
+                $gearListItems = GearListItems::where('list_id', $request->list_id)->get();
+            }catch(\Exception $e){
+                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                return response()->json(['status'=>'0','msg'=>'Error getting Gear item data. Please try again later.']);
+            }
+        }else{
+            try{
+                $gearListItems = GearListItems::where('user_id', $userId)->get();
+            }catch(\Exception $e){
+                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                return response()->json(['status'=>'0','msg'=>'Error getting Gear item data. Please try again later.']);
+            }
         }
+
 
         if(empty($gearListItems)){
             return response()->json(['status'=>'0','msg'=>'No items associacted with gear list. Please add gear items.']);
         }
 
-        $sortedForCategoryView = GearListItems::sortItemsForCategoryView($gearListItems,$categories);
+        $sortedForCategoryView = GearListItems::sortItemsForCategoryView($gearListItems,$categories, $isMasterItem);
 
         if(!$sortedForCategoryView){
             return response()->json(['status'=>'0','msg'=>'Failed to sort gear items by category. Please try again later.']);

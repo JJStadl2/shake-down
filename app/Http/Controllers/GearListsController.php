@@ -72,9 +72,21 @@ class GearListsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(GearLists $gearLists)
+    public function show($id)
     {
-        //
+        $listSortingOptions = GearLists::getSortingOptions();
+        $listClasses = GearLists::getListClasses();
+        try{
+            $gearList = GearLists::where('id',$id)->first();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return redirect()->back()->with('error','Faild to find list to edit.')->withInput();
+        }
+
+        if(empty($gearList)){
+            return redirect()->back()->with('error','No gear list found.')->withInput();
+        }
+        return view('gear-lists.edit',['gearList'=>$gearList,'sortOptions'=>$listSortingOptions,'listClasses'=>$listClasses]);
     }
 
     public function getListChartData($id){
@@ -97,9 +109,39 @@ class GearListsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(GearLists $gearLists)
+    public function edit(Request $request)
     {
-        //
+        Log::debug('requwst for edit: '.print_r($request->input(),true));
+        $id = $request->id ?? false;
+        $inputs = $request->except(['_token', 'q', 'id']);
+        if(empty($id)){
+            return redirect()->back()->with('error','No list id provided. Please try again later')->withInput();
+        }
+
+        try{
+            $gearList = GearLists::where('id',$id)->first();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return redirect()->back()->with('error','Failed to find list to edit.')->withInput();
+        }
+
+        if(empty($gearList)){
+            return redirect()->back()->with('error','No gear list found.')->withInput();
+        }
+        foreach($inputs as $key => $value){
+            //TODO-> Add weight conversion from us-> metric for all items and check/for when Item is added from master items view.
+            $gearList->$key = $value;
+        }
+
+        try{
+            $gearList->save();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return redirect()->back()->with('error','Failed save.')->withInput();
+        }
+
+        return redirect()->back()->with('success','Changes saved.')->withInput();
+
     }
 
     /**
@@ -199,7 +241,7 @@ class GearListsController extends Controller
     }
 
     public function updateSession(Request $request){
-
+        Log::debug('request for change session data: '.print_r($request->input(),true));
         $masterItemOptions = Session::get('masterItemOptions') ?? [];
 
         foreach($request->input() as $key => $value){

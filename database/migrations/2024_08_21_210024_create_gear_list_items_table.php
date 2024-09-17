@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('gear_list_items', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('list_id');
+            $table->bigInteger('list_id')->nullable();
             $table->bigInteger('user_id');
             $table->string('item_name')->nullable();
             $table->string('item_category')->nullable();

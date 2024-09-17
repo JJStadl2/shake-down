@@ -40,6 +40,9 @@ Route::get('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 
 )->name('list-show');
 Route::post('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 'update']
 )->name('list-update');
+
+Route::post('/edit-gear-list', [App\Http\Controllers\GearListsController::class, 'edit']
+)->name('list-edit');
 Route::get('/gear-list', [App\Http\Controllers\GearListsController::class, 'create']
 )->name('list-create');
 Route::post('/gear-list', [App\Http\Controllers\GearListsController::class, 'store']

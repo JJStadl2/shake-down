@@ -148,16 +148,20 @@ class GearListItems extends Model
         return true;
     }
 
-    public static function sortItemsForCategoryView($gearListItems, $sortedCategories)
+    public static function sortItemsForCategoryView($gearListItems, $sortedCategories, $isMasterItem = false)
     {
 
         foreach($gearListItems as $item){
             foreach($sortedCategories as $categoryOrder){
                 if($item->item_category === $categoryOrder['item_category']){
+                    $params = ['category_order' => $categoryOrder['category_order']];
+                    if($isMasterItem){
+                        $params = ['master_category_order' => $categoryOrder['category_order']];
+                    }
                     try {
                         DB::table('gear_list_items')
                             ->where('id', $item->id)
-                            ->update(['category_order' => $categoryOrder['category_order']]);
+                            ->update($params);
                     } catch (\Exception $e) {
                         Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                         return false;
