@@ -94,28 +94,28 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             //append inputs to cells.
             // Define the SVG namespace
-            const svgNamespace = "http://www.w3.org/2000/svg";
-            let iconCell = document.createElement("th");
-            // Create a new SVG element
-            let icon = document.createElementNS(svgNamespace, "svg");
-            icon.setAttribute("width", "16");
-            icon.setAttribute("height", "16");
-            icon.setAttribute("fill", "currentColor");
-            icon.setAttribute("class", "bi bi-grip-vertical");
-            icon.setAttribute("viewBox", "0 0 16 16");
+            // const svgNamespace = "http://www.w3.org/2000/svg";
+            // let iconCell = document.createElement("th");
+            // // Create a new SVG element
+            // let icon = document.createElementNS(svgNamespace, "svg");
+            // icon.setAttribute("width", "16");
+            // icon.setAttribute("height", "16");
+            // icon.setAttribute("fill", "currentColor");
+            // icon.setAttribute("class", "bi bi-grip-vertical");
+            // icon.setAttribute("viewBox", "0 0 16 16");
 
-            // Create the <path> element
-            let path = document.createElementNS(svgNamespace, "path");
-            path.setAttribute(
-                "d",
-                "M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
-            );
+            // // Create the <path> element
+            // let path = document.createElementNS(svgNamespace, "path");
+            // path.setAttribute(
+            //     "d",
+            //     "M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+            // );
 
-            // Append the path to the SVG
-            icon.appendChild(path);
+            // // Append the path to the SVG
+            // icon.appendChild(path);
 
-            // // Append the SVG icon to the cell
-            iconCell.appendChild(icon);
+            // // // Append the SVG icon to the cell
+            // iconCell.appendChild(icon);
 
             // cell1.appendChild(counter);
             // cell1.appendChild(icon);
@@ -131,7 +131,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             cell6.appendChild(deleteBtn);
 
             // Append cells to the row.
-            row.appendChild(iconCell);
+            // row.appendChild(iconCell);
             row.appendChild(cell1);
             row.appendChild(selectCell);
             row.appendChild(cell3);
@@ -146,6 +146,32 @@ window.addEventListener("DOMContentLoaded", function (e) {
         document.getElementById('newItemCount').value = linesToAdd;
         numberOfItemsToAdd.value = 1;
     };
+
+    this.window.assignToGearList = function assignToGearList(itemId, listId){
+        console.log('list_id in new assign: '+ listId);
+        console.log('item in new assign: '+ itemId);
+
+        let url = '/assign-to-gear-list'
+        let data = {
+            list_id: listId,
+            id: itemId
+        };
+
+
+        axios.post(url,data)
+          .then((response) => {
+            response = response.data;
+            if(response.status == 1){
+
+            }else{
+                alert(response.msg);
+            }
+
+          }, (error) => {
+            console.log(error);
+          });
+
+    }
     this.window.updateSessionData = function updateSessionData(element){
         let value = element.value;
         let columnName = element.getAttribute('data-column-name');

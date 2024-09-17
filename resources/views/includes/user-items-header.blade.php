@@ -22,7 +22,7 @@
         </select>
 
     </div>
-    <div class="col-md-2 mt-2">
+    <div class="col-md-2 mt-2" style="margin-left: -5%;">
         <input style="width: 30%; margin-top:7%; margin-left:35%;" class="form-control" type="number" id='linesToAdd' name="linesToAdd"
             min='1' value="1" />
     </div>

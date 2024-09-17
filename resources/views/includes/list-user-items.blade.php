@@ -36,10 +36,11 @@
             <th scope="col">Item</th>
             <th scope="col">Category</th>
             <th scope="col">UOM</th>
-            <th scope="col">Weight</th>
-            <th scope="col"># Packed</th>
-            <th scope="col">Total Packed Weight</th>
+            <th class="master-number-th" scope="col">Weight</th>
+            <th class="master-number-th" scope="col"># Packed</th>
+            <th class="master-number-th" scope="col">Total Packed Weight</th>
             <th scope="col"></th>
+            <th scope="col">Assign</th>
             <th scope="col">Remove</th>
 
         </tr>
@@ -125,7 +126,7 @@
                             onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
                     </td>
                     <td>
-                        <input class="form-control for-total-list-weight" type="number"
+                        <input class="form-control for-total-list-weight master-number" type="number"
                             data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}"
                             name="totalLineWeight[]"
                             value="{{ floatval($item->total_line_weight) ?? floatval($item->item_weight * $item->amount) }}"
@@ -154,6 +155,17 @@
                             </label>
                         @endif
 
+                    </td>
+                    <td>
+                        <select class="form-control" id="listIdSelect-{{ $i }}" data-column-name="list_id" value='{{ $item->list_id ?? '' }}' onchange="assignToGearList('{{ $item->id }}',this.value);">
+                            <option value='' @if($item->list_id === '') selected @endif>Assign to a gear list</option>
+                            @if(!empty($userLists))
+                                @foreach($userLists as $userList){
+                                    <option value='{{ $userList->id }}' @if($item->list_id === $userList->id) selected @endif>{{ $userList->name }}</option>
+                                }
+                                @endforeach
+                            @endif
+                        </select>
                     </td>
 
                     <td id="btn-td-{{ $i }}">

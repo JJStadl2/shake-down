@@ -78,6 +78,8 @@ Route::get('/remove-list-item/{id}', [App\Http\Controllers\GearListItemsControll
 )->name('item-remove');
 Route::post('/add-gear-items',  [App\Http\Controllers\GearListItemsController::class, 'addMasterGearItems']
 )->name('add-master-items');
+Route::post('/assign-to-gear-list',  [App\Http\Controllers\GearListItemsController::class, 'assignMasterItem']
+)->name('assign-master-items');
 
 //gear item API search
 Route::get('/search-api', [App\Http\Controllers\GearSearchController::class, 'search'])->name('gear-api-search');

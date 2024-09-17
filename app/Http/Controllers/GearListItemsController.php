@@ -72,6 +72,7 @@ class GearListItemsController extends Controller
         $userId = $user->id;
         $itemCategories = $this->getCategories($request);
         $listSortingOptions = GearLists::getSortingOptions();
+        $userLists = GearLists::where('user_id',$userId)->orderBy('id','ASC')->get(['id','name']);
         //Session::forget('masterItemOptions');
         $masterItemOptions = Session::get('masterItemOptions') ?? [];
         if(empty($masterItemOptions)){
@@ -128,7 +129,7 @@ class GearListItemsController extends Controller
         Session::put('masterItemOptions',$masterItemOptions);
 
         // return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions,  'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
-        return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions]);
+        return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions,'userLists'=>$userLists]);
 
     }
     /**
@@ -389,10 +390,33 @@ class GearListItemsController extends Controller
 
     }
     public function addMasterGearItems(Request $request){
-        Log::debug(__FILE__.' '.__LINE__.' request for add master items: '.print_r($request->input(),true));
+
         $inputs = $request->input();
         $user = Auth::user();
         GearListItems::createNewMasterItems($inputs, $user);
         return redirect()->back();
+    }
+
+    public function assignMasterItem(Request $request){
+        try{
+            $gearListItem = GearListItems::where('id',$request->id)->first();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Failed to assign gear item. Please try again later.']);
+        }
+        if(empty($gearListItem)){
+            return response()->json(['status'=>'0','msg'=>'Gear item does not exist.']);
+        }
+        $gearListItem->list_id = $request->list_id;
+
+        try{
+            $gearListItem->save();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Failed save list id for item. Please try again later.']);
+        }
+
+        return response()->json(['status'=>'1','msg'=>'Assigned to list']);
+
     }
 }
