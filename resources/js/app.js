@@ -146,6 +146,26 @@ window.addEventListener("DOMContentLoaded", function (e) {
         document.getElementById('newItemCount').value = linesToAdd;
         numberOfItemsToAdd.value = 1;
     };
+    this.window.updateSessionData = function updateSessionData(element){
+        let value = element.value;
+        let columnName = element.getAttribute('data-column-name');
+        let url = '/update-session';
+        let data = {};
+        data[columnName] = value;
+
+        axios.post(url,data)
+          .then((response) => {
+            response = response.data;
+            if(response.status == 1){
+                location.reload();
+            }
+
+          }, (error) => {
+            console.log(error);
+          });
+
+
+    }
     this.window.addListItem = function addListItem(categorycounter = null, groupCategory = null) {
         let numberOfItemsToAdd = document.getElementById("linesToAdd");
         let linesToAdd = 1;

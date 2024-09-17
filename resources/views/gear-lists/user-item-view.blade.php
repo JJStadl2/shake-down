@@ -21,7 +21,7 @@
 
 
     </div>
-    @if((bool)$options->list_items)
+    @if((bool)$masterItemOptions->list_items)
         @include('includes.list-user-items')
     @else
          {{-- @include('includes.sortable-gear-by-category') --}}

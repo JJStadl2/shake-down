@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use stdClass;
 
 class GearListItemsController extends Controller
@@ -71,19 +72,61 @@ class GearListItemsController extends Controller
         $userId = $user->id;
         $itemCategories = $this->getCategories($request);
         $listSortingOptions = GearLists::getSortingOptions();
-        $listClasses = GearLists::getListClasses();
-        $options = new stdClass();
-        $options->list_items = true;
-        $options->sort = 'name_desc';
+        //Session::forget('masterItemOptions');
+        $masterItemOptions = Session::get('masterItemOptions') ?? [];
+        if(empty($masterItemOptions)){
+            $masterItemOptions = new stdClass();
+            $masterItemOptions->list_items = true;
+            $masterItemOptions->sort = 'name_asc';
+        }
+
+        $sort = ['category_order', 'ASC'];
+
+        if($masterItemOptions->list_items){
+            $sort = DB::table('list_sorting_options')->where('value', $masterItemOptions->sort)->first('order_by');
+            $sort = explode(' ', $sort->order_by);
+        }
+
+        $by = $sort[0];
+        $order = $sort[1];
+        // $masterItemOptions->sort = implode('_',$sort);
 
         try {
-            $gearListItems = GearListItems::where('user_id', $userId)->get();
+            $gearListItems = GearListItems::where('user_id', $userId)->orderBy($by,$order)->get();
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return redirect()->back()->with('error', 'Unable to find list info.');
         }
-       // return view('gear-lists.all-list-items', ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses]);
-        return view('gear-lists.user-item-view', ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'options'=>$options]);
+        // $listIds = GearListItems::getUserListIds($userId);
+        // if(empty($listIds)){
+        //     return redirect()->back()->with('error', 'Unable any lists for user.');
+        // }
+
+        // $gearListItems = [];
+
+        // foreach($listIds as $listId){
+
+        // }
+
+        // try {
+        //     $gearListItems = GearListItems::getSortedUserItems($userId, $sort);
+        // } catch (\Exception $e) {
+        //     Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+        //     $gearListItems = [];
+        // }
+
+        // $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
+
+        // if(!$masterItemOptions->list_items){
+        //     $sortedItemCategories = $this->getCategories($request, $selectedCategories);
+        // }
+
+
+        Session::put('masterItemOptions',$masterItemOptions);
+
+        // return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions,  'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
+        return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions]);
+
     }
     /**
      * Show the form for creating a new resource.

@@ -6,9 +6,9 @@
     <input type="hidden" name="userId" id="userId" data-column-name="user_id" value="{{ $user->id }}"/>
     <div class="col-md-3 mb-3">
         <label class="form-control-label" for="sortBy" class="form-label">Sort By</label>
-        <select class="form-control" id="sortBy" name="sortBy" data-column-name="sort" >
+        <select class="form-control" id="sortBy" name="sortBy" data-column-name="sort" onchange="updateSessionData(this);">
             @foreach($sortingOptions as $option)
-            <option value="{{ $option->value }}"  @if($options->sort === $option->value) selected @endif>{{ $option->display }}</option>
+            <option value="{{ $option->value }}"  @if($masterItemOptions->sort === $option->value) selected @endif>{{ $option->display }}</option>
             @endforeach
         </select>
 
