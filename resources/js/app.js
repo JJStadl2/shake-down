@@ -465,7 +465,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
         let lineTotal = 0;
         lineTotal = +weight * +packedAmount;
-        lineTotal = lineTotal.toFixed(2).replace(/[.,]00$/, "");
+        lineTotal = lineTotal.toFixed(3).replace(/[.,]00$/, "");
         lineTotalWeightElement.value = lineTotal;
 
         updateListItem(lineTotalWeightElement);
@@ -474,7 +474,14 @@ window.addEventListener("DOMContentLoaded", function (e) {
         row,
         convert = false
     ) {
-        let uom = document.getElementById("uom").value;
+        let listId = document.getElementById('listId').value;
+        let uom;
+
+        if(listId == 'master'){
+            uom = document.getElementById("uom-"+row).value;
+        }else{
+            uom = document.getElementById("uom").value;
+        }
         let weight = document.getElementById("itemWeight-" + row);
         let packedAmount = document.getElementById("packedAmount-" + row).value;
         let totalWeight = document.getElementById("totalLineWeight-" + row);
@@ -514,9 +521,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
         }
 
         totalLineWeightValue = +weightValue * +packedAmount;
-        weight.value = weightValue.toFixed(2).replace(/[.,]00$/, "");
+        weight.value = weightValue.toFixed(3).replace(/[.,]00$/, "");
         totalWeight.value = totalLineWeightValue
-            .toFixed(2)
+            .toFixed(3)
             .replace(/[.,]00$/, "");
         label.innerHTML = labelHTML;
         updateListItem(element);
@@ -524,7 +531,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
         updateListItem(totalWeight);
     };
     this.window.addCategoryGroup = function addCategoryGroup(listId,category, listUOM, userId){
-
 
         let columnName;
         if(listUOM === 'us'){
@@ -549,7 +555,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
             if(res.status === '1'){
                 location.reload();
             }else{
-
                 alert(res.msg);
             }
 
@@ -559,9 +564,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
         });
 
-        console.log('id in add cat: '+listId);
-        console.log('cat in add cat: '+category);
-        console.log('bool data in add cat: '+JSON.stringify(data));
     }
     function getBooleanData(columnName) {
         let data = {};
@@ -587,7 +589,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         }
         return data;
     }
-    this.window.updateListItem = function updateListItem(element) {
+    this.window.updateListItem = function updateListItem(element,) {
         let columnName = element.getAttribute("data-column-name");
         let value = element.value;
         let id = element.id;
@@ -613,13 +615,17 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
         axios
             .post(url, data, itemId)
-            .then((res) => {})
+            .then((res) => {
+                console.log('res from update for master: '+JSON.stringify(res));
+            })
             .catch((err) => {
                 alert("Failed to update list item. Please try again later.");
                 console.error(err);
             });
+        if(listId !== 'master'){
+            updateTotalListWeights();
+        }
 
-        updateTotalListWeights();
     };
     function updateTotalListWeights() {
         let weightsForPW = document.querySelectorAll(".for-total-list-weight");
@@ -676,16 +682,16 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
         if (+baseWeight > +maxPackWeight) {
             let divElement = document.getElementById("weightWarning-div");
-            divElement.innerText ="Base weight (" +  baseWeight.toFixed(2) +" " +uomText +") exceedes the weight for the '" +classWarningValue+"' style of hiking.";
+            divElement.innerText ="Base weight (" +  baseWeight.toFixed(3) +" " +uomText +") exceedes the weight for the '" +classWarningValue+"' style of hiking.";
 
             divElement.style.display = "block";
         } else {
             document.getElementById("weightWarning-div").style.display = "none";
         }
 
-        document.getElementById("baseWeight").value = baseWeight.toFixed(2);
+        document.getElementById("baseWeight").value = baseWeight.toFixed(3);
         document.getElementById("totalPackWeight").value =
-            totalPackWeight.toFixed(2);
+            totalPackWeight.toFixed(3);
     }
     function createListItemInput(
         type,

@@ -124,16 +124,20 @@ class GearListItems extends Model
 
         return array_unique($selectedCategories);
     }
-    public static function sortItemsForListView($orderedIds)
+    public static function sortItemsForListView($orderedIds,$isMasterItem = false)
     {
 
         foreach ($orderedIds as $order => $id) {
             if (!empty($id)) {
-
+                if(!$isMasterItem){
+                    $params = ['list_order' => $order];
+                }else{
+                   $params = ['master_list_order' => $order];
+                }
                 try {
                     DB::table('gear_list_items')
                         ->where('id', $id)
-                        ->update(['list_order' => $order]);
+                        ->update($params);
                 } catch (\Exception $e) {
                     Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                     return false;

@@ -10,7 +10,7 @@
 
         </div>
         <div class="col-md-2 mb-3" style="margin-right: -9%;">
-          
+
         </div>
         <div class="col-md-2 mb-3" style="margin-top: 1%;">
 
@@ -59,7 +59,7 @@
                     <td>
                         <input class="form-control" type="text" data-column-name="item_name"
                             id="itemName-{{ $i }}" name="itemName[]" placeholder="Item Name"
-                            value="{{ $item->item_name ?? '' }}" onblur="updateListItem(this)" />
+                            value="{{ $item->item_name ?? '' }}" onblur="updateListItem(this);" />
                     </td>
                     <td>
                         <select class="form-control" id="itemCategory-{{ $i }}" name="itemCategory[]"
@@ -74,6 +74,7 @@
                     </td>
                     <td class="uom-td">
                         @if ($item->in_ounces || $item->in_lbs)
+                            <input type="hidden" id="uom-{{ $i }}" value="us"/>
                             <input class="form-check-input us-radio for-conversion" type="radio"
                                 data-column-name="in_ounces" name="uom-{{ $i }}-[]"
                                 id="uom-oz-{{ $i }}" @if ($item->in_ounces) checked @endif
@@ -91,6 +92,7 @@
                                 LBS
                             </label>
                         @else
+                        <input type="hidden" id="uom-{{ $i }}" value="metric"/>
                             <input class="form-check-input metric-radio for-conversion" type="radio"
                                 data-column-name="in_grams" name="uom-{{ $i }}-[]"
                                 id="uom-gram-{{ $i }}" @if ($item->in_grams) checked @endif
@@ -99,7 +101,7 @@
                                 for="uom-gram-{{ $i }}">
                                 G
                             </label>
-                            <input class="form-check-input metric-radio for-conversion" type=radio
+                            <input class="form-check-input metric-radio for-conversion" type="radio"
                                 data-column-name="in_kilos" name="uom-{{ $i }}-[]"
                                 id="uom-kg-{{ $i }}" @if ($item->in_kilos) checked @endif
                                 onchange="convertMeasurement({{ $i }});" />
@@ -155,7 +157,7 @@
                     </td>
 
                     <td id="btn-td-{{ $i }}">
-                        <a id="deleteBtn-{{ $i }}" href="/remove-list-item/{{ $item->id }}"
+                        <a id="deleteBtn-{{ $i }}" href="/destroy-list-item/{{ $item->id }}"
                             class="btn btn-primary btn-sm  py-2">x</a>
                     </td>
 

@@ -83,13 +83,16 @@ class GearListItemsController extends Controller
         $sort = ['category_order', 'ASC'];
 
         if($masterItemOptions->list_items){
-            $sort = DB::table('list_sorting_options')->where('value', $masterItemOptions->sort)->first('order_by');
-            $sort = explode(' ', $sort->order_by);
+            if($masterItemOptions->sort !== 'drag_drop'){
+                $sort = DB::table('list_sorting_options')->where('value', $masterItemOptions->sort)->first('order_by');
+                $sort = explode(' ', $sort->order_by);
+            }else{
+                $sort = ['master_list_order','ASC'];
+            }
         }
 
         $by = $sort[0];
         $order = $sort[1];
-        // $masterItemOptions->sort = implode('_',$sort);
 
         try {
             $gearListItems = GearListItems::where('user_id', $userId)->orderBy($by,$order)->get();
@@ -202,22 +205,28 @@ class GearListItemsController extends Controller
     public function update(Request $request, $id)
     {
         $listId = $request->list_id;
-        if($listId === 'all'){
-            return response()->json(['status' => '0', 'msg' => 'update from all items.']);
+        $isMasterItem = false;
+
+        if($listId === 'master'){
+
+            $isMasterItem = true;
+            $gearList = Session::get('masterItemOptions');
+
+        }else{
+
+            try {
+                $gearList = GearLists::where('id', $listId)->first();
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
+            }
         }
+
         $inputs = $request->except(['_token', 'q', 'list_id']);
-
-        try {
-            $gearList = GearLists::where('id', $listId)->first();
-        } catch (\Exception $e) {
-            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-            return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
-        }
-
         $listItems = $gearList->list_items;
 
         try {
-            $gearListItem = GearListItems::where('id', $id)->where('list_id', $listId)->first();
+            $gearListItem = GearListItems::where('id', $id)->first();
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error fetching list item']);
@@ -228,8 +237,14 @@ class GearListItemsController extends Controller
                 if(empty($value)){
                     $value = 'unassigned';
                 }
-                $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->first('category_order');
-                $gearListItem->category_order = $categoryOrder->category_order ?? 1;
+                if($isMasterItem){
+                    $categoryOrder = GearListItems::where('item_category',$value)->first('master_category_order');
+                    $gearListItem->category_order = $categoryOrder->category_order ?? 1;
+                }else{
+                    $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->first('category_order');
+                    $gearListItem->category_order = $categoryOrder->category_order ?? 1;
+                }
+
             }
             $gearListItem->$key = $value;
         }
@@ -242,6 +257,10 @@ class GearListItemsController extends Controller
         }
 
         return response()->json(['status' => '1', 'msg' => 'updated']);
+    }
+
+    public function updateMasterItem(Request $request){
+
     }
 
     /**
@@ -262,7 +281,7 @@ class GearListItemsController extends Controller
             return redirect()->back()->with('error', 'Failed to delete item.');
         }
 
-        return redirect()->back()->with('success', 'Item deleted.');
+        return redirect()->back()->with('success', 'Item permanently deleted from all gear lists.');
     }
 
     public function remove(Request $request, $id)
@@ -281,7 +300,7 @@ class GearListItemsController extends Controller
             return redirect()->back()->with('error', 'Failed to remove item from list.');
         }
 
-        return redirect()->back()->with('success', 'Item removed.');
+        return redirect()->back()->with('success', 'Item removed from this gear list.');
     }
 
     public function getCategories(Request $request, $selectedCategories = [])
@@ -315,20 +334,27 @@ class GearListItemsController extends Controller
         $categoryId = $request->category_id;
         $orderedIds = $request->ordered_ids;
         $listId = $request->list_id;
+        $isMasterItem = ($listId === 'master') ? true : false;
 
         if ($categoryId === 'list-items') {
 
-            $gearList = GearLists::where('id', $listId)->first();
+            if(!$isMasterItem){
+                $gearList = GearLists::where('id', $listId)->first();
 
-            try {
-                $gearList->sort = 'drag_drop';
-                $gearList->save();
-            } catch (\Exception $e) {
-                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-                return response()->json(['status' => '0', 'msg' => 'Failed to update the sortign attribute of the Gear list for these items.']);
+                try {
+                    $gearList->sort = 'drag_drop';
+                    $gearList->save();
+                } catch (\Exception $e) {
+                    Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                    return response()->json(['status' => '0', 'msg' => 'Failed to update the sortign attribute of the Gear list for these items.']);
+                }
+            }else{
+                $masterItemOptions = Session::get('masterItemOptions');
+                $masterItemOptions->sort = 'drag_drop';
+                Session::put('masterItemOptions',$masterItemOptions);
             }
 
-            $sortItemsInListView = GearListItems::sortItemsForListView($orderedIds);
+            $sortItemsInListView = GearListItems::sortItemsForListView($orderedIds,$isMasterItem);
             if (!$sortItemsInListView) {
                 $response = ['status' => '0', 'msg' => 'Failed to update the order of one or more items.'];
             } else {

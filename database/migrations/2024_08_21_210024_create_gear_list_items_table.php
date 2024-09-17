@@ -27,6 +27,8 @@ return new class extends Migration
             $table->float('total_line_weight')->default(0);
             $table->integer('list_order')->default(0);
             $table->integer('category_order')->default(0);
+            $table->integer('master_list_order')->default(0);
+            $table->integer('master_category_order')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
