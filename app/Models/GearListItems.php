@@ -16,6 +16,8 @@ class GearListItems extends Model
 
     public static int $usConversionFactor = 16;
     public static int $metricConversionFactor = 1000;
+    public static float $gramsToOunceConversionFactor = 0.035274;
+    public static float $ouncesToGramsConversionFactor = 28.34952;
     public static $uomArray = ['in_ounces' => false, 'in_lbs' => false, 'in_grams' => false, 'in_kilos' => false];
     /**
      * The attributes that are mass assignable.
@@ -27,6 +29,7 @@ class GearListItems extends Model
         'user_id',
         'item_name',
         'item_category',
+        'minimum_unit_weight',
         'item_weight',
         'in_grams',
         'in_ounces',
@@ -34,7 +37,9 @@ class GearListItems extends Model
         'in_kilos',
         'amount',
         'list_order',
-        'category_order'
+        'category_order',
+        'master_list_order',
+        'master_category_order'
     ];
 
     /**
@@ -61,9 +66,9 @@ class GearListItems extends Model
      * @param  mixed $sort
      * @return object
      * Uses raw sql because it is more readable than Eloquent for this specific query.
-     * SOrts based on smallest scale unit of measure when sorting by weight.
+     * Sorts based on smallest scale unit of measure when sorting by weight.
      */
-    public static function getSortedListItems($listId, $sort, $uom, $fromWeight = false)
+    public static function getSortedListItems($listId, $sort, $uom)
     {
 
         $by = $sort[0];
@@ -230,5 +235,88 @@ class GearListItems extends Model
         }
 
         return $orders[0];
+     }
+
+     public static function updateItemUomValues($listId,$oldUOM){
+
+        $sort = ['item_weight','ASC'];
+
+        if($oldUOM == 'us'){
+            $unitConversionFactor = self::$ouncesToGramsConversionFactor;
+            $conversionFactor = self::$metricConversionFactor;
+        }else{
+            $unitConversionFactor = self::$gramsToOunceConversionFactor;
+            $conversionFactor = self::$usConversionFactor;
+        }
+        try{
+            $gearListItems = self:: getSortedListItems($listId, $sort, $oldUOM);
+
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return false;
+        }
+
+        if(empty($gearListItems)){
+            return false;
+        }
+
+        foreach($gearListItems as $item){
+
+            try{
+                $gearItem = GearListItems::find($item->id);
+
+            }catch(\Exception $e){
+                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                continue;
+            }
+            if(empty($gearItem)){
+                Log::info(__FILE__.' '.__LINE__.' '.' Empty gear item record for list id: '.$listId.' and item id: '.$item->id);
+                continue;
+            }
+
+            $convertedUnitWeight = $item->item_unit_weight * $unitConversionFactor;
+            $convertedItemWeight = $convertedUnitWeight;
+
+            if($item->in_lbs || $item->in_kilos){
+                $convertedItemWeight = $convertedItemWeight/$conversionFactor;
+            }
+            $convertedTotalWeight = $convertedItemWeight * $item->amount;
+            // $item->item_weight = $convertedItemWeight;
+            // $item->total_line_weight = $convertedTotalWeight;
+            // $item->minimum_unit_weight = $convertedUnitWeight;
+
+            $gearItem->item_weight = round($convertedItemWeight,3);
+            $gearItem->total_line_weight = round($convertedTotalWeight, 3);
+            $gearItem->minimum_unit_weight = round($convertedUnitWeight, 3);
+
+             //update line UOMs
+             if($oldUOM === 'us'){
+                if($item->in_ounces){
+                    $gearItem->in_ounces = false;
+                    $gearItem->in_grams = true;
+                }else{
+                    $gearItem->in_lbs = false;
+                    $gearItem->in_kilos = true;
+                }
+            }else{
+                if($item->in_grams){
+                    $gearItem->in_ounces = true;
+                    $item->in_grams = false;
+                }else{
+                    $gearItem->in_lbs = true;
+                    $gearItem->in_kilos = false;
+                }
+            }
+            try{
+                $gearItem->save();
+            }catch(\Exception $e){
+                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                continue;
+            }
+
+
+        }
+
+        return true;
      }
 }

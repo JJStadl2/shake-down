@@ -114,6 +114,9 @@ class GearListsController extends Controller
         Log::debug('requwst for edit: '.print_r($request->input(),true));
         $id = $request->id ?? false;
         $inputs = $request->except(['_token', 'q', 'id']);
+        $updatItemUOM = false;
+        $oldUOM = '';
+
         if(empty($id)){
             return redirect()->back()->with('error','No list id provided. Please try again later')->withInput();
         }
@@ -130,6 +133,12 @@ class GearListsController extends Controller
         }
         foreach($inputs as $key => $value){
             //TODO-> Add weight conversion from us-> metric for all items and check/for when Item is added from master items view.
+            if($key === 'uom' && $value !== $gearList->uom){
+                Log::debug('change of UOM');
+                $oldUOM = $gearList->uom;
+                $updatItemUOM = true;
+
+            }
             $gearList->$key = $value;
         }
 
@@ -137,9 +146,15 @@ class GearListsController extends Controller
             $gearList->save();
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return redirect()->back()->with('error','Failed save.')->withInput();
+            return redirect()->back()->with('error','Failed save changes to list.')->withInput();
         }
 
+        if($updatItemUOM){
+            $updatItemUOM = GearListItems::updateItemUomValues($id, $oldUOM);
+            if(!$updatItemUOM){
+                return redirect()->back()->with('error','Gear List changes saved, but an error occurred when updatig the gear items weight values.')->withInput();
+            }
+        }
         return redirect()->back()->with('success','Changes saved.')->withInput();
 
     }

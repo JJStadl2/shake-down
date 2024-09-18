@@ -1,5 +1,5 @@
 @extends('layouts.header-footer')
-@section('title', 'Create Grear List | ')
+@section('title', 'Edit Grear List | ')
 @section('content')
 
 <div class="btn-header-container" >
@@ -56,7 +56,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="uom" class="form-label">Measurement</label>
-                                <select class="form-control" id="uom" name="uom">
+                                <select class="form-control" id="uom" name="uom" onchange="showConvrsionAlert();">
                                     <option value="us"  @if($gearList->uom === 'us') selected @endif>US(OZ/LBS)</option>
                                     <option value="metric"  @if($gearList->uom === 'metric') selected @endif >Metric(G/KG)</option>
                                 </select>

@@ -18,27 +18,9 @@
 <br>
 
 <div class="container">
-    {{-- <div class="row">
-        <div class="col-md-4">
-            <a href="/gear-list" class="btn btn-primary py-2" >Create new List</a>
-        </div>
-        <div class="col-md-4">
 
-        </div>
-        <div class="col-md-4"> <a href="/all-list-items" class="btn btn-primary py-2" style="float: right;">View All Items</a></div>
-    </div> --}}
 
-    <div class='row'>
-        <div class="col-md-4">
-
-        </div>
-        <div class="col-md-4">
-            {{-- <h1 style="margin-bottom: 10%;">Your Gear Lists</h1> --}}
-        </div>
-        <div class="col-md-4"></div>
-
-    </div>
-    <table class="table table-dark" >
+    <table class="table table-dark" style="width:100%" >
         <thead>
           <tr>
 
@@ -74,7 +56,7 @@
             </td> --}}
             <td><a href='/gear-list/{{ $gearList->id }}' class="btn btn-primary btn-sm py-2">Edit</a>
             </td>
-            <td><a href='/list-items/{{ $gearList->id }}' class="btn btn-primary btn-sm py-2"> View</a></td>
+            <td><a href='/list-items/{{ $gearList->id }}' class="btn btn-primary btn-sm py-2"> Items</a></td>
             <td><a href="/destroy-list/{{ $gearList->id }}"   class="btn btn-primary btn-sm py-2"> Delete</a>
             </td>
           </tr>
