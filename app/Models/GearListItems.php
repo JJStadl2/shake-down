@@ -98,12 +98,10 @@ class GearListItems extends Model
 
         $sql .= ' WHERE list_id = ? AND deleted_at IS NULL';
 
-        if($by === 'category_order'){
+        if ($by === 'category_order') {
             $sql .= " ORDER BY category_order $order, list_order ASC";
-
-        }else{
+        } else {
             $sql .= " ORDER BY $by COLLATE NOCASE $order";
-
         }
 
         $params = [$listId];
@@ -122,7 +120,7 @@ class GearListItems extends Model
         $selectedCategories = [];
 
         foreach ($gearListItems as $item) {
-            if(empty($item->item_category)){
+            if (empty($item->item_category)) {
                 $item->item_category = 'unassigned';
             }
             $selectedCategories[] = $item->item_category;
@@ -130,15 +128,15 @@ class GearListItems extends Model
 
         return array_unique($selectedCategories);
     }
-    public static function sortItemsForListView($orderedIds,$isMasterItem = false)
+    public static function sortItemsForListView($orderedIds, $isMasterItem = false)
     {
 
         foreach ($orderedIds as $order => $id) {
             if (!empty($id)) {
-                if(!$isMasterItem){
+                if (!$isMasterItem) {
                     $params = ['list_order' => $order];
-                }else{
-                   $params = ['master_list_order' => $order];
+                } else {
+                    $params = ['master_list_order' => $order];
                 }
                 try {
                     DB::table('gear_list_items')
@@ -156,11 +154,11 @@ class GearListItems extends Model
     public static function sortItemsForCategoryView($gearListItems, $sortedCategories, $isMasterItem = false)
     {
 
-        foreach($gearListItems as $item){
-            foreach($sortedCategories as $categoryOrder){
-                if($item->item_category === $categoryOrder['item_category']){
+        foreach ($gearListItems as $item) {
+            foreach ($sortedCategories as $categoryOrder) {
+                if ($item->item_category === $categoryOrder['item_category']) {
                     $params = ['category_order' => $categoryOrder['category_order']];
-                    if($isMasterItem){
+                    if ($isMasterItem) {
                         $params = ['master_category_order' => $categoryOrder['category_order']];
                     }
                     try {
@@ -176,46 +174,47 @@ class GearListItems extends Model
         }
         return true;
     }
-    public static function createNewMasterItems($inputs, $user){
+    public static function createNewMasterItems($inputs, $user)
+    {
 
         $itemCount = $inputs['newItemCount'] ?? 0;
-        for($i = 0; $i < $itemCount; $i++){
+        for ($i = 0; $i < $itemCount; $i++) {
 
-         $uomArray = self::$uomArray;
-         $gearListItem = new GearListItems();
-         $gearListItem->list_id = '';
-         $gearListItem->user_id = $user->id;
-         $gearListItem->item_name = $inputs['itemName'][$i] ?? '';
-         $gearListItem->item_category = $inputs['itemCategory'][$i] ?? 'unassigned';
-         $gearListItem->item_weight = $inputs['itemWeight'][$i] ?? 0;
-         $gearListItem->master_list_order = 0;
-         $gearListItem->master_category_order = 0;
+            $uomArray = self::$uomArray;
+            $gearListItem = new GearListItems();
+            $gearListItem->list_id = '';
+            $gearListItem->user_id = $user->id;
+            $gearListItem->item_name = $inputs['itemName'][$i] ?? '';
+            $gearListItem->item_category = $inputs['itemCategory'][$i] ?? 'unassigned';
+            $gearListItem->item_weight = $inputs['itemWeight'][$i] ?? 0;
+            $gearListItem->master_list_order = 0;
+            $gearListItem->master_category_order = 0;
 
-         $listOrders = self::getCategoryOrder( $gearListItem->item_category);
+            $listOrders = self::getCategoryOrder($gearListItem->item_category);
 
-         if(!empty($listOrders)){
-            $gearListItem->master_list_order = $listOrders->max_list_order +1;
-            $gearListItem->master_category_order = $listOrders->max_category_order;
-         }
+            if (!empty($listOrders)) {
+                $gearListItem->master_list_order = $listOrders->max_list_order + 1;
+                $gearListItem->master_category_order = $listOrders->max_category_order;
+            }
 
-         foreach($uomArray as $key => $value){
-             $gearListItem->$key = false;
-             if($inputs['uom'][$i] === $key){
-                 $gearListItem->$key = true;
-             }
-         }
-         try {
-             $gearListItem->save();
-         } catch (\Exception $e) {
-             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-             return false;
-         }
-
+            foreach ($uomArray as $key => $value) {
+                $gearListItem->$key = false;
+                if ($inputs['uom'][$i] === $key) {
+                    $gearListItem->$key = true;
+                }
+            }
+            try {
+                $gearListItem->save();
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                return false;
+            }
         }
         return true;
-     }
+    }
 
-     public static function getCategoryOrder( $itemCategory){
+    public static function getCategoryOrder($itemCategory)
+    {
 
         $user = Auth::user();
 
@@ -227,96 +226,90 @@ class GearListItems extends Model
 
         $params = [$user->id, $itemCategory];
 
-        try{
-            $orders = DB::select($sql,$params);
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+        try {
+            $orders = DB::select($sql, $params);
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return [];
         }
 
         return $orders[0];
-     }
+    }
 
-     public static function updateItemUomValues($listId,$oldUOM){
+    public static function updateItemUomValues($listId, $oldUOM)
+    {
 
-        $sort = ['item_weight','ASC'];
+        $sort = ['item_weight', 'ASC'];
 
-        if($oldUOM == 'us'){
+        if ($oldUOM == 'us') {
             $unitConversionFactor = self::$ouncesToGramsConversionFactor;
             $conversionFactor = self::$metricConversionFactor;
-        }else{
+        } else {
             $unitConversionFactor = self::$gramsToOunceConversionFactor;
             $conversionFactor = self::$usConversionFactor;
         }
-        try{
-            $gearListItems = self:: getSortedListItems($listId, $sort, $oldUOM);
-
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+        try {
+            $gearListItems = self::getSortedListItems($listId, $sort, $oldUOM);
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return false;
         }
 
-        if(empty($gearListItems)){
+        if (empty($gearListItems)) {
             return false;
         }
 
-        foreach($gearListItems as $item){
+        foreach ($gearListItems as $item) {
 
-            try{
+            try {
                 $gearItem = GearListItems::find($item->id);
-
-            }catch(\Exception $e){
-                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 continue;
             }
-            if(empty($gearItem)){
-                Log::info(__FILE__.' '.__LINE__.' '.' Empty gear item record for list id: '.$listId.' and item id: '.$item->id);
+            if (empty($gearItem)) {
+                Log::info(__FILE__ . ' ' . __LINE__ . ' ' . ' Empty gear item record for list id: ' . $listId . ' and item id: ' . $item->id);
                 continue;
             }
 
             $convertedUnitWeight = $item->item_unit_weight * $unitConversionFactor;
             $convertedItemWeight = $convertedUnitWeight;
 
-            if($item->in_lbs || $item->in_kilos){
-                $convertedItemWeight = $convertedItemWeight/$conversionFactor;
+            if ($item->in_lbs || $item->in_kilos) {
+                $convertedItemWeight = $convertedItemWeight / $conversionFactor;
             }
-            $convertedTotalWeight = $convertedItemWeight * $item->amount;
-            // $item->item_weight = $convertedItemWeight;
-            // $item->total_line_weight = $convertedTotalWeight;
-            // $item->minimum_unit_weight = $convertedUnitWeight;
 
-            $gearItem->item_weight = round($convertedItemWeight,3);
+            $convertedTotalWeight = $convertedItemWeight * $item->amount;
+            $gearItem->item_weight = round($convertedItemWeight, 3);
             $gearItem->total_line_weight = round($convertedTotalWeight, 3);
             $gearItem->minimum_unit_weight = round($convertedUnitWeight, 3);
 
-             //update line UOMs
-             if($oldUOM === 'us'){
-                if($item->in_ounces){
+
+            if ($oldUOM === 'us') {
+                if ($item->in_ounces) {
                     $gearItem->in_ounces = false;
                     $gearItem->in_grams = true;
-                }else{
+                } else {
                     $gearItem->in_lbs = false;
                     $gearItem->in_kilos = true;
                 }
-            }else{
-                if($item->in_grams){
+            } else {
+                if ($item->in_grams) {
                     $gearItem->in_ounces = true;
                     $item->in_grams = false;
-                }else{
+                } else {
                     $gearItem->in_lbs = true;
                     $gearItem->in_kilos = false;
                 }
             }
-            try{
+            try {
                 $gearItem->save();
-            }catch(\Exception $e){
-                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 continue;
             }
-
-
         }
 
         return true;
-     }
+    }
 }

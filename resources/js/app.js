@@ -989,7 +989,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
     }
     this.window.showConvrsionAlert = function showConvrsionAlert(){
-        alert('Changing this value will also update the units of meassure and associated values for any item on this gear list.');
+        alert('Changing this value will also update the units of measure and associated values for any item on this gear list.');
     }
 
 

@@ -87,6 +87,10 @@ html,body {
     margin: 0 auto;
 }
 
+.list-header-container {
+    width: 60%;
+    margin: 0 auto;
+}
 /* Header */
 .header {
     background-color: #333;
@@ -262,10 +266,7 @@ html,body {
    float: left;
  }
  .create-list-form-header{
-    // width: 35%;
-    // margin-left: 32%;
-    padding-bottom: 6.5%;
-    // margin-top: 2%;
+     padding-bottom: 2.5%;
 
 }
 .add-list-items-form{
