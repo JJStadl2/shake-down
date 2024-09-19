@@ -5,8 +5,11 @@ import "@popperjs/core";
 import Chart from "chart.js/auto";
 import Sortable from "sortablejs";
 const bootstrap = require("./bootstrap");
-const gramConverter = 1000;
 const ounceConverter = 16;
+const gramConverter = 1000;
+const gramsToOunceConversionFactor = 0.035274;
+const ouncesToGramsConversionFactor = 28.34952;
+const kiloToPoundConversioFactor = 2.20462;
 window.addEventListener("DOMContentLoaded", function (e) {
     this.window.showPassword = function showPassword(id) {
         let password = document.getElementById(id);
@@ -239,6 +242,13 @@ window.addEventListener("DOMContentLoaded", function (e) {
             counter.value = "new-" + finalI;
             counter.setAttribute("data-column-name", "id");
 
+            let itemUOM = document.createElement("input");
+            itemUOM.type = "hidden";
+            itemUOM.id = "uom-" + finalI;
+            itemUOM.value = "";
+            itemUOM.setAttribute('data-column-name','uom');
+
+
             let itemName = createListItemInput(
                 "text",
                 "itemName",
@@ -258,15 +268,16 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             let data = {};
             let url = "/list-item";
-
-            if (listUOM == "us") {
-                data = getBooleanData("in_ounces");
-            } else {
-                data = getBooleanData("in_grams");
-            }
+            // data = getBooleanData("in_grams");
+            // if (listUOM == "us") {
+            //     data = getBooleanData("in_ounces");
+            // } else {
+            //     data = getBooleanData("in_grams");
+            // }
             data["list_id"] = listId;
             data["user_id"] = userId;
             data["item_name"] = "";
+            // data['uom'] = 'metric'
             if(groupCategory !== null){
                 data['item_category'] = groupCategory;
             }
@@ -314,57 +325,97 @@ window.addEventListener("DOMContentLoaded", function (e) {
             let lineUomCell = document.createElement("td");
             cell3.classList.add("uom-td");
             lineUomCell.classList.add("uom-td");
-            let radio1;
-            let radio2;
-            let radioLabel1;
-            let radioLabel2;
-            let radioLabel3;
+            // let radio1;
+            // let radio2;
+            // let radioLabel1;
+            // let radioLabel2;
+            // let radioLabel3;
 
-            if (listUOM === "us") {
-                radio1 = createRadio("in_ounces", "", "oz", finalI);
-                radioLabel1 = createLabel(
-                    "OZ",
-                    "uom-oz-" + finalI,
-                    "oz",
-                    finalI
-                );
-                radio2 = createRadio("in_lbs", "", "lbs", finalI);
-                radioLabel2 = createLabel(
-                    "LBS",
-                    "uom-lbs-" + finalI,
-                    "lbs",
-                    finalI
-                );
-                radioLabel3 = createLabel(
-                    "OZ",
-                    "uom-oz-" + finalI,
-                    "oz",
-                    finalI,
-                    true
-                );
-            } else {
-                radio1 = createRadio("in_grams", "", "gram", finalI);
-                radioLabel1 = createLabel(
-                    "G",
-                    "uom-gram-" + finalI,
-                    "gram",
-                    finalI
-                );
-                radio2 = createRadio("in_kilos", "", "kg", finalI);
-                radioLabel2 = createLabel(
-                    "KG",
-                    "uom-kg-" + finalI,
-                    "kg",
-                    finalI
-                );
-                radioLabel3 = createLabel(
-                    "G",
-                    "uom-gram-" + finalI,
-                    "gram",
-                    finalI,
-                    true
-                );
-            }
+            let ozRadio = createRadio("in_ounces", "", "oz", finalI);
+            let ozRadioLabel = createLabel(
+                "OZ",
+                "uom-oz-" + finalI,
+                "oz",
+                finalI);
+
+            let lbsRadio = createRadio("in_lbs", "", "lbs", finalI);
+            let lbsRadioLabel = createLabel(
+                "LBS",
+                "uom-lbs-" + finalI,
+                "lbs",
+                finalI
+            );
+
+            let grRadio = createRadio("in_grams", "", "gram", finalI);
+            let grRadioLabel = createLabel(
+                "G",
+                "uom-gram-" + finalI,
+                "gram",
+                finalI
+            );
+
+            let kgRadio = createRadio("in_kilos", "", "kg", finalI);
+            let kgRadioLabel = createLabel(
+                "KG",
+                "uom-kg-" + finalI,
+                "kg",
+                finalI
+            );
+
+            let radioLabel3 = createLabel(
+                "",
+                "",
+                "",
+                finalI,
+                true
+            );
+
+
+            // if (listUOM === "us") {
+            //     radio1 = createRadio("in_ounces", "", "oz", finalI);
+            //     radioLabel1 = createLabel(
+            //         "OZ",
+            //         "uom-oz-" + finalI,
+            //         "oz",
+            //         finalI
+            //     );
+                // radio2 = createRadio("in_lbs", "", "lbs", finalI);
+                // radioLabel2 = createLabel(
+                //     "LBS",
+                //     "uom-lbs-" + finalI,
+                //     "lbs",
+                //     finalI
+                // );
+            //     radioLabel3 = createLabel(
+            //         "OZ",
+            //         "uom-oz-" + finalI,
+            //         "oz",
+            //         finalI,
+            //         true
+            //     );
+            // } else {
+            //     radio1 = createRadio("in_grams", "", "gram", finalI);
+            //     radioLabel1 = createLabel(
+            //         "G",
+            //         "uom-gram-" + finalI,
+            //         "gram",
+            //         finalI
+            //     );
+            //     radio2 = createRadio("in_kilos", "", "kg", finalI);
+            //     radioLabel2 = createLabel(
+            //         "KG",
+            //         "uom-kg-" + finalI,
+            //         "kg",
+            //         finalI
+            //     );
+                // radioLabel3 = createLabel(
+                //     "G",
+                //     "uom-gram-" + finalI,
+                //     "gram",
+                //     finalI,
+                //     true
+                // );
+            // }
 
             let cell4 = document.createElement("td");
             cell4.classList.add("number-col");
@@ -425,6 +476,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             iconCell.appendChild(icon);
 
             cell1.appendChild(counter);
+            cell1.appendChild(itemUOM);
             // cell1.appendChild(icon);
             cell1.appendChild(itemName);
             cell2.appendChild(itemWeight);
@@ -433,10 +485,16 @@ window.addEventListener("DOMContentLoaded", function (e) {
             let categorySelect = getCategroySelect(finalI, groupCategory);
             selectCell.append(categorySelect);
 
-            cell3.appendChild(radio1);
-            cell3.appendChild(radioLabel1);
-            cell3.appendChild(radio2);
-            cell3.appendChild(radioLabel2);
+            cell3.appendChild(ozRadio);
+            cell3.appendChild(ozRadioLabel);
+            cell3.appendChild(lbsRadio);
+            cell3.appendChild(lbsRadioLabel);
+            cell3.appendChild(grRadio);
+            cell3.appendChild(grRadioLabel);
+            cell3.appendChild(kgRadio);
+            cell3.appendChild(kgRadioLabel);
+
+
 
             cell4.appendChild(packedAmount);
             cell5.appendChild(totalLineWeight);
@@ -498,16 +556,18 @@ window.addEventListener("DOMContentLoaded", function (e) {
     };
     this.window.convertMeasurement = function convertMeasurement(
         row,
-        convert = false
+        pageElement
     ) {
         let listId = document.getElementById('listId').value;
-        let uom;
+        let  uomElement = document.getElementById("uom-"+row);
+        let uom = uomElement.value;
+        console.log('test uom: '+uom);
 
-        if(listId == 'master'){
-            uom = document.getElementById("uom-"+row).value;
-        }else{
-            uom = document.getElementById("uom").value;
-        }
+        // if(listId == 'master'){
+        //     uom = document.getElementById("uom-"+row).value;
+        // }else{
+        //     uom = document.getElementById("uom").value;
+        // }
         let weight = document.getElementById("itemWeight-" + row);
         let packedAmount = document.getElementById("packedAmount-" + row).value;
         let totalWeight = document.getElementById("totalLineWeight-" + row);
@@ -517,34 +577,102 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let large;
         let element;
         let label = document.getElementById("line-uom-label-" + row);
-        let labelHTML;
+        let currentUom = pageElement.getAttribute('data-current-uom');
+        let columnName = pageElement.getAttribute('data-column-name');
+        let labelHTML = currentUom.toUpperCase();
 
-        if (uom === "us") {
+
+
+        if(uom === '' && currentUom === ''){
+            alert('uom and current blank');
+            uomElement.value = (columnName === 'in_grams' || columnName === 'in_kilo') ? 'metric' : 'us';
+            labelHTML = currentUom.toUpperCase();
+            weightValue = +weightValue;
+            element = pageElement;
+        }
+        else if (uom === "us" && pageElement.classList.contains("us-radio")) {
+            alert('uom = '+ uom + ' and not metric element');
             small = document.getElementById("uom-oz-" + row);
             large = document.getElementById("uom-lbs-" + row);
             if (small.checked === true) {
-                weightValue = +weightValue * 16;
+                weightValue = +weightValue * ounceConverter;
                 element = small;
                 labelHTML = "OZ";
+            } else {
+                weightValue = +weightValue / ounceConverter;
+                element = large;
+                labelHTML = "LBS";
+            }
+        }else if(uom === 'metric' && pageElement.classList.contains("metric-radio")) {
+            alert('uom = '+ uom + ' and not us element');
+            small = document.getElementById("uom-gram-" + row);
+            large = document.getElementById("uom-kg-" + row);
+            console.log('gram current: '+ small.getAttribute('data-current-uom'));
+            console.log('kilo current: '+ large.getAttribute('data-current-uom'));
+
+            if (small.checked === true) {
+                weightValue = +weightValue * gramConverter;
+                element = small;
+                labelHTML = "G";
+            } else {
+                weightValue = +weightValue / gramConverter;
+                element = large;
+                labelHTML = "KG";
+            }
+
+        } else if(uom === "us" && pageElement.classList.contains("metric-radio")) {
+            alert('uom = '+ uom + ' and IS metric element');
+            small = document.getElementById("uom-gram-" + row);
+            large = document.getElementById("uom-kg-" + row);
+            if (small.checked === true) {
+//                 const gramsToOunceConversionFactor = 0.035274;
+// const ouncesToGramsConversionFactor = 28.34952;
+                weightValue = +weightValue * 16;
+                element = small;
+                labelHTML = "G";
             } else {
                 weightValue = +weightValue / 16;
                 element = large;
                 labelHTML = "LBS";
             }
-        } else {
-            small = document.getElementById("uom-gram-" + row);
-            large = document.getElementById("uom-kg-" + row);
-
-            if (small.checked === true) {
-                weightValue = +weightValue * 1000;
-                element = small;
-                labelHTML = "G";
-            } else {
-                weightValue = +weightValue / 1000;
-                element = large;
-                labelHTML = "KG";
-            }
+        }else{
+           console.log('in else:');
+           console.log('uom: '+uom);
+           console.log('current uom: '+currentUom);
+           console.log('column: '+columnName);
+           console.log('class list: '+ JSON.stringify(pageElement.classList));
         }
+        console.log('html label: '+labelHTML);
+        pageElement.setAttribute('data-current-uom', labelHTML.toLowerCase());
+
+        // if (uom === "us" ) {
+        //     small = document.getElementById("uom-oz-" + row);
+        //     large = document.getElementById("uom-lbs-" + row);
+        //     if (small.checked === true) {
+        //         weightValue = +weightValue * 16;
+        //         element = small;
+        //         labelHTML = "OZ";
+        //     } else {
+        //         weightValue = +weightValue / 16;
+        //         element = large;
+        //         labelHTML = "LBS";
+        //     }
+        // } else {
+        //     small = document.getElementById("uom-gram-" + row);
+        //     large = document.getElementById("uom-kg-" + row);
+        //     console.log('gram current: '+ small.getAttribute('data-current-uom'));
+        //     console.log('kilo current: '+ large.getAttribute('data-current-uom'));
+
+        //     if (small.checked === true) {
+        //         weightValue = +weightValue * 1000;
+        //         element = small;
+        //         labelHTML = "G";
+        //     } else {
+        //         weightValue = +weightValue / 1000;
+        //         element = large;
+        //         labelHTML = "KG";
+        //     }
+        // }
 
         totalLineWeightValue = +weightValue * +packedAmount;
         weight.value = weightValue.toFixed(3).replace(/[.,]00$/, "");
@@ -555,6 +683,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         updateListItem(element);
         updateListItem(weight);
         updateListItem(totalWeight);
+        updateListItem(uomElement);
     };
     this.window.addCategoryGroup = function addCategoryGroup(listId,category, listUOM, userId){
 
@@ -615,7 +744,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         }
         return data;
     }
-    this.window.updateListItem = function updateListItem(element,) {
+    this.window.updateListItem = function updateListItem(element) {
         let columnName = element.getAttribute("data-column-name");
         let value = element.value;
         let id = element.id;
@@ -851,20 +980,29 @@ window.addEventListener("DOMContentLoaded", function (e) {
         radio.name = "uom-" + row + "[]";
         radio.id = "uom-" + uom + "-" + row;
         radio.setAttribute("data-column-name", dataColumnName);
+        radio.setAttribute("data-current-uom", '');
 
-        if (uom === "gram" || uom === "oz") {
-            radio.checked = true;
-        }
+        // if (uom === "gram" ) {
+        //     radio.checked = true;
+
+        // }
+        // if (uom === "gram" || uom === "oz") {
+        //     radio.checked = true;
+        // }
         radio.addEventListener("change", function () {
-            convertMeasurement(row);
+            convertMeasurement(row,radio);
         });
         return radio;
     }
     function createLabel(innerHtml, htmlFor, uom, row, lineLabel = false) {
         let label = document.createElement("label");
-        label.className =
-            "form-check-label" +
-            (uom === "gram" || uom === "kg" ? " metric-radio" : " us-radio");
+        label.className ="form-check-label";
+
+        if(uom !== ''){
+            let uomClass = (uom === "gram" || uom === "kg" ? "metric-radio" : "us-radio");
+            label.classList.add(uomClass);
+        }
+
         label.htmlFor = htmlFor;
         label.innerHTML = innerHtml;
         if (!lineLabel) {

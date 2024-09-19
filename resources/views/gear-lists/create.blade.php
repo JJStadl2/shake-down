@@ -56,14 +56,14 @@
                     </select>
 
                 </div>
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <label for="uom" class="form-label">Measurement</label>
                     <select class="form-control" id="uom" name="uom">
                         <option value="us" @if (old('uom') === 'us') selected @endif>US(OZ/LBS)</option>
                         <option value="metric" @if (old('uom') === 'metric') selected @endif>Metric(G/KG)</option>
                     </select>
 
-                </div>
+                </div> --}}
                 <div class="mb-3">
                     <label for="list_items" class="form-label">View</label>
                     <select class="form-control" id="list_items" name="list_items">

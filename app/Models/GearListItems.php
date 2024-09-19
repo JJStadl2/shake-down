@@ -80,20 +80,41 @@ class GearListItems extends Model
             $conversionFactor = self::$metricConversionFactor;
         }
 
-        if (!str_contains($by, 'weight')) {
+        $sql = " SELECT *,
+        CASE
+            WHEN (in_grams = 1 OR in_ounces = 1) THEN item_weight
+            WHEN (in_lbs = 1 OR in_kilos = 1) THEN item_weight * $conversionFactor
+            ELSE 0
+        END AS item_unit_weight,
+        CASE
+            WHEN in_grams = 1 THEN 'g'
+            WHEN in_kilos = 1 THEN 'kg'
+            WHEN in_ounces = 1 THEN 'oz'
+            WHEN in_lbs = 1 THEN 'lbs'
+        END AS 'item_uom'
+        FROM gear_list_items";
 
-            $sql = ' SELECT *
-                    FROM gear_list_items';
-        } else {
-            $sql = " SELECT *,
-                    CASE
-                        WHEN (in_grams = 1 OR in_ounces = 1) THEN item_weight
-                        WHEN (in_lbs = 1 OR in_kilos = 1) THEN item_weight * $conversionFactor
-                        ELSE 0
-                    END AS item_unit_weight
-                    FROM gear_list_items";
 
+        if (str_contains($by, 'weight')) {
             $by = 'item_unit_weight';
+            // $sql = ' SELECT *
+            //         FROM gear_list_items';
+        } else {
+            // $sql = " SELECT *,
+            //         CASE
+            //             WHEN (in_grams = 1 OR in_ounces = 1) THEN item_weight
+            //             WHEN (in_lbs = 1 OR in_kilos = 1) THEN item_weight * $conversionFactor
+            //             ELSE 0
+            //         END AS item_unit_weight,
+            //         CASE
+            //             WHEN in_grams = 1 THEN 'g'
+            //             WHEN in_kilos = 1 THEN 'kg'
+            //             WHEN in_ounces = 1 THEN 'oz'
+            //             WHEN in_lbs = 1 THEN 'lbs'
+            //         END AS 'item_oum'
+            //         FROM gear_list_items";
+
+            // $by = 'item_unit_weight';
         }
 
         $sql .= ' WHERE list_id = ? AND deleted_at IS NULL';
@@ -311,5 +332,8 @@ class GearListItems extends Model
         }
 
         return true;
+    }
+    public static function GetMinimumUnitWeight($gearListItem,$weight){
+
     }
 }

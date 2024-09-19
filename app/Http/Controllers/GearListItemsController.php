@@ -146,6 +146,7 @@ class GearListItemsController extends Controller
      */
     public function store(Request $request)
     {
+        Log::debug(__FILE__.' '.__LINE__.' requestin store list item: '.print_r($request->input(),true));
         $listId = $request->list_id;
 
         try {
@@ -172,6 +173,9 @@ class GearListItemsController extends Controller
                 $list_order = $categoryOrder->list_order ?? 0;
                 $gearListItem->list_order = $list_order +1;
             }
+            // if($key === 'item_weight'){
+            //     $value = GearListItems::GetMinimumUnitWeight();
+            // }
             $gearListItem->$key = $value;
         }
 
@@ -248,6 +252,9 @@ class GearListItemsController extends Controller
                 }
 
             }
+            // if($key === 'item_weight'){
+            //     $gearListItem->minimum_unit_weight = GearListItems::GetMinimumUnitWeight($gearListItem,$value);
+            // }
             $gearListItem->$key = $value;
         }
 

@@ -29,6 +29,7 @@ return new class extends Migration
             $table->integer('category_order')->default(0);
             $table->integer('master_list_order')->default(0);
             $table->integer('master_category_order')->default(0);
+            $table->string('uom')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

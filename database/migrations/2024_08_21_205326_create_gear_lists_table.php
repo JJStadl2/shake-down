@@ -17,7 +17,7 @@ return new class extends Migration
             $table->bigInteger('user_id');
             $table->string('notes')->nullable();
             $table->string('sort');
-            $table->string('uom');
+            $table->string('uom')->nullable();
             $table->string('list_class');
             $table->boolean('list_items')->default(true);
             $table->timestamps();

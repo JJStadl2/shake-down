@@ -53,7 +53,7 @@ class GearListsController extends Controller
         $gearList->name = $request->listName;
         $gearList->notes = $request->listNotes ?? '';
         $gearList->sort = $request->sortBy ?? 'cat_asc';
-        $gearList->uom = $request->uom ?? 'us';
+        //$gearList->uom = $request->uom ?? 'us';
         $gearList->list_class = $request->listClass ?? 'hvy';
         $gearList->list_items = $request->list_items ?? true;
 

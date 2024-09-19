@@ -47,9 +47,9 @@
                 <th scope="col">Item</th>
                 <th scope="col">Category</th>
                 <th scope="col">UOM</th>
-                <th scope="col">Weight</th>
-                <th scope="col"># Packed</th>
-                <th scope="col">Total Packed Weight</th>
+                <th class="list-number-th" scope="col">Weight</th>
+                <th class="list-number-th" scope="col"># Packed</th>
+                <th class="list-number-th" scope="col">Total Packed Weight</th>
                 <th scope="col"></th>
                 <th scope="col">Remove</th>
 
@@ -60,6 +60,7 @@
             @if (!empty($gearListItems))
                 @foreach ($gearListItems as $item)
                     <tr data-id="{{ $item->id }}">
+                        <input type="hidden" id="uom-{{ $i }}" value="@if($item->in_ounces || $item->in_lbs)'us'@else'metric'@endif"/>
                         <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[]"
                             value="{{ $item->id }}" />
                         <th scope="row"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -84,41 +85,41 @@
                             </select>
                         </td>
                         <td class="uom-td">
-                            @if ($item->in_ounces || $item->in_lbs)
+
                                 <input class="form-check-input us-radio for-conversion" type="radio"
-                                    data-column-name="in_ounces" name="uom-{{ $i }}-[]"
-                                    id="uom-oz-{{ $i }}" @if ($item->in_ounces) checked @endif
-                                    onchange="convertMeasurement({{ $i }});" />
+                                    data-column-name="in_ounces" data-current-uom="{{ $item->item_uom }}" name="uom-{{ $i }}-[]"
+                                    id="uom-oz-{{ $i }}" @if ($item->item_uom == 'oz') checked @endif
+                                    onchange="convertMeasurement({{ $i }},this);" />
                                 <label class="form-check-label us-radio" id="uom-oz-label-{{ $i }}"
                                     for="uom-oz-{{ $i }}">
                                     OZ
                                 </label>
                                 <input class="form-check-input us-radio for-conversion" type="radio"
-                                    data-column-name="in_lbs" name="uom-{{ $i }}-[]"
-                                    id="uom-lbs-{{ $i }}" @if ($item->in_lbs) checked @endif
-                                    onchange="convertMeasurement({{ $i }});" />
+                                    data-column-name="in_lbs" data-current-uom="{{ $item->item_uom }}" name="uom-{{ $i }}-[]"
+                                    id="uom-lbs-{{ $i }}" @if ($item->item_uom === 'lbs') checked @endif
+                                    onchange="convertMeasurement({{ $i }},this);" />
                                 <label class="form-check-label us-radio" id="uom-lbs-label-{{ $i }}"
                                     for="uom-lbs-{{ $i }}">
                                     LBS
                                 </label>
-                            @else
+
                                 <input class="form-check-input metric-radio for-conversion" type="radio"
-                                    data-column-name="in_grams" name="uom-{{ $i }}-[]"
-                                    id="uom-gram-{{ $i }}" @if ($item->in_grams) checked @endif
-                                    onchange="convertMeasurement({{ $i }});" />
+                                    data-column-name="in_grams" data-current-uom="{{ $item->item_uom }}" name="uom-{{ $i }}-[]"
+                                    id="uom-gram-{{ $i }}" @if ($item->item_uom === 'g') checked @endif
+                                    onchange="convertMeasurement({{ $i }},this);" />
                                 <label class="form-check-label metric-radio" id="uom-gram-label-{{ $i }}"
                                     for="uom-gram-{{ $i }}">
                                     G
                                 </label>
                                 <input class="form-check-input metric-radio for-conversion" type=radio
-                                    data-column-name="in_kilos" name="uom-{{ $i }}-[]"
-                                    id="uom-kg-{{ $i }}" @if ($item->in_kilos) checked @endif
-                                    onchange="convertMeasurement({{ $i }});" />
+                                    data-column-name="in_kilos" data-current-uom="{{ $item->item_uom }}" name="uom-{{ $i }}-[]"
+                                    id="uom-kg-{{ $i }}" @if ($item->item_uom === 'kg') checked @endif
+                                    onchange="convertMeasurement({{ $i }}, this);" />
                                 <label class="form-check-label metric-radio" id="uom-kg-label-{{ $i }}"
                                     for="uom-kg-{{ $i }}">
                                     KG
                                 </label>
-                            @endif
+
 
                         </td>
                         <td>
