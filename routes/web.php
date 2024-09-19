@@ -92,6 +92,8 @@ Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsControlle
 )->name('get-categories');
 Route::post('/update-session', [App\Http\Controllers\GearListsController::class, 'updateSession']
 )->name('update-session');
+Route::get('/get-user-lists/{userId}', [App\Http\Controllers\GearListsController::class, 'getUserLists']
+)->name('get-user-lists');
 
 //about/housekeeping
 Route::get('/about', [App\Http\Controllers\GearListsController::class, 'index']

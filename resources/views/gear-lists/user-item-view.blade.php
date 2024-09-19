@@ -2,6 +2,7 @@
 @section('title','Gear | ')
 @section('content')
 @include('modals.add-list-item-modal')
+@include('modals.assign-item-to-lists-modal')
 <div class="list-item-form-container">
     <div class="row">
         <div class="col-md-4">

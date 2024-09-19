@@ -93,32 +93,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
             select.appendChild(kgOption);
 
             //append inputs to cells.
-            // Define the SVG namespace
-            // const svgNamespace = "http://www.w3.org/2000/svg";
-            // let iconCell = document.createElement("th");
-            // // Create a new SVG element
-            // let icon = document.createElementNS(svgNamespace, "svg");
-            // icon.setAttribute("width", "16");
-            // icon.setAttribute("height", "16");
-            // icon.setAttribute("fill", "currentColor");
-            // icon.setAttribute("class", "bi bi-grip-vertical");
-            // icon.setAttribute("viewBox", "0 0 16 16");
-
-            // // Create the <path> element
-            // let path = document.createElementNS(svgNamespace, "path");
-            // path.setAttribute(
-            //     "d",
-            //     "M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
-            // );
-
-            // // Append the path to the SVG
-            // icon.appendChild(path);
-
-            // // // Append the SVG icon to the cell
-            // iconCell.appendChild(icon);
-
-            // cell1.appendChild(counter);
-            // cell1.appendChild(icon);
             cell1.appendChild(itemName);
             cell2.appendChild(itemWeight);
 
@@ -146,10 +120,75 @@ window.addEventListener("DOMContentLoaded", function (e) {
         document.getElementById('newItemCount').value = linesToAdd;
         numberOfItemsToAdd.value = 1;
     };
+    this.window.showListAssignModal = function showListAssignModal(listId,itemId,userId,itemName){
 
-    this.window.assignToGearList = function assignToGearList(itemId, listId){
-        console.log('list_id in new assign: '+ listId);
-        console.log('item in new assign: '+ itemId);
+        let table = document.getElementById("modal-assign-item-table-body");
+        document.getElementById('itemIdforAssign').value = itemId;
+        let header = document.getElementById('AssignItemToListModalLabel');
+        console.log('item name: '+itemName);
+        header.innerHTML = 'Assign/Unassign item: '+itemName;
+
+        let url = '/get-user-lists/'+userId;
+        let userLists;
+
+        axios
+        .get(url)
+        .then((res) => {
+            let data = res.data;
+            userLists = data.userLists;
+            console.log('user list data to assign: '+ JSON.stringify(data.userLists));
+            for (let i = 0; i < userLists.length; i++) {
+                if(data.status !== '1'){
+                    alert(data.msg);
+                    return;
+                }
+                let row = document.createElement("tr");
+                let listNameCell = document.createElement("td");
+                let assignCell = document.createElement("td");
+                // let listIdInput = document.createElement('input');
+                // listIdInput.type = "hidden";
+                // listIdInput.name = 'listId-';
+                // listIdInput.value = userLists[i].id
+
+                listNameCell.innerHTML = userLists[i].name;
+                console.log('list name in assign to list: '+ userLists[i].name);
+                console.log('user list id in assign to list: '+ userLists[i].id);
+
+                let checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = 'listCheckBox-'+i;
+                checkbox.name = 'listId[]';
+                checkbox.value = userLists[i].id;
+
+                if(listId !== '' && userLists[i].id == listId){
+                    checkbox.checked = true;
+
+                }
+                // checkbox.addEventListener("change", function () {
+                //     // assignToGearList(itemId, listId)
+                //     assignToGearList(checkbox);
+                // });
+
+                assignCell.appendChild(checkbox);
+
+                row.appendChild(listNameCell);
+                row.appendChild(assignCell);
+                table.appendChild(row);
+            }
+
+        });
+
+    }
+    this.window.assignToGearList = function assignToGearList(element){
+        let listId = element.getAttribute('data-list-id');
+        let itemId = element.getAttribute('data-item-id');
+
+        console.log('list id in assign gear to list new: '+listId);
+        console.log('item id in assign gear to list new: '+itemId);
+        console.log('checked: '+element.checked);
+        if(!element.checked){
+            listId = '';
+        }
 
         let url = '/assign-to-gear-list'
         let data = {
@@ -740,7 +779,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         return element;
     }
     function getCategroySelect(row, groupCategory = null, listen = true) {
-    console.log('group cat in get select: '+ groupCategory)
+
         let select = document.createElement("select");
         select.id = "ItemCategory-" + row;
         select.name = "itemCategory-" + row;
@@ -1100,5 +1139,16 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 alert(err);
             });
 
+    }
+
+    let assignToListModal =  document.getElementById('AssignItemToListModal');
+    if(assignToListModal !== undefined){
+        assignToListModal.addEventListener('hide.bs.modal', function () {
+            let tableBody = document.getElementById('modal-assign-item-table-body');
+            while(tableBody.firstChild){
+                tableBody.removeChild(tableBody.firstChild);
+            }
+
+        });
     }
 });

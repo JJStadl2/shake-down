@@ -21,12 +21,6 @@
 
     </div>
 </div>
-{{-- <div class="weight-warning-containter">
-    @include('includes.weight-warning')
-</div> --}}
-
-
-
 <div class="gear-items-container">
 <input type="hidden" id="listByItems" data-column-name="list_items" value="" />
 <table class="table table-dark sortable" data-category-id="list-items">
@@ -157,15 +151,8 @@
 
                     </td>
                     <td>
-                        <select class="form-control" id="listIdSelect-{{ $i }}" data-column-name="list_id" value='{{ $item->list_id ?? '' }}' onchange="assignToGearList('{{ $item->id }}',this.value);">
-                            <option value='' @if($item->list_id === '') selected @endif>Assign to a gear list</option>
-                            @if(!empty($userLists))
-                                @foreach($userLists as $userList){
-                                    <option value='{{ $userList->id }}' @if($item->list_id === $userList->id) selected @endif>{{ $userList->name }}</option>
-                                }
-                                @endforeach
-                            @endif
-                        </select>
+                        <button  class="btn btn-primary btn-sm py-2 px-3"  data-bs-toggle="modal"   data-bs-target="#AssignItemToListModal" onclick="showListAssignModal('{{ $item->list_id }}',{{ $item->id }},{{ $user->id }},'{{ $item->item_name }}')" >Assign</button>
+
                     </td>
 
                     <td id="btn-td-{{ $i }}">

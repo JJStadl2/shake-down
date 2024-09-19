@@ -411,6 +411,8 @@ class GearListItemsController extends Controller
     }
 
     public function assignMasterItem(Request $request){
+        Log::debug(__FILE__.' '.__LINE__.' request in assign item to lists: '.print_r($request->input(),true));
+        return redirect()->back();
         try{
             $gearListItem = GearListItems::where('id',$request->id)->first();
         }catch(\Exception $e){

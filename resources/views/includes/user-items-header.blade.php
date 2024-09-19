@@ -17,7 +17,7 @@
         <label class="form-control-label" for="viewOption" class="form-label">View Options</label>
         <select class="form-control" id="viewOptions" name="viewOptions" data-column-name="list_items" onchange="updateSessionData(this);">
 
-            <option value="1" @if($masterItemOptions->list_items) selected @endif >List by Items</option>
+            <option value="1" @if($masterItemOptions->list_items) selected @endif >List by Item</option>
             <option value="0"  @if(!$masterItemOptions->list_items) selected @endif  >Group by Category</option>
         </select>
 

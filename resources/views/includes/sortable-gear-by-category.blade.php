@@ -46,6 +46,7 @@
 </div>
 <div class="gear-items-container">
     @php $categoryCounter = 1; @endphp
+    @php $i = 1; @endphp
     <div class="parent-container">
     @foreach ($sortedItemCategories as $itemCat)
         @if (in_array($itemCat->value, $selectedCategories))
@@ -79,7 +80,7 @@
                         </tr>
                     </thead>
                     <tbody id="categoryTable-{{ $categoryCounter }}">
-                        @php $i = 1; @endphp
+                        {{-- @php $i = 1; @endphp --}}
                         @foreach ($gearListItems as $item)
                             @if ($item->item_category === $itemCat->value)
                                 <tr data-id="{{ $item->id }}">

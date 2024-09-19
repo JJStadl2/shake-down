@@ -265,7 +265,28 @@ class GearListsController extends Controller
         }
         Session::put('masterItemOptions',$masterItemOptions);
 
-        return response()->json(['status'=>'1','msg'=>'Updated session vars.']);;
+        return response()->json(['status'=>'1','msg'=>'Updated session vars.']);
+    }
+
+    public function getUserLists($userId){
+
+        if(empty($userId)){
+            return response()->json(['status'=>'0','msg'=>'No user ID provided.']);
+        }
+
+        try{
+            $userLists = GearLists::where('user_id',$userId)->orderBy('id','ASC')->get(['id','name']);
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Error fetching gear lists for user.']);
+        }
+
+        if(empty($userLists)){
+            return response()->json(['status'=>'0','msg'=>'No  gear lists found for this user.']);
+        }
+
+        return response()->json(['status'=>'1','userLists' => $userLists, 'msg'=>'Lists!']);
+
     }
 
 }
