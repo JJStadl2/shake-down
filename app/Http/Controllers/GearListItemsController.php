@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\GearListItems;
 use App\Models\GearLists;
+use App\Models\UserItems;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use stdClass;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+
 class GearListItemsController extends Controller
 {
 
@@ -73,7 +73,7 @@ class GearListItemsController extends Controller
         $userId = $user->id;
         $itemCategories = $this->getCategories($request);
         $listSortingOptions = GearLists::getSortingOptions();
-        $userLists = GearLists::where('user_id',$userId)->orderBy('id','ASC')->get(['id','name']);
+     //   $userLists = GearLists::where('user_id',$userId)->orderBy('id','ASC')->get(['id','name']);
         $sortedItemCategories = [];
         $sortByCategory = false;
         $masterItemOptions = Session::get('masterItemOptions') ?? [];
@@ -109,10 +109,11 @@ class GearListItemsController extends Controller
 
         $by = $sort[0];
         $order = $sort[1];
-
+        $userListArray = UserItems::where('user_id',$userId)->pluck('list_id')->toArray();
+        Log::debug("user list as array:" .print_r($userListArray,true));
         try {
             if(!$sortByCategory){
-                $gearListItems = GearListItems::where('user_id', $userId)->orderBy($by,$order)->orderBy($by_2,$order_2)->orderBy($by_3,$order_3)->get();
+                $gearListItems = GearListItems::where('user_id', $userId)->whereIn('list_id',$userListArray)->orderBy($by,$order)->orderBy($by_2,$order_2)->orderBy($by_3,$order_3)->get();
             }else{
 
                 $gearListItems = GearListItems::where('user_id', $userId)->orderBy('master_category_order','ASC')->orderBy('master_list_order','ASC')->get();
@@ -124,13 +125,15 @@ class GearListItemsController extends Controller
         }
 
         $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
+        $gearListItems = $gearListItems->unique('user_item_id');
 
         if(!$masterItemOptions->list_items){
             $sortedItemCategories = $this->getCategories($request, $selectedCategories);
         }
 
         Session::put('masterItemOptions',$masterItemOptions);
-        return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions,'userLists'=>$userLists, 'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
+        // return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions,'userLists'=>$userLists, 'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
+        return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions, 'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
 
     }
     /**
@@ -148,6 +151,9 @@ class GearListItemsController extends Controller
     {
         $listId = $request->list_id;
 
+        $userItem = new UserItems();
+        $userItemId = $userItem->createAndReturnId($listId);
+
         try {
             $gearList = GearLists::where('id', $listId)->first();
         } catch (\Exception $e) {
@@ -161,6 +167,7 @@ class GearListItemsController extends Controller
         $listItems = $gearList->list_items;
         $gearListItem = new GearListItems();
         $inputs = $request->except(['_token', 'q', 'id']);
+        $inputs['user_item_id'] = $userItemId;
 
         foreach ($inputs as $key => $value) {
             if(!$listItems && $key === 'item_category'){
@@ -248,6 +255,7 @@ class GearListItemsController extends Controller
                 }
 
             }
+            //TODO--> ADD CHECK FOR WHEN MASTER ITEM AND LIST ID UNASSIGNED.
             $gearListItem->$key = $value;
         }
 
@@ -367,7 +375,7 @@ class GearListItemsController extends Controller
         $categories = $request->category_order ?? [];
         $isMasterItem = ($request->list_id === 'master') ? true : false;
         $userId = Auth::user()->id;
-        Log::debug(__FILE__.' '.__LINE__.' requwst in sort cats for master: '.print_r($request->input(),true) );
+
         if(empty($categories)){
             return response()->json(['status'=>'1','msg'=>'No change in category sort.']);
         }
@@ -400,38 +408,6 @@ class GearListItemsController extends Controller
         }
 
         return response()->json(['status'=>'1','msg'=>'Category sort updates.']);
-
-    }
-    public function addMasterGearItems(Request $request){
-
-        $inputs = $request->input();
-        $user = Auth::user();
-        GearListItems::createNewMasterItems($inputs, $user);
-        return redirect()->back();
-    }
-
-    public function assignMasterItem(Request $request){
-        Log::debug(__FILE__.' '.__LINE__.' request in assign item to lists: '.print_r($request->input(),true));
-        return redirect()->back();
-        try{
-            $gearListItem = GearListItems::where('id',$request->id)->first();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Failed to assign gear item. Please try again later.']);
-        }
-        if(empty($gearListItem)){
-            return response()->json(['status'=>'0','msg'=>'Gear item does not exist.']);
-        }
-        $gearListItem->list_id = $request->list_id;
-
-        try{
-            $gearListItem->save();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Failed save list id for item. Please try again later.']);
-        }
-
-        return response()->json(['status'=>'1','msg'=>'Assigned to list']);
 
     }
 }

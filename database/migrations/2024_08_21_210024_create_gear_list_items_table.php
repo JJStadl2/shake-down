@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('list_id')->nullable();
             $table->bigInteger('user_id');
+            $table->bigInteger('user_item_id');
             $table->string('item_name')->nullable();
             $table->string('item_category')->nullable();
             $table->float('item_weight')->default(0);

@@ -10,6 +10,7 @@
 
           <form action="/assign-to-gear-list" method="post">
             <input type='hidden' id='itemIdforAssign' name="assignItemId" value=""/>
+            <input type='hidden' id='userItemIdforAssign' name="userItemIdforAssign" value=""/>
             @csrf
             <div class="modal-body">
               {{-- <div class="table-responsive"> --}}

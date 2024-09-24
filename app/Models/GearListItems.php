@@ -27,6 +27,7 @@ class GearListItems extends Model
     protected $fillable = [
         'list_id',
         'user_id',
+        'user_item_id',
         'item_name',
         'item_category',
         'minimum_unit_weight',
@@ -311,5 +312,17 @@ class GearListItems extends Model
         }
 
         return true;
+    }
+
+    public function createAndAssignNewItem(&$gearItem, $userItemId){
+
+        $currentItem = GearListItems::where('user_item_id',$userItemId)->first();
+        $currentItem->list_id = '';
+        unset( $currentItem->id);
+
+        foreach($currentItem->getAttributes() as $key => $value){
+            $gearItem->$key = $value;
+        }
+
     }
 }

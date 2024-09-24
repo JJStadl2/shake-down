@@ -120,57 +120,47 @@ window.addEventListener("DOMContentLoaded", function (e) {
         document.getElementById('newItemCount').value = linesToAdd;
         numberOfItemsToAdd.value = 1;
     };
-    this.window.showListAssignModal = function showListAssignModal(listId,itemId,userId,itemName){
+    this.window.showListAssignModal = function showListAssignModal(itemId,userItemId,itemName){
+
+        document.getElementById('itemIdforAssign').value = itemId;
+        document.getElementById('userItemIdforAssign').value = userItemId;
 
         let table = document.getElementById("modal-assign-item-table-body");
-        document.getElementById('itemIdforAssign').value = itemId;
         let header = document.getElementById('AssignItemToListModalLabel');
-        console.log('item name: '+itemName);
         header.innerHTML = 'Assign/Unassign item: '+itemName;
 
-        let url = '/get-user-lists/'+userId;
+        let url = '/get-user-lists/'+userItemId;
         let userLists;
 
-        axios
-        .get(url)
+        axios.get(url)
         .then((res) => {
             let data = res.data;
             userLists = data.userLists;
-            console.log('user list data to assign: '+ JSON.stringify(data.userLists));
+
+            if(data.status !== '1'){
+                alert(data.msg);
+                return;
+            }
+
             for (let i = 0; i < userLists.length; i++) {
-                if(data.status !== '1'){
-                    alert(data.msg);
-                    return;
-                }
+
                 let row = document.createElement("tr");
                 let listNameCell = document.createElement("td");
                 let assignCell = document.createElement("td");
-                // let listIdInput = document.createElement('input');
-                // listIdInput.type = "hidden";
-                // listIdInput.name = 'listId-';
-                // listIdInput.value = userLists[i].id
 
                 listNameCell.innerHTML = userLists[i].name;
-                console.log('list name in assign to list: '+ userLists[i].name);
-                console.log('user list id in assign to list: '+ userLists[i].id);
 
                 let checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.id = 'listCheckBox-'+i;
-                checkbox.name = 'listId[]';
+                checkbox.name = 'listIds[]';
                 checkbox.value = userLists[i].id;
 
-                if(listId !== '' && userLists[i].id == listId){
+                if(userLists[i].itemAssigned == true){
                     checkbox.checked = true;
-
                 }
-                // checkbox.addEventListener("change", function () {
-                //     // assignToGearList(itemId, listId)
-                //     assignToGearList(checkbox);
-                // });
 
                 assignCell.appendChild(checkbox);
-
                 row.appendChild(listNameCell);
                 row.appendChild(assignCell);
                 table.appendChild(row);
@@ -1142,7 +1132,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
     }
 
     let assignToListModal =  document.getElementById('AssignItemToListModal');
-    if(assignToListModal !== undefined){
+
+    if(assignToListModal !== undefined && assignToListModal !== null){
+        console.log('assign to list modal: '+JSON.stringify(assignToListModal));
         assignToListModal.addEventListener('hide.bs.modal', function () {
             let tableBody = document.getElementById('modal-assign-item-table-body');
             while(tableBody.firstChild){
