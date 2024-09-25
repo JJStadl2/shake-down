@@ -187,8 +187,8 @@ class GearListItemsController extends Controller
             $masterItem->$key = $value;
         }
 
-        $masterItem->list_id = $masterGearList->list_id;
-        $masterItem->master_list_id =  $masterGearList->list_id;
+        $masterItem->list_id = $masterGearList->id;
+        $masterItem->master_list_id =  $masterGearList->id;
         $gearListItem->master_list_id = $masterGearList->id;
 
         try {
