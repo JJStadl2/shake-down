@@ -126,7 +126,7 @@ class UserItems extends Model
                unset($listIds[$index]);
             }else{
                 try{
-                    UserItems::where('list_id',$value)->where('item_id',$userItemId)->update(['list_id','']);
+                    UserItems::where('list_id',$value)->where('item_id',$userItemId)->update(['list_id'=>'']);
                     GearListItems::where('list_id',$value)->where('user_item_id',$userItemId)->delete();
                 }catch(\Exception $e){
                     Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
