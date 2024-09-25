@@ -56,7 +56,7 @@ class GearLists extends Model
      *
      * @return array<int, object>
      */
-    public static function getSortingOptions(){
+    public static function getSortingOptions($key = false){
 
         $sql = 'SELECT *
                 FROM list_sorting_options
@@ -68,7 +68,18 @@ class GearLists extends Model
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             return [];
         }
-        return $options;
+
+        if(!$key){
+            return $options;
+        }else{
+            foreach($options as $option){
+                if($option->value === $key){
+                    return $option;
+                }
+            }
+        }
+
+
 
     }
 
@@ -124,18 +135,28 @@ class GearLists extends Model
         $baseWeight = 0;
         $totalPackWeight = 0;
         $sort = ['item_weight','ASC'];
-        $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
+        $fromWeight = true;
+        $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom,$fromWeight);
         $maxListWeight = self::getlistClassByKey($gearList->list_class);
-        $maxListWeight = $maxListWeight->max_weight;
-        $weightUom = 'LBS';
+        $listClassWarning = $maxListWeight->display;
+
+        if($gearList->uom === 'us'){
+            $maxListWeight = $maxListWeight->us_max_weight;
+            $weightUom = 'LBS';
+        }else{
+            $maxListWeight = $maxListWeight->metric_max_weight;
+            $weightUom = 'KG';
+        }
 
         foreach($gearListItems as $item){
-            if($item->item_category !== 'consumables' ){
-                $baseWeight+= $item->item_unit_weight;
-            }
+            $line_weight = ($item->item_unit_weight * $item->amount);
+            $totalPackWeight+= $line_weight;
 
-            $totalPackWeight+= $item->item_unit_weight;
+            if($item->item_category !== 'consumables' ){
+                $baseWeight+= $line_weight;
+            }
         }
+
 
         if($gearList->uom === 'us'){
             $baseWeight = $baseWeight/GearListItems::$usConversionFactor;
@@ -143,14 +164,14 @@ class GearLists extends Model
         }else{
             $baseWeight = $baseWeight/GearListItems::$metricConversionFactor;
             $totalPackWeight = $totalPackWeight/GearListItems::$metricConversionFactor;
-            $maxListWeight = $maxListWeight * self::$metricMaxWeightConversionFactor;
-            $weightUom = 'KG';
+
         }
 
         $gearList->totalPackWeight = $totalPackWeight;
         $gearList->baseWeight = $baseWeight;
         $gearList->maxPackWeight = $maxListWeight;
         $gearList->weightUom = $weightUom;
+        $gearList->classWarningValue = $listClassWarning;
 
     }
     public static function getChartData($gearList){
@@ -160,7 +181,7 @@ class GearLists extends Model
         }else{
             $conversionFactor = GearListItems::$metricConversionFactor;
         }
-        
+
         $sort = ['item_weight','ASC'];
         $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
         $categories = DB::table('item_categories')->orderBy('category','asc')->get(['category','value']);

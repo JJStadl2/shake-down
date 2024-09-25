@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('gear_list_items', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('list_id');
+            $table->bigInteger('list_id')->nullable();
             $table->bigInteger('user_id');
+            $table->bigInteger('user_item_id');
             $table->string('item_name')->nullable();
             $table->string('item_category')->nullable();
             $table->float('item_weight')->default(0);
@@ -25,6 +26,10 @@ return new class extends Migration
             $table->boolean('in_lbs')->default(false);
             $table->float('amount')->default(1);
             $table->float('total_line_weight')->default(0);
+            $table->integer('list_order')->default(0);
+            $table->integer('category_order')->default(0);
+            $table->integer('master_list_order')->default(0);
+            $table->integer('master_category_order')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -29,6 +29,7 @@ class ListSortingOptionsSeeder extends Seeder
             ['value'=>'weight_asc','display'=>'Item Weight(Low-High)','ordinal'=>5, 'order_by'=>'item_weight ASC'],
             ['value'=>'weight_desc','display'=>'Item Weight(High-Low)','ordinal'=>6, 'order_by'=>'item_weight DESC'],
             ['value'=>'dont','display'=>"Don't Sort",'ordinal'=>7, 'order_by'=>'id ASC'],
+            ['value'=>'drag_drop','display'=>"Manual (User Drag & Drop)",'ordinal'=>8, 'order_by'=>'list_order ASC'],
 
           ];
 

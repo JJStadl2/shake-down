@@ -16,10 +16,11 @@ This Laravel application replaces the Excel spreadsheets we all use to weigh and
 
 ### Future Enhancements:
 - View that displays list items grouped by item category.
-- Displaying user specific gear that existis on other lists to be a prepopulated optin when adding gear items to a new list. 
+- Displaying user specific gear that existis on other lists to be a prepopulated option when adding gear items to a new list. 
 - Integrated gear specifications search and results - You will no longer have to weigh everything!
 - Drag and drop sort of list items within a list.
 - Abilty for users to upload media and post blogs about recent adventures. 
 - Weight reduction recomendations for gear lists based on trip length, hiking style and current packed items. 
 - Ability to share lists with other users.
 - Suggestions for gear we think you will like based on what items you currently have, and access to deals on all the best gear out there. 
+- USer profile and account settings.

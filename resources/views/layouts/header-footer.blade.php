@@ -25,8 +25,9 @@
                         <a href="/logout" class="nav-link-text">Log Out</a>
                     @else
                         <a href="/login" class="nav-link-text">Login</a>
+                        <a href="/register" class="nav-link-text">Sign Up</a>
                     @endif
-                    <a href="/register" class="nav-link-text">Sign Up</a>
+
                     <a href="/about" class="nav-link-text">About</a>
 
                 </nav>

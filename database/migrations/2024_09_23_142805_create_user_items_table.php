@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('list_classes', function (Blueprint $table) {
+        Schema::create('user_items', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
-            $table->string('display');
-            $table->string('description');
-            $table->integer('ordinal');
-            $table->float('us_max_weight');
-            $table->float('metric_max_weight');
-
+            $table->bigInteger('item_id')->nullable();
+            $table->bigInteger('list_id')->nullable();
+            $table->bigInteger('user_id');
+            $table->timestamps();
         });
     }
 
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('list_classes');
+        Schema::dropIfExists('user_items');
     }
 };
