@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('gear_list_items', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('master_item_id')->nullable();
+            $table->bigInteger('master_list_id')->nullable();
             $table->bigInteger('list_id')->nullable();
             $table->bigInteger('user_id');
-            $table->bigInteger('user_item_id');
             $table->string('item_name')->nullable();
             $table->string('item_category')->nullable();
             $table->float('item_weight')->default(0);

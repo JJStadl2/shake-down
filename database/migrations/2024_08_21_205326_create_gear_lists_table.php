@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('uom');
             $table->string('list_class');
             $table->boolean('list_items')->default(true);
+            $table->boolean('master_list')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
