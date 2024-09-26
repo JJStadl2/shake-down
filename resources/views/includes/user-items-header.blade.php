@@ -2,7 +2,9 @@
 <div class="row">
 
     <div class="col-md-2"></div>
-    <input type="hidden" name="listId" id="listId" data-column-name="list_id" value="master"/>
+    {{-- <input type="hidden" name="listId" id="listId" data-column-name="list_id" value="master"/> --}}
+    <input type="hidden" name="isMaster" id="isMaster" value="true"/>
+    <input type="hidden" name="listId" id="listId" data-column-name="list_id" value="{{ $gearList->id }}"/>
     <input type="hidden" name="userId" id="userId" data-column-name="user_id" value="{{ $user->id }}"/>
     <div class="col-md-3 mb-3">
         <label class="form-control-label" for="sortBy" class="form-label">Sort By</label>

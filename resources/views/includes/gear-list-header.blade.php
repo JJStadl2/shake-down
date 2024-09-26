@@ -4,6 +4,7 @@
     <div class="col-md-1"></div>
     <input type="hidden" name="listId" id="listId" data-column-name="list_id" value="{{ $gearList->id }}"/>
     <input type="hidden" name="userId" id="userId" data-column-name="user_id" value="{{ $user->id }}"/>
+    <input type="hidden" name="isMaster" id="isMaster" value="false"/>
     <input type="hidden" id="classWarningValue" value="{{$gearList->classWarningValue}}"/>
     <div class="col-md-1"></div>
     <div class="col-md-3">

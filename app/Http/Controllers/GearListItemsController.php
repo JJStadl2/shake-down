@@ -72,10 +72,11 @@ class GearListItemsController extends Controller
         $userId = $user->id;
         $itemCategories = $this->getCategories($request);
         $listSortingOptions = GearLists::getSortingOptions();
-        $userLists = GearLists::where('user_id',$userId)->orderBy('id','ASC')->get(['id','name']);
+        $userLists = GearLists::where('user_id',$userId)->where('master_list',false)->orderBy('id','ASC')->get(['id','name']);
         $sortedItemCategories = [];
         $sortByCategory = false;
         $masterItemOptions = Session::get('masterItemOptions') ?? [];
+        $masterGearList = GearLists::where('user_id', $userId)->where('master_list',true)->first();
 
         if(empty($masterItemOptions)){
             $masterItemOptions = new stdClass();
@@ -111,10 +112,10 @@ class GearListItemsController extends Controller
 
         try {
             if(!$sortByCategory){
-                $gearListItems = GearListItems::where('user_id', $userId)->orderBy($by,$order)->orderBy($by_2,$order_2)->orderBy($by_3,$order_3)->get();
+                $gearListItems = GearListItems::where('user_id', $userId)->where('list_id',$masterGearList->id)->orderBy($by,$order)->orderBy($by_2,$order_2)->orderBy($by_3,$order_3)->get();
             }else{
 
-                $gearListItems = GearListItems::where('user_id', $userId)->orderBy('master_category_order','ASC')->orderBy('master_list_order','ASC')->get();
+                $gearListItems = GearListItems::where('user_id', $userId)->where('list_id',$masterGearList->id)->orderBy('master_category_order','ASC')->orderBy('master_list_order','ASC')->get();
             }
 
         } catch (\Exception $e) {
@@ -129,7 +130,7 @@ class GearListItemsController extends Controller
         }
 
         Session::put('masterItemOptions',$masterItemOptions);
-        return view('gear-lists.user-item-view',  ['gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions,'userLists'=>$userLists, 'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
+        return view('gear-lists.user-item-view',  ['gearList'=>$masterGearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions,  'masterItemOptions'=>$masterItemOptions,'userLists'=>$userLists, 'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
 
     }
     /**

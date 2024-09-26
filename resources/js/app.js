@@ -539,12 +539,18 @@ window.addEventListener("DOMContentLoaded", function (e) {
     ) {
         let listId = document.getElementById('listId').value;
         let uom;
-
-        if(listId == 'master'){
+        let isMasterList = document.getElementById('isMaster').value;
+        if(isMasterList){
             uom = document.getElementById("uom-"+row).value;
         }else{
             uom = document.getElementById("uom").value;
         }
+
+        // if(listId == 'master'){
+        //     uom = document.getElementById("uom-"+row).value;
+        // }else{
+        //     uom = document.getElementById("uom").value;
+        // }
         let weight = document.getElementById("itemWeight-" + row);
         let packedAmount = document.getElementById("packedAmount-" + row).value;
         let totalWeight = document.getElementById("totalLineWeight-" + row);
@@ -671,6 +677,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let deleteHref = '/remove-list-item/' ;
         let updateMaster = null;
         let create = true;
+        let isMasterList = document.getElementById('isMaster').value;
         // let inputRow = document.getElementById('row-'+row);
         // let inputsAndSelects = inputRow.querySelector(' td input, td select');
         // inputsAndSelects.forEach(element => {
@@ -714,9 +721,13 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 alert("Failed to update list item. Please try again later.");
                 console.error(err);
             });
-        if(listId !== 'master'){
+        // if(listId !== 'master'){
+        //     updateTotalListWeights();
+        // }
+        if(!isMasterList){
             updateTotalListWeights();
         }
+
 
     };
 
