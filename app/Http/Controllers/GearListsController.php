@@ -267,15 +267,16 @@ class GearListsController extends Controller
         return response()->json(['status'=>'1','msg'=>'Updated session vars.']);
     }
 
-    public function getUserLists($userItemId){
+    public function getUserLists($itemId){
 
         $userId = Auth::user()->id;
+
         if(empty($userId)){
             return response()->json(['status'=>'0','msg'=>'No user ID provided.']);
         }
 
         try{
-             $userLists = GearLists::where('user_id',$userId)->orderBy('id','ASC')->get(['id','name']);
+             $userLists = GearLists::where('user_id',$userId)->where('master_list',false)->orderBy('id','ASC')->get(['id','name']);
 
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
@@ -286,7 +287,7 @@ class GearListsController extends Controller
             return response()->json(['status'=>'0','msg'=>'No  gear lists found for this user.']);
         }
 
-        $assignedListArray = UserItems::getItemAssignments($userItemId);
+        $assignedListArray = GearListItems::getItemAssignments($itemId);
         foreach($userLists as $list){
 
             if(in_array($list->id, $assignedListArray)){
@@ -298,6 +299,23 @@ class GearListsController extends Controller
         }
 
         return response()->json(['status'=>'1','userLists' => $userLists, 'msg'=>'Lists!']);
+
+    }
+    public function assignMasterItem(Request $request){
+
+        $masterItemId = $request->assignItemId ?? false;
+
+        if(empty($masterItemId)){
+            return redirect()->back()->with('error','No item provided.');
+        }
+
+        $response =  GearListItems::manageListAssigments($request);
+
+        if($response['status'] !== 1){
+            return redirect()->back()->with('warning',$response['msg']);
+        }
+
+        return redirect()->back()->with('success',$response['msg']);
 
     }
 

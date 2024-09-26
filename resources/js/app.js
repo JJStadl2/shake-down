@@ -120,23 +120,23 @@ window.addEventListener("DOMContentLoaded", function (e) {
         document.getElementById('newItemCount').value = linesToAdd;
         numberOfItemsToAdd.value = 1;
     };
-    this.window.showListAssignModal = function showListAssignModal(itemId,userItemId,itemName){
+    this.window.showListAssignModal = function showListAssignModal(itemId,itemName){
 
         document.getElementById('itemIdforAssign').value = itemId;
-        document.getElementById('userItemIdforAssign').value = userItemId;
+        // document.getElementById('userItemIdforAssign').value = userItemId;
 
         let table = document.getElementById("modal-assign-item-table-body");
         let header = document.getElementById('AssignItemToListModalLabel');
         header.innerHTML = 'Assign/Unassign item: '+itemName;
 
-        let url = '/get-user-lists/'+userItemId;
+        let url = '/get-user-lists/'+itemId;
         let userLists;
 
         axios.get(url)
         .then((res) => {
             let data = res.data;
             userLists = data.userLists;
-
+            console.log('data for user lists: ' + JSON.stringify(res));
             if(data.status !== '1'){
                 alert(data.msg);
                 return;
@@ -540,7 +540,8 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let listId = document.getElementById('listId').value;
         let uom;
         let isMasterList = document.getElementById('isMaster').value;
-        if(isMasterList){
+        console.log('is master in convert mes: '+isMasterList)
+        if(isMasterList === 'true'){
             uom = document.getElementById("uom-"+row).value;
         }else{
             uom = document.getElementById("uom").value;

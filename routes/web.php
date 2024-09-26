@@ -79,10 +79,10 @@ Route::get('/remove-list-item/{id}', [App\Http\Controllers\GearListItemsControll
 )->name('item-remove');
 
 
-//user item routes
-Route::post('/add-gear-items',  [App\Http\Controllers\UserItemsController::class, 'addUserItems']
+//master list and item routes
+Route::post('/add-gear-items',  [App\Http\Controllers\GearListItemsController::class, 'addMasterGearItems']
 )->name('add-master-items');
-Route::post('/assign-to-gear-list',  [App\Http\Controllers\UserItemsController::class, 'assignUserItem']
+Route::post('/assign-to-gear-list',  [App\Http\Controllers\GearListsController::class, 'assignMasterItem']
 )->name('assign-master-items');
 
 //gear item API search
@@ -93,6 +93,6 @@ Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsControlle
 )->name('get-categories');
 Route::post('/update-session', [App\Http\Controllers\GearListsController::class, 'updateSession']
 )->name('update-session');
-Route::get('/get-user-lists/{userItemId}', [App\Http\Controllers\GearListsController::class, 'getUserLists']
+Route::get('/get-user-lists/{masterItemId}', [App\Http\Controllers\GearListsController::class, 'getUserLists']
 )->name('get-user-lists');
 

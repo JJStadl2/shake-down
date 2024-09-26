@@ -306,9 +306,9 @@ class GearListItems extends Model
         return true;
     }
 
-    public function createAndAssignNewItem(&$gearItem, $userItemId){
+    public function createAndAssignNewItem(&$gearItem, $masterItemId){
 
-        $currentItem = GearListItems::where('user_item_id',$userItemId)->first();
+        $currentItem = GearListItems::where('id',$masterItemId)->first();
         $currentItem->list_id = '';
         unset( $currentItem->id);
 
@@ -350,5 +350,119 @@ class GearListItems extends Model
         }
         return $gearListItem;
 
+    }
+
+    public static function getItemAssignments($masterItemId){
+
+        $userId = Auth::user()->id;
+
+        try{
+
+            $itemAssignments =  GearListItems::where('user_id',$userId)->where('master_item_id',$masterItemId)->get(['id','list_id']);
+
+        }catch(\Exception $e){
+           Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+           $itemAssignments = [];
+        }
+
+        $assignments = [];
+
+        foreach($itemAssignments as $item){
+
+             $assignments[] = $item->list_id;
+        }
+
+        return $assignments;
+    }
+
+    public static function manageListAssigments($request){
+        $listIds = $request->listIds ?? [];
+        $masterItemId = $request->assignItemId ?? false;
+        $userId = Auth::user()->id;
+        $response = ['status'=>1,'msg'=>'Item assigned.'];
+        $failedLIstIds = [];
+
+        try{
+
+            $itemListAssignments = GearListItems::where('user_id',$userId)->where('master_item_id',$masterItemId)->pluck('list_id')->toArray();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            $itemListAssignments = [];
+
+        }
+        if(empty($itemListAssignments)){
+            $response['status'] = 0;
+            $response['msg'] = 'Cannot find this item in this user account.';
+           // return $response;
+           // return 0;
+        }
+
+        foreach($itemListAssignments as $key => $value){
+
+            $index = array_search(intval($value),$listIds);
+
+            if($index !== false){
+               unset($listIds[$index]);
+            }else{
+                try{
+
+                    GearListItems::where('list_id',$value)->where('master_item_id',$masterItemId)->delete();
+                }catch(\Exception $e){
+                    Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                    $failedLIstIds[] = $value;
+                    continue;
+                }
+
+            }
+        }
+
+        foreach($listIds as $listId){
+            if(!in_array($listId,$failedLIstIds)){
+
+                // $userItem = new UserItems();
+                // $userItem->list_id = $listId;
+                // $userItem->item_id = $userItemId;
+                // $userItem->user_id = $userId;
+
+                $gearItem = new GearListItems();
+                $gearItem->createAndAssignNewItem($gearItem,$masterItemId);
+                $gearItem->item_name = 'NEW ASSIGN '.$gearItem->item_name;
+                $gearItem->list_id = $listId;
+                $gearItem->master_item_id = $masterItemId;
+
+                try{
+                    $gearItem->save();
+                }catch(\Exception $e){
+                    Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                    $failedLIstIds[] = $listId;
+                    continue;
+                }
+
+                // try{
+                //     $userItem->save();
+                // }catch(\Exception $e){
+                //     Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                //     $failedLIstIds[] = $listId;
+                //     $userItem = false;
+                //     continue;
+                // }
+
+                if(!empty($userItem)){
+                    try{
+                        $gearItem->save();
+                    }catch(\Exception $e){
+                        Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                        $failedLIstIds[] = $listId;
+                        continue;
+                    }
+                }
+            }
+
+        }
+        if(!empty($failedLIstIds)){
+            $response['status'] = 0;
+            $response['msg'] = 'Error while updating some item assignments. Please try again later';
+        }
+        return $response;
     }
 }

@@ -248,7 +248,6 @@ class GearListItemsController extends Controller
                 Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 return response()->json(['status' => '0', 'msg' => 'Error fetching master list for user.']);
             }
-            Log::debug(__FILE__.' '.__LINE__);
 
         }
 
@@ -387,7 +386,7 @@ class GearListItemsController extends Controller
     public function sortGearListCategories(Request $request){
 
         $categories = $request->category_order ?? [];
-      
+
         if(empty($categories)){
             return response()->json(['status'=>'1','msg'=>'No change in category sort.']);
         }
@@ -413,35 +412,12 @@ class GearListItemsController extends Controller
 
     }
     public function addMasterGearItems(Request $request){
-
+        Log::debug(__FILE__.' '.__LINE__.' request in add master items: '.print_r($request->input(),true));
         $inputs = $request->input();
         $user = Auth::user();
         GearListItems::createNewMasterItems($inputs, $user);
         return redirect()->back();
     }
 
-    public function assignMasterItem(Request $request){
-        Log::debug(__FILE__.' '.__LINE__.' request in assign item to lists: '.print_r($request->input(),true));
-        return redirect()->back();
-        try{
-            $gearListItem = GearListItems::where('id',$request->id)->first();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Failed to assign gear item. Please try again later.']);
-        }
-        if(empty($gearListItem)){
-            return response()->json(['status'=>'0','msg'=>'Gear item does not exist.']);
-        }
-        $gearListItem->list_id = $request->list_id;
 
-        try{
-            $gearListItem->save();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Failed save list id for item. Please try again later.']);
-        }
-
-        return response()->json(['status'=>'1','msg'=>'Assigned to list']);
-
-    }
 }
