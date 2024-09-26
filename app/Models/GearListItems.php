@@ -39,8 +39,7 @@ class GearListItems extends Model
         'amount',
         'list_order',
         'category_order',
-        'master_list_order',
-        'master_category_order'
+
     ];
 
     /**
@@ -167,37 +166,41 @@ class GearListItems extends Model
         }
         return true;
     }
-    public static function createNewMasterItems($inputs, $user)
+    public static function createNewMasterItems($inputs)
     {
-
+        $user = Auth::user();
+        $masterListId = $user->master_list_id;
         $itemCount = $inputs['newItemCount'] ?? 0;
+
         for ($i = 0; $i < $itemCount; $i++) {
 
             $uomArray = self::$uomArray;
-            $gearListItem = new GearListItems();
-            $gearListItem->list_id = '';
-            $gearListItem->user_id = $user->id;
-            $gearListItem->item_name = $inputs['itemName'][$i] ?? '';
-            $gearListItem->item_category = $inputs['itemCategory'][$i] ?? 'unassigned';
-            $gearListItem->item_weight = $inputs['itemWeight'][$i] ?? 0;
-            $gearListItem->master_list_order = 0;
-            $gearListItem->master_category_order = 0;
+            $masterItem = new GearListItems();
+            $masterItem->list_id = $masterListId;
+            $masterItem->master_list_id = $masterListId;
+            $masterItem->user_id = $user->id;
+            $masterItem->item_name = $inputs['itemName'][$i] ?? '';
+            $masterItem->item_category = $inputs['itemCategory'][$i] ?? 'unassigned';
+            $masterItem->item_weight = $inputs['itemWeight'][$i] ?? 0;
+            $masterItem->list_order = 0;
+            $masterItem->category_order = 0;
 
-            $listOrders = self::getCategoryOrder($gearListItem->item_category);
+            $listOrders = self::getCategoryOrder($masterItem->item_category);
 
             if (!empty($listOrders)) {
-                $gearListItem->master_list_order = $listOrders->max_list_order + 1;
-                $gearListItem->master_category_order = $listOrders->max_category_order;
+
+                $masterItem->list_order = $listOrders->max_list_order + 1;
+                $masterItem->category_order = $listOrders->max_category_order + 1;
             }
 
             foreach ($uomArray as $key => $value) {
-                $gearListItem->$key = false;
+                $masterItem->$key = false;
                 if ($inputs['uom'][$i] === $key) {
-                    $gearListItem->$key = true;
+                    $masterItem->$key = true;
                 }
             }
             try {
-                $gearListItem->save();
+                $masterItem->save();
             } catch (\Exception $e) {
                 Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 return false;
@@ -208,10 +211,8 @@ class GearListItems extends Model
 
     public static function getCategoryOrder($itemCategory)
     {
-
         $user = Auth::user();
-
-        $sql = 'SELECT MAX(master_list_order) AS max_list_order, MAX(master_category_order) AS max_category_order
+        $sql = 'SELECT MAX(COALESCE(list_order,0)) AS max_list_order, MAX(COALESCE(category_order,0)) AS max_category_order
                 FROM gear_list_items
                 WHERE deleted_at IS NULL
                 AND user_id = ?

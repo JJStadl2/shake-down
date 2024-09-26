@@ -412,10 +412,10 @@ class GearListItemsController extends Controller
 
     }
     public function addMasterGearItems(Request $request){
-        Log::debug(__FILE__.' '.__LINE__.' request in add master items: '.print_r($request->input(),true));
+       
         $inputs = $request->input();
-        $user = Auth::user();
-        GearListItems::createNewMasterItems($inputs, $user);
+
+        GearListItems::createNewMasterItems($inputs);
         return redirect()->back();
     }
 
