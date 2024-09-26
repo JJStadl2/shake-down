@@ -183,6 +183,7 @@ class GearListItemsController extends Controller
 
         $masterItem->list_id = $masterGearList->id;
         $masterItem->master_list_id =  $masterGearList->id;
+        $masterItem->amount = 1;
         $gearListItem->master_list_id = $masterGearList->id;
 
         try {
@@ -412,7 +413,7 @@ class GearListItemsController extends Controller
 
     }
     public function addMasterGearItems(Request $request){
-       
+
         $inputs = $request->input();
 
         GearListItems::createNewMasterItems($inputs);

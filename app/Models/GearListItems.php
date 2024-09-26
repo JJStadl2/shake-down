@@ -338,13 +338,8 @@ class GearListItems extends Model
                 if(empty($value)){
                     $value = 'unassigned';
                 }
-                if($isMasterItem){
-                    $categoryOrder = GearListItems::where('item_category',$value)->first('master_category_order');
-                    $gearListItem->master_category_order = $categoryOrder->master_category_order ?? 1;
-                }else{
-                    $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->first('category_order');
-                    $gearListItem->category_order = $categoryOrder->category_order ?? 1;
-                }
+                $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->first('category_order');
+                $gearListItem->category_order = $categoryOrder->category_order ?? 1;
 
             }
             $gearListItem->$key = $value;
@@ -420,14 +415,9 @@ class GearListItems extends Model
         foreach($listIds as $listId){
             if(!in_array($listId,$failedLIstIds)){
 
-                // $userItem = new UserItems();
-                // $userItem->list_id = $listId;
-                // $userItem->item_id = $userItemId;
-                // $userItem->user_id = $userId;
-
                 $gearItem = new GearListItems();
                 $gearItem->createAndAssignNewItem($gearItem,$masterItemId);
-                $gearItem->item_name = 'NEW ASSIGN '.$gearItem->item_name;
+                $gearItem->item_name = $gearItem->item_name;
                 $gearItem->list_id = $listId;
                 $gearItem->master_item_id = $masterItemId;
 
@@ -438,15 +428,6 @@ class GearListItems extends Model
                     $failedLIstIds[] = $listId;
                     continue;
                 }
-
-                // try{
-                //     $userItem->save();
-                // }catch(\Exception $e){
-                //     Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-                //     $failedLIstIds[] = $listId;
-                //     $userItem = false;
-                //     continue;
-                // }
 
                 if(!empty($userItem)){
                     try{
