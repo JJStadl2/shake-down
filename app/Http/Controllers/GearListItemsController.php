@@ -232,49 +232,53 @@ class GearListItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
+
         $listId = $request->list_id;
         $isMasterItem = false;
-
-        if($listId === 'master'){
-
-            $isMasterItem = true;
-            $gearList = Session::get('masterItemOptions');
-
-        }else{
-
-            try {
-                $gearList = GearLists::where('id', $listId)->first();
-            } catch (\Exception $e) {
-                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-                return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
-            }
-        }
-
-        $inputs = $request->except(['_token', 'q', 'list_id']);
-        $listItems = $gearList->list_items;
+        $user = Auth::user();
+        $masterListId = $user->master_list_id;
+        $updateMaster = $request->updateMaster ?? false;
+        $inputs = $request->except(['_token', 'q', 'list_id','updateMaster','id']);
 
         try {
-            $gearListItem = GearListItems::where('id', $id)->first();
+            $gearList = GearLists::where('id', $listId)->first();
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-            return response()->json(['status' => '0', 'msg' => 'Error fetching list item']);
+            return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
         }
 
-        foreach ($inputs as $key => $value) {
-            if(!$listItems && $key === 'item_category'){
-                if(empty($value)){
-                    $value = 'unassigned';
-                }
-                if($isMasterItem){
-                    $categoryOrder = GearListItems::where('item_category',$value)->first('master_category_order');
-                    $gearListItem->master_category_order = $categoryOrder->master_category_order ?? 1;
-                }else{
-                    $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->first('category_order');
-                    $gearListItem->category_order = $categoryOrder->category_order ?? 1;
-                }
 
+        if($updateMaster){
+            try {
+                $masterList = GearLists::where('user_id',$masterListId)->first();
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                return response()->json(['status' => '0', 'msg' => 'Error fetching master list for user.']);
             }
-            $gearListItem->$key = $value;
+            Log::debug(__FILE__.' '.__LINE__);
+
+        }
+        // if($listId === 'master'){
+
+        //     $isMasterItem = true;
+        //     $gearList = Session::get('masterItemOptions');
+
+        // }else{
+
+        //     try {
+        //         $gearList = GearLists::where('id', $listId)->first();
+        //     } catch (\Exception $e) {
+        //         Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+        //         return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
+        //     }
+        // }
+
+
+        $gearListItem = GearListItems::updateGearItem($gearList,$id, $inputs);
+
+        if(empty($gearListItem)){
+
+            return response()->json(['status' => '0', 'msg' => 'Error fetching list item']);
         }
 
         try {
@@ -282,6 +286,25 @@ class GearListItemsController extends Controller
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error updating list item']);
+        }
+
+
+        if($updateMaster){
+
+            $masterListItem = GearListItems::updateGearItem($masterList,$gearListItem->master_item_id, $inputs);
+        }
+        if($updateMaster){
+            if( empty($masterListItem)){
+                return response()->json(['status' => '0', 'msg' => 'Error fetching master item for user.']);
+            }
+            try {
+
+                $masterListItem->save();
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                return response()->json(['status' => '0', 'msg' => 'Error updating master list item']);
+            }
+
         }
 
         return response()->json(['status' => '1', 'msg' => 'updated']);

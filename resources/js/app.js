@@ -253,6 +253,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             finalIElement.value = +finalI + 1;
 
             let row = document.createElement("tr");
+            row.id = 'row-'+finalI;
 
             // Create cells and input elements.
             let cell0 = document.createElement("th");
@@ -267,6 +268,13 @@ window.addEventListener("DOMContentLoaded", function (e) {
             counter.id = "id-" + finalI;
             counter.value = "new-" + finalI;
             counter.setAttribute("data-column-name", "id");
+
+            let updateMasterList = document.createElement("input");
+            updateMasterList.type = "hidden";
+            updateMasterList.name = "";
+            updateMasterList.id = "updateMaster-"+finalI;
+            updateMasterList.value = "true";
+
 
             let itemName = createListItemInput(
                 "text",
@@ -285,45 +293,45 @@ window.addEventListener("DOMContentLoaded", function (e) {
             deleteBtn.className = "btn btn-primary btn-sm  py-2";
             deleteBtn.innerHTML = "x";
 
-            let data = {};
-            let url = "/list-item";
+            // let data = {};
+            // let url = "/list-item";
 
-            if (listUOM == "us") {
-                data = getBooleanData("in_ounces");
-            } else {
-                data = getBooleanData("in_grams");
-            }
-            data["list_id"] = listId;
-            data["user_id"] = userId;
-            data["item_name"] = "";
-            if(groupCategory !== null){
-                data['item_category'] = groupCategory;
-            }
+            // if (listUOM == "us") {
+            //     data = getBooleanData("in_ounces");
+            // } else {
+            //     data = getBooleanData("in_grams");
+            // }
+            // data["list_id"] = listId;
+            // data["user_id"] = userId;
+            // data["item_name"] = "";
+            // if(groupCategory !== null){
+            //     data['item_category'] = groupCategory;
+            // }
 
-            let updateItem;
-            updateItem = async function () {
-                try {
-                    const response = await axios.post(url, data);
-                    // alert(
-                    //     "response fro new input: " + JSON.stringify(response)
-                    // );
-                    return response.data;
-                } catch (error) {
-                    // handle error
-                    console.log(error);
-                }
-            };
+            // let updateItem;
+            // updateItem = async function () {
+            //     try {
+            //         const response = await axios.post(url, data);
+            //         // alert(
+            //         //     "response fro new input: " + JSON.stringify(response)
+            //         // );
+            //         return response.data;
+            //     } catch (error) {
+            //         // handle error
+            //         console.log(error);
+            //     }
+            // };
 
-            // To use the function and handle the response data
-            updateItem().then((data) => {
-                // Do something with the response data
-                counter.value = data.newId;
-                row.setAttribute("data-id", data.newId);
-                deleteBtn.setAttribute(
-                    "href",
-                    "/destroy-list-item/" + data.newId
-                );
-            });
+            // // To use the function and handle the response data
+            // updateItem().then((data) => {
+            //     // Do something with the response data
+            //     counter.value = data.newId;
+            //     row.setAttribute("data-id", data.newId);
+            //     deleteBtn.setAttribute(
+            //         "href",
+            //         "/destroy-list-item/" + data.newId
+            //     );
+            // });
 
 
             let cell2 = document.createElement("td");
@@ -454,7 +462,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             iconCell.appendChild(icon);
 
             cell1.appendChild(counter);
-            // cell1.appendChild(icon);
+            cell1.appendChild(updateMasterList);
             cell1.appendChild(itemName);
             cell2.appendChild(itemWeight);
 
@@ -644,7 +652,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
         }
         return data;
     }
-    this.window.updateListItem = function updateListItem(element,) {
+    this.window.updateListItem = function updateListItem(element) {
+
+
         let columnName = element.getAttribute("data-column-name");
         let value = element.value;
         let id = element.id;
@@ -654,9 +664,18 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let itemId = document.getElementById("id-" + row);
         let itemIdValue = itemId.value;
         let listId = document.getElementById("listId").value;
-        let url = "/list-item/" + itemIdValue;
+        let url = "/list-item";
         let data = {};
         let userId = document.getElementById("userId").value;
+        let deleteBtn = document.getElementById('deleteBtn-'+row);
+        let deleteHref = '/remove-list-item/' ;
+        let updateMaster = null;
+        let create = true;
+        // let inputRow = document.getElementById('row-'+row);
+        // let inputsAndSelects = inputRow.querySelector(' td input, td select');
+        // inputsAndSelects.forEach(element => {
+        //     console.log(element);
+        // });
 
         data[columnName] = value;
 
@@ -667,11 +686,29 @@ window.addEventListener("DOMContentLoaded", function (e) {
         data["list_id"] = listId;
         data["user_id"] = userId;
         data["id"] = itemIdValue;
+        if(itemIdValue.substring(0,3) !== 'new'){
+            create = false;
+            url = url +'/'+ itemIdValue;
+            updateMaster = document.getElementById('updateMaster-'+row);
+            if(updateMaster !== null){
+                updateMaster = updateMaster.value;
+                data['updateMaster'] = updateMaster;
+            }
+        }
 
         axios
             .post(url, data, itemId)
             .then((res) => {
-                console.log('res from update for master: '+JSON.stringify(res));
+
+                let resData = res.data;
+                if(resData.status !== '1'){
+                    alert(resData.msg);
+                    return;
+                }
+                if(create){
+                    itemId.value = resData.newId;
+                    deleteBtn.setAttribute('href',deleteHref+'/'+resData.newId);
+                }
             })
             .catch((err) => {
                 alert("Failed to update list item. Please try again later.");
@@ -682,6 +719,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         }
 
     };
+
     function updateTotalListWeights() {
         let weightsForPW = document.querySelectorAll(".for-total-list-weight");
         let baseWeight = 0;

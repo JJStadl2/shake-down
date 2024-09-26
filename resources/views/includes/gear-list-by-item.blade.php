@@ -59,7 +59,7 @@
             @php $i = 1; @endphp
             @if (!empty($gearListItems))
                 @foreach ($gearListItems as $item)
-                    <tr data-id="{{ $item->id }}">
+                    <tr id="row-{{ $i }}" data-id="{{ $item->id }}">
                         <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[]"
                             value="{{ $item->id }}" />
                         <th scope="row"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"

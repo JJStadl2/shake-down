@@ -325,4 +325,38 @@ class GearListItems extends Model
         }
 
     }
+
+    public static function updateGearItem($gearList,$id, $inputs ){
+
+        $listItems = $gearList->list_items ?? true;
+        $isMasterItem = $gearList->master_list ?? false;
+        $listId = $gearList->id;
+
+
+        try {
+            $gearListItem = GearListItems::where('id', $id)->first();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return [];
+        }
+
+        foreach ($inputs as $key => $value) {
+            if(!$listItems && $key === 'item_category'){
+                if(empty($value)){
+                    $value = 'unassigned';
+                }
+                if($isMasterItem){
+                    $categoryOrder = GearListItems::where('item_category',$value)->first('master_category_order');
+                    $gearListItem->master_category_order = $categoryOrder->master_category_order ?? 1;
+                }else{
+                    $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->first('category_order');
+                    $gearListItem->category_order = $categoryOrder->category_order ?? 1;
+                }
+
+            }
+            $gearListItem->$key = $value;
+        }
+        return $gearListItem;
+
+    }
 }

@@ -24,7 +24,7 @@ class GearListsController extends Controller
             return redirect()->back()->with('error','Please login');
         }
 
-        $gearLists = GearLists::where('user_id',$user->id)->get();
+        $gearLists = GearLists::where('user_id',$user->id)->where('master_list',false)->get();
 
         if(!count($gearLists)){
             return redirect('/gear-list')->with('info','Please create a gear list.');
@@ -255,7 +255,7 @@ class GearListsController extends Controller
     }
 
     public function updateSession(Request $request){
-    
+
         $masterItemOptions = Session::get('masterItemOptions') ?? [];
 
         foreach($request->input() as $key => $value){
