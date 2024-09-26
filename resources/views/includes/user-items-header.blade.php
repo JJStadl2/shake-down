@@ -8,19 +8,22 @@
     <input type="hidden" name="userId" id="userId" data-column-name="user_id" value="{{ $user->id }}"/>
     <div class="col-md-3 mb-3">
         <label class="form-control-label" for="sortBy" class="form-label">Sort By</label>
-        <select class="form-control" id="sortBy" name="sortBy" data-column-name="sort" onchange="updateSessionData(this);">
+         {{-- onchange="updateSessionData(this); --}}
+        <select class="form-control" id="sortBy" name="sortBy" data-column-name="sort"  onchange="updateList(this,{{ $gearList->id }})">
             @foreach($sortingOptions as $option)
-            <option value="{{ $option->value }}"  @if($masterItemOptions->sort === $option->value) selected @endif>{{ $option->display }}</option>
+            <option value="{{ $option->value }}"  @if($gearList->sort === $option->value) selected @endif>{{ $option->display }}</option>
             @endforeach
         </select>
 
     </div>
     <div class="col-md-3 mb-3">
         <label class="form-control-label" for="viewOption" class="form-label">View Options</label>
-        <select class="form-control" id="viewOptions" name="viewOptions" data-column-name="list_items" onchange="updateSessionData(this);">
+        <select class="form-control" id="viewOptions" name="viewOptions" data-column-name="list_items"  onchange="updateList(this,{{ $gearList->id }})">
 
-            <option value="1" @if($masterItemOptions->list_items) selected @endif >List by Item</option>
-            <option value="0"  @if(!$masterItemOptions->list_items) selected @endif  >Group by Category</option>
+            {{-- <option value="1" @if($masterItemOptions->list_items) selected @endif >List by Item</option>
+            <option value="0"  @if(!$masterItemOptions->list_items) selected @endif  >Group by Category</option> --}}
+            <option value="1" @if($gearList->list_items) selected @endif >List by Item</option>
+            <option value="0"  @if(!$gearList->list_items) selected @endif  >Group by Category</option>
         </select>
 
     </div>

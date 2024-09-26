@@ -129,20 +129,15 @@ class GearListItems extends Model
 
         return array_unique($selectedCategories);
     }
-    public static function sortItemsForListView($orderedIds, $isMasterItem = false)
+    public static function sortItemsForListView($orderedIds)
     {
 
         foreach ($orderedIds as $order => $id) {
             if (!empty($id)) {
-                if (!$isMasterItem) {
-                    $params = ['list_order' => $order];
-                } else {
-                    $params = ['master_list_order' => $order];
-                }
                 try {
                     DB::table('gear_list_items')
                         ->where('id', $id)
-                        ->update($params);
+                        ->update( ['list_order' => $order]);
                 } catch (\Exception $e) {
                     Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                     return false;
@@ -152,20 +147,17 @@ class GearListItems extends Model
         return true;
     }
 
-    public static function sortItemsForCategoryView($gearListItems, $sortedCategories, $isMasterItem = false)
+    public static function sortItemsForCategoryView($gearListItems, $sortedCategories)
     {
 
         foreach ($gearListItems as $item) {
             foreach ($sortedCategories as $categoryOrder) {
                 if ($item->item_category === $categoryOrder['item_category']) {
-                    $params = ['category_order' => $categoryOrder['category_order']];
-                    if ($isMasterItem) {
-                        $params = ['master_category_order' => $categoryOrder['category_order']];
-                    }
+
                     try {
                         DB::table('gear_list_items')
                             ->where('id', $item->id)
-                            ->update($params);
+                            ->update(['category_order' => $categoryOrder['category_order']]);
                     } catch (\Exception $e) {
                         Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                         return false;

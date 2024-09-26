@@ -22,7 +22,7 @@
 
 
     </div>
-    @if((bool)$masterItemOptions->list_items)
+    @if((bool)$gearList->list_items)
         @include('includes.list-user-items')
     @else
          @include('includes.user-items-by-category')
