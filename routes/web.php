@@ -91,8 +91,6 @@ Route::get('/search-api', [App\Http\Controllers\GearSearchController::class, 'se
 //js helpers
 Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsController::class, 'getCategories']
 )->name('get-categories');
-Route::post('/update-session', [App\Http\Controllers\GearListsController::class, 'updateSession']
-)->name('update-session');
 Route::get('/get-user-lists/{masterItemId}', [App\Http\Controllers\GearListsController::class, 'getUserLists']
 )->name('get-user-lists');
 

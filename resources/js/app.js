@@ -136,7 +136,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         .then((res) => {
             let data = res.data;
             userLists = data.userLists;
-            console.log('data for user lists: ' + JSON.stringify(res));
+
             if(data.status !== '1'){
                 alert(data.msg);
                 return;
@@ -173,9 +173,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let listId = element.getAttribute('data-list-id');
         let itemId = element.getAttribute('data-item-id');
 
-        console.log('list id in assign gear to list new: '+listId);
-        console.log('item id in assign gear to list new: '+itemId);
-        console.log('checked: '+element.checked);
         if(!element.checked){
             listId = '';
         }
@@ -201,26 +198,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
           });
 
     }
-    this.window.updateSessionData = function updateSessionData(element){
-        let value = element.value;
-        let columnName = element.getAttribute('data-column-name');
-        let url = '/update-session';
-        let data = {};
-        data[columnName] = value;
 
-        axios.post(url,data)
-          .then((response) => {
-            response = response.data;
-            if(response.status == 1){
-                location.reload();
-            }
-
-          }, (error) => {
-            console.log(error);
-          });
-
-
-    }
     this.window.addListItem = function addListItem(categorycounter = null, groupCategory = null) {
         let numberOfItemsToAdd = document.getElementById("linesToAdd");
         let linesToAdd = 1;
@@ -468,6 +446,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             let selectCell = document.createElement("td");
             let categorySelect = getCategroySelect(finalI, groupCategory);
+
             selectCell.append(categorySelect);
 
             cell3.appendChild(radio1);
@@ -540,7 +519,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let listId = document.getElementById('listId').value;
         let uom;
         let isMasterList = document.getElementById('isMaster').value;
-        console.log('is master in convert mes: '+isMasterList)
+
         if(isMasterList === 'true'){
             uom = document.getElementById("uom-"+row).value;
         }else{
@@ -683,7 +662,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         // let inputsAndSelects = inputRow.querySelector(' td input, td select');
         // inputsAndSelects.forEach(element => {
         //     console.log(element);
-        // });
+                // });
 
         data[columnName] = value;
 
@@ -722,10 +701,8 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 alert("Failed to update list item. Please try again later.");
                 console.error(err);
             });
-        // if(listId !== 'master'){
-        //     updateTotalListWeights();
-        // }
-        if(!isMasterList){
+
+        if(isMasterList === 'false'){
             updateTotalListWeights();
         }
 
@@ -1184,7 +1161,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
     let assignToListModal =  document.getElementById('AssignItemToListModal');
 
     if(assignToListModal !== undefined && assignToListModal !== null){
-        console.log('assign to list modal: '+JSON.stringify(assignToListModal));
+
         assignToListModal.addEventListener('hide.bs.modal', function () {
             let tableBody = document.getElementById('modal-assign-item-table-body');
             while(tableBody.firstChild){

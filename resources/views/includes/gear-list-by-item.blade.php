@@ -16,7 +16,7 @@
                     min='1' value="1" />
             </div>
             <div class="col-md-2 mb-3" style="margin-right: -9%;">
-                <button style="margin-left: -150%; margin-top:10%;" class="btn btn-primary btn-sm py-2 px-3" onclick="addListItem();">+ Lines</button>
+                <button style="margin-left: -150%; margin-top:10%;" class="btn btn-primary btn-sm py-2 px-3" onclick="addListItem();">+ Gear</button>
             </div>
             <div class="col-md-2 mb-3" style="margin-top: 1%;">
 

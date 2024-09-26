@@ -31,8 +31,8 @@
             <th scope="col">Category</th>
             <th scope="col">UOM</th>
             <th class="master-number-th" scope="col">Weight</th>
-            <th class="master-number-th" scope="col"># Packed</th>
-            <th class="master-number-th" scope="col">Total Packed Weight</th>
+            {{-- <th class="master-number-th" scope="col"># Packed</th> --}}
+            {{-- <th class="master-number-th" scope="col">Total Packed Weight</th> --}}
             <th scope="col"></th>
             <th scope="col">Assign</th>
             <th scope="col">Remove</th>
@@ -46,6 +46,13 @@
                 <tr data-id="{{ $item->id }}">
                     <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[]"
                         value="{{ $item->id }}" />
+                        <input type="hidden" data-column-name="amount"
+                            id="packedAmount-{{ $i }}" name="pakedAmount[]"
+                            value="1" />
+                    <input class="for-total-list-weight master-number" type="hidden"
+                    data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}"
+                    name="totalLineWeight[]"
+                    value="{{ floatval($item->total_line_weight)}}" />
                     <th scope="row"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                             fill="currentColor" class="bi bi-grip-vertical" viewBox="0 0 16 16">
                             <path
@@ -113,19 +120,19 @@
                             value="{{ $item->item_weight ?? 0 }}"
                             onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
                     </td>
-                    <td>
+                    {{-- <td>
                         <input class="form-control" type="number" data-column-name="amount"
                             id="packedAmount-{{ $i }}" name="pakedAmount[]"
                             value="{{ $item->amount ?? 1 }}"
                             onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
-                    </td>
-                    <td>
+                    </td> --}}
+                    {{-- <td>
                         <input class="form-control for-total-list-weight master-number" type="number"
                             data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}"
                             name="totalLineWeight[]"
                             value="{{ floatval($item->total_line_weight) ?? floatval($item->item_weight * $item->amount) }}"
                             readonly />
-                    </td>
+                    </td> --}}
                     <td class="uom-td">
                         @if ($item->in_ounces)
                             <label class="form-check-label us-radio" id="line-uom-label-{{ $i }}"

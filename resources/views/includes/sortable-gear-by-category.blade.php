@@ -213,7 +213,7 @@
                 </table>
                 <div class="row">
                     <div class="col-md-3">
-                        <button class="btn btn-primary" onclick="addListItem('{{ $categoryCounter }}','{{ $itemCat->value }}');">+ Line</button>
+                        <button class="btn btn-primary" onclick="addListItem('{{ $categoryCounter }}','{{ $itemCat->value }}');">+ Gear</button>
                     </div>
                     <div class="col-md-3"> </div>
                     <div class="col-md-3"></div>

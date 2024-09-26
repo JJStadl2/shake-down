@@ -61,7 +61,8 @@ class GearListItemsController extends Controller
         }
 
         GearLists::checkWeight($gearList);
-
+        Log::debug(__FILE__.' '.__LINE__.' gearlist in index: '.print_r($gearList, true));
+        Log::debug(__FILE__.' '.__LINE__.' gearlistitems in index: '.print_r($gearListItems, true));
         return view('gear-lists.gear-list-view', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
     }
 
