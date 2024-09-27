@@ -331,7 +331,7 @@ class GearListItems extends Model
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return [];
         }
-
+       
         foreach ($inputs as $key => $value) {
             if(!$listItems && $key === 'item_category'){
                 if(empty($value)){

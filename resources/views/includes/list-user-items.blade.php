@@ -44,9 +44,10 @@
         @if (!empty($gearListItems))
             @foreach ($gearListItems as $item)
                 <tr data-id="{{ $item->id }}">
-
+                    <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[]"
+                    value="{{ $item->id }}" />
                     <th scope="row">
-            
+
                         <i class="fas fa-grip-vertical"></i>
                     </th>
                     <td>

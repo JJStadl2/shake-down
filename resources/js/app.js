@@ -612,11 +612,15 @@ window.addEventListener("DOMContentLoaded", function (e) {
         if(itemIdValue.substring(0,3) !== 'new'){
             create = false;
             url = url +'/'+ itemIdValue;
-            updateMaster = document.getElementById('updateMaster-'+row);
-            if(updateMaster !== null){
-                updateMaster = updateMaster.value;
-                data['updateMaster'] = updateMaster;
+            if(isMasterList === 'true'){
+
+                data['updateMaster'] = true;
             }
+            // updateMaster = document.getElementById('updateMaster-'+row);
+            // if(updateMaster !== null){
+            //     updateMaster = updateMaster.value;
+            //     data['updateMaster'] = updateMaster;
+            // }
         }
 
         axios

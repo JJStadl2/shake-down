@@ -233,64 +233,43 @@ class GearListItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
-
-        $listId = $request->list_id;
-        $user = Auth::user();
-        $masterListId = $user->master_list_id;
         $updateMaster = $request->updateMaster ?? false;
         $inputs = $request->except(['_token', 'q', 'list_id', 'updateMaster', 'id']);
 
         try {
-            $gearList = GearLists::where('id', $listId)->first();
+            GearListItems::where('id',$id)->update($inputs);
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
         }
 
-
-        if ($updateMaster) {
-            try {
-                $masterList = GearLists::where('user_id', $masterListId)->first();
-            } catch (\Exception $e) {
-                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-                return response()->json(['status' => '0', 'msg' => 'Error fetching master list for user.']);
-            }
-        }
-
-
-        $gearListItem = GearListItems::updateGearItem($gearList, $id, $inputs);
-
-        if (empty($gearListItem)) {
-
-            return response()->json(['status' => '0', 'msg' => 'Error fetching list item']);
-        }
-
-        try {
-            $gearListItem->save();
-        } catch (\Exception $e) {
-            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-            return response()->json(['status' => '0', 'msg' => 'Error updating list item']);
-        }
-
-
-        if ($updateMaster) {
-
-            $masterListItem = GearListItems::updateGearItem($masterList, $gearListItem->master_item_id, $inputs);
-        }
-        if ($updateMaster) {
-            if (empty($masterListItem)) {
-                return response()->json(['status' => '0', 'msg' => 'Error fetching master item for user.']);
-            }
-            try {
-
-                $masterListItem->save();
-            } catch (\Exception $e) {
-                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-                return response()->json(['status' => '0', 'msg' => 'Error updating master list item']);
-            }
+        if($updateMaster){
+            return $this->updateAllChildItems($inputs, $id);
         }
 
         return response()->json(['status' => '1', 'msg' => 'updated']);
+    }
+    public function updateAllChildItems($inputs, $id){
+
+        try {
+            $gearListItems = GearListItems::where('master_item_id', $id)->get();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status' => '0', 'msg' => 'Error fetching all master list.']);
+        }
+
+        foreach($gearListItems as $gearListItem){
+
+            try {
+                GearListItems::where('id',$gearListItem->id)->update($inputs);
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                return response()->json(['status' => '0', 'msg' => 'Error updating list item']);
+            }
+
+        }
+        return response()->json(['status' => '1', 'msg' => 'updated']);
+
     }
 
     /**
