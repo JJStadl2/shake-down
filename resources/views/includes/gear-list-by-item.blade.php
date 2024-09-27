@@ -166,8 +166,6 @@
                         </td>
 
                         <td id="btn-td-{{ $i }}">
-                            {{-- <a id="deleteBtn-{{ $i }}" href="/remove-list-item/{{ $item->id }}"
-                                class="btn btn-primary btn-sm  py-2">x</a> --}}
                                 <button id="deleteItemBtn-{{ $i }}" class="btn btn-sm btn-danger" title="Delete Item" data-href='/remove-list-item/{{ $item->id }}' data-object-type='item:' data-object-name='{{ $item->item_name }}' data-list-name="{{ $gearList->name }}" data-object-id="{{ $item->id }}" data-bs-toggle="modal" data-bs-target="#deleteAlertModal" onclick="confirmDelete(this)">
                                     <i class="fa fa-trash"></i>
                                 </button>

@@ -200,9 +200,12 @@
                                     </td>
 
                                     <td id="btn-td-{{ $i }}">
-                                        <a id="deleteBtn-{{ $i }}"
+                                        {{-- <a id="deleteBtn-{{ $i }}"
                                             href="/remove-list-item/{{ $item->id }}"
-                                            class="btn btn-primary btn-sm  py-2">x</a>
+                                            class="btn btn-primary btn-sm  py-2">x</a> --}}
+                                            <button id="deleteItemBtn-{{ $i }}" class="btn btn-sm btn-danger" title="Delete Item" data-href='/remove-list-item/{{ $item->id }}' data-object-type='item:' data-object-name='{{ $item->item_name }}' data-list-name="{{ $gearList->name }}" data-object-id="{{ $item->id }}" data-bs-toggle="modal" data-bs-target="#deleteAlertModal" onclick="confirmDelete(this)">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
                                     </td>
 
                                 </tr>
@@ -213,12 +216,12 @@
                 </table>
                 <div class="row">
                     <div class="col-md-3">
-                        <button class="btn btn-primary" onclick="addListItem('{{ $categoryCounter }}','{{ $itemCat->value }}');">+ Gear</button>
+                        <button class="btn btn-primary btn-sm py-2 px3" onclick="addListItem('{{ $categoryCounter }}','{{ $itemCat->value }}');">+ Gear</button>
                     </div>
                     <div class="col-md-3"> </div>
                     <div class="col-md-3"></div>
                     <div class="col-md-3">
-                        <a href="/remove-category/{{ $gearList->id }}/{{ $itemCat->value}}" class="btn btn-primary"> Delete Category</a>
+                        <a href="/remove-category/{{ $gearList->id }}/{{ $itemCat->value}}" class="btn btn-primary btn-sm py-2 px-3"> Delete Category</a>
                     </div>
 
 
