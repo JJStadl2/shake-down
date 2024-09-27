@@ -266,10 +266,14 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             let cell6 = document.createElement("td");
             cell6.id = "btn-td-" + finalI;
-            let deleteBtn = document.createElement("a");
-            deleteBtn.id = "deleteBtn-" + finalI;
-            deleteBtn.className = "btn btn-primary btn-sm  py-2";
-            deleteBtn.innerHTML = "x";
+            // let deleteBtn = document.createElement("a");
+            // deleteBtn.id = "deleteBtn-" + finalI;
+            // deleteBtn.className = "btn btn-primary btn-sm  py-2";
+            // deleteBtn.innerHTML = "x";
+            let deleteBtn = createDeleteButton(finalI);
+            // deleteBtn.id = "deleteBtn-" + finalI;
+            // deleteBtn.className = "btn btn-primary btn-sm  py-2";
+            // deleteBtn.innerHTML = "x";
 
             // let data = {};
             // let url = "/list-item";
@@ -653,8 +657,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let url = "/list-item";
         let data = {};
         let userId = document.getElementById("userId").value;
-        let deleteBtn = document.getElementById('deleteBtn-'+row);
-        let deleteHref = '/remove-list-item/' ;
         let updateMaster = null;
         let create = true;
         let isMasterList = document.getElementById('isMaster').value;
@@ -694,8 +696,8 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 }
                 if(create){
                     itemId.value = resData.newId;
-                    deleteBtn.setAttribute('href',deleteHref+'/'+resData.newId);
                 }
+                getDeleteBtnData(itemId.value,row);
             })
             .catch((err) => {
                 alert("Failed to update list item. Please try again later.");
@@ -1047,13 +1049,85 @@ window.addEventListener("DOMContentLoaded", function (e) {
     this.window.showConvrsionAlert = function showConvrsionAlert(){
         alert('Changing this value will also update the units of measure and associated values for any item on this gear list.');
     }
-    this.window.confirmDelete = function confirmDelete(listId) {
-        if (confirm('Are you sure you want to delete this list?')) {
-            window.location.href = `/destroy-list/${listId}`;
+    this.window.confirmDelete = function confirmDelete(element) {
+        let href = element.getAttribute('data-href');
+        let name = element.getAttribute('data-object-name');
+        let objectType = element.getAttribute('data-object-type');
+        let anchor = document.getElementById('deleteObjectAnchor');
+        let modalBody = document.getElementById('deleteModalBody');
+        let text = `Are you sure you want to delete ${objectType} ${name}?`;
+        let helperDiv = document.getElementById('deleteHelper');
+        helperDiv.innerText = '';
+
+
+        if(objectType === 'item:'){
+            let listName = element.getAttribute('data-list-name');
+            let helptext = `* Deleting an item from from this list (${listName}) will not delete it the 'Your Gear' section.`;
+            helperDiv.append(helptext);
+        }else{
+            helperDiv.style.display = 'none';
         }
+        modalBody.innerHTML = text;
+        anchor.setAttribute('href',href);
+
     }
 
+    function createDeleteButton(row) {
+        // Create the button element
+        const button = document.createElement('button');
+        button.className = 'btn btn-sm btn-danger';
+        button.title = 'Delete Item';
+        button.id =`deleteItemBtn-${row}`;
+        button.setAttribute('data-href','');
+        button.setAttribute('data-object-name','');
+        button.setAttribute('data-object-id','');
+        button.setAttribute('data-object-type','item:');
+        button.setAttribute('data-list-name',document.getElementById('listName').value);
+        button.setAttribute('data-bs-toggle',"modal")
+        button.setAttribute('data-bs-target',"#deleteAlertModal");
 
+        // Create the icon element
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-trash'; // Font Awesome trash icon
+
+        // Add the icon to the button
+        button.appendChild(icon);
+
+        // Add text to the button (optional)
+        // button.appendChild(document.createTextNode('Delete'));
+
+        // Add the onclick event to the button
+        button.onclick = function() {
+            confirmDelete(button);
+        };
+
+        return button;
+    }
+
+    function getDeleteBtnData(id,row){
+        let deleteBtn = document.getElementById(`deleteItemBtn-${row}`);
+        let url = `/list-item/${id}`;
+
+        axios
+        .get(url)
+        .then((res) => {
+            if (res.data.status != "1") {
+                alert(res.data.msg);
+                return;
+            }
+
+            let item = res.data.item;
+            deleteBtn.setAttribute('data-href',`/remove-list-item/${item.id}`);
+            deleteBtn.setAttribute('data-object-name',item.item_name);
+            deleteBtn.setAttribute('data-object-id',item.id);
+
+        })
+        .catch((err) => {
+            alert(err);
+        });
+
+
+    }
 
     document.querySelectorAll(".sortable").forEach(function (table) {
         const categoryId = table.getAttribute("data-category-id");

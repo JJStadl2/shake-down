@@ -2,10 +2,10 @@
 <div class='modal-container'>
     <div class="modal fade" id="addMasterItemModal" tabindex="-1" aria-labelledby="addMasterItemModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg" style="max-width: 90%;">
-        <div class="modal-content" style="font-family:'Roboto', sans-serif;color: #f5f5f5;background-color: #1a1a1a;">
+        <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="addMasterItemModalLabel">Add New Items</h5>
-            <button style="background-color: #f5f5f5" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button  type="button" class="btn-close modal-x" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
           <form action="/add-gear-items" method="post">

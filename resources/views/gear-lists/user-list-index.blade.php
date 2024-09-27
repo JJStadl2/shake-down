@@ -2,6 +2,7 @@
 @extends('layouts.header-footer')
 @section('title','Grear Lists | ')
 @section('content')
+@include('modals.delete-alert-modal')
 <div class="btn-header-container" >
     <div class="row">
         <div class="col-md-4">
@@ -52,7 +53,7 @@
                 <a href='/list-items/{{ $gearList->id }}' class="btn btn-sm btn-success" style=" margin-right:.5rem;"title="View Items">
                     <i class="fa fa-list"></i>
                 </a>
-                <button class="btn btn-sm btn-danger" title="Delete List" onclick="confirmDelete({{ $gearList->id }})">
+                <button id="deleteListBtn-{{ $i }}" class="btn btn-sm btn-danger" title="Delete List"  data-object-type="list:"  data-object-name='{{ $gearList->name }}' data-object-id="{{ $gearList->id }}" data-href='/destroy-list/{{ $gearList->id }}' data-bs-toggle="modal" data-bs-target="#deleteAlertModal"  onclick="confirmDelete(this)">
                     <i class="fa fa-trash"></i>
                 </button>
 

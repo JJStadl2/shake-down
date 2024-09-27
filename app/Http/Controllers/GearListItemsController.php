@@ -42,7 +42,7 @@ class GearListItemsController extends Controller
         $uom = $gearList->uom;
         $sort = ['category_order', 'ASC'];
 
-        if($gearList->list_items){
+        if ($gearList->list_items) {
             $sort = DB::table('list_sorting_options')->where('value', $gearList->sort)->first('order_by');
             $sort = explode(' ', $sort->order_by);
         }
@@ -56,14 +56,12 @@ class GearListItemsController extends Controller
 
         $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
 
-        if(!$gearList->list_items){
+        if (!$gearList->list_items) {
             $sortedItemCategories = $this->getCategories($request, $selectedCategories);
         }
 
         GearLists::checkWeight($gearList);
-        Log::debug(__FILE__.' '.__LINE__.' gearlist in index: '.print_r($gearList, true));
-        Log::debug(__FILE__.' '.__LINE__.' gearlistitems in index: '.print_r($gearListItems, true));
-        return view('gear-lists.gear-list-view', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
+        return view('gear-lists.gear-list-view', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories, 'sortedItemCategories' => $sortedItemCategories]);
     }
 
     public function itemsMaster()
@@ -73,12 +71,12 @@ class GearListItemsController extends Controller
         $userId = $user->id;
         $itemCategories = $this->getCategories($request);
         $listSortingOptions = GearLists::getSortingOptions();
-        $userLists = GearLists::where('user_id',$userId)->where('master_list',false)->orderBy('id','ASC')->get(['id','name']);
+        $userLists = GearLists::where('user_id', $userId)->where('master_list', false)->orderBy('id', 'ASC')->get(['id', 'name']);
         $sortedItemCategories = [];
         $sortByCategory = false;
-        $masterGearList = GearLists::where('user_id', $userId)->where('master_list',true)->first();
+        $masterGearList = GearLists::where('user_id', $userId)->where('master_list', true)->first();
 
-        $sort_2 = ['list_order','ASC'];
+        $sort_2 = ['list_order', 'ASC'];
         $sort_3 = ['category_order', 'ASC'];
 
         $by_2 = $sort_2[0];
@@ -86,19 +84,18 @@ class GearListItemsController extends Controller
         $by_3 = $sort_3[0];
         $order_3 = $sort_3[1];
 
-        if($masterGearList->list_items){
-            if($masterGearList->sort !== 'drag_drop'){
+        if ($masterGearList->list_items) {
+            if ($masterGearList->sort !== 'drag_drop') {
                 $sort = DB::table('list_sorting_options')->where('value', $masterGearList->sort)->first('order_by');
                 $sort = explode(' ', $sort->order_by);
-
-            }else{
+            } else {
                 $sort = $sort_2;
             }
-        }else{
+        } else {
             $sortByCategory = true;
         }
 
-        if(empty($sort)){
+        if (empty($sort)) {
             $sort = $sort_3;
         }
 
@@ -106,13 +103,12 @@ class GearListItemsController extends Controller
         $order = $sort[1];
 
         try {
-            if(!$sortByCategory){
-                $gearListItems = GearListItems::where('user_id', $userId)->where('list_id',$masterGearList->id)->orderBy($by,$order)->orderBy($by_2,$order_2)->orderBy($by_3,$order_3)->get();
-            }else{
+            if (!$sortByCategory) {
+                $gearListItems = GearListItems::where('user_id', $userId)->where('list_id', $masterGearList->id)->orderBy($by, $order)->orderBy($by_2, $order_2)->orderBy($by_3, $order_3)->get();
+            } else {
 
-                $gearListItems = GearListItems::where('user_id', $userId)->where('list_id',$masterGearList->id)->orderBy('category_order','ASC')->orderBy('list_order','ASC')->get();
+                $gearListItems = GearListItems::where('user_id', $userId)->where('list_id', $masterGearList->id)->orderBy('category_order', 'ASC')->orderBy('list_order', 'ASC')->get();
             }
-
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return redirect()->back()->with('error', 'Unable to find list info.');
@@ -120,12 +116,11 @@ class GearListItemsController extends Controller
 
         $selectedCategories = GearListItems::getListSelectedCategories($gearListItems);
 
-        if(!$masterGearList->list_items){
+        if (!$masterGearList->list_items) {
             $sortedItemCategories = $this->getCategories($request, $selectedCategories);
         }
 
-        return view('gear-lists.user-item-view',  ['gearList'=>$masterGearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'userLists'=>$userLists, 'selectedCategories' => $selectedCategories, 'sortedItemCategories'=>$sortedItemCategories]);
-
+        return view('gear-lists.user-item-view',  ['gearList' => $masterGearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'userLists' => $userLists, 'selectedCategories' => $selectedCategories, 'sortedItemCategories' => $sortedItemCategories]);
     }
     /**
      * Show the form for creating a new resource.
@@ -143,7 +138,7 @@ class GearListItemsController extends Controller
         $listId = $request->list_id;
         $user = Auth::user();
         try {
-            $masterGearList = GearLists::where('user_id', $user->id)->where('master_list',true)->first();
+            $masterGearList = GearLists::where('user_id', $user->id)->where('master_list', true)->first();
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => "Error fetching find user's master list. Please try again later."]);
@@ -155,7 +150,7 @@ class GearListItemsController extends Controller
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error fetching list for adding item.']);
         }
-        if(empty($gearList)){
+        if (empty($gearList)) {
             return response()->json(['status' => '0', 'msg' => 'No list found for adding item.']);
         }
 
@@ -166,17 +161,16 @@ class GearListItemsController extends Controller
 
 
         foreach ($inputs as $key => $value) {
-            if(!$listItems && $key === 'item_category'){
-                if(empty($value)){
+            if (!$listItems && $key === 'item_category') {
+                if (empty($value)) {
                     $value = 'unassigned';
                 }
-                $categoryOrder = GearListItems::where('list_id',$listId)->where('item_category',$value)->orderBy('list_order','desc')->first(['category_order','list_order']);
+                $categoryOrder = GearListItems::where('list_id', $listId)->where('item_category', $value)->orderBy('list_order', 'desc')->first(['category_order', 'list_order']);
                 $gearListItem->category_order = $categoryOrder->category_order ?? 1;
                 $list_order = $categoryOrder->list_order ?? 0;
-                $gearListItem->list_order = $list_order +1;
+                $gearListItem->list_order = $list_order + 1;
                 $masterItem->category_order = $categoryOrder->category_order ?? 1;
-                $masterItem->list_order = $list_order +1;
-
+                $masterItem->list_order = $list_order + 1;
             }
             $gearListItem->$key = $value;
             $masterItem->$key = $value;
@@ -210,9 +204,20 @@ class GearListItemsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(GearListItems $gearListItems)
+    public function show($id)
     {
-        //
+        try {
+            $gearListItem = GearListItems::where('id', $id)->first();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status' => '0', 'msg' => $e->getMessage()]);
+        }
+        if (empty($gearListItem)) {
+            return response()->json(['status' => '0', 'msg' => 'No item Found']);
+        }
+        $listName = GearLists::where('id', $gearListItem->list_id)->first('name');
+        $gearListItem->list_name = $listName->name;
+        return response()->json(['status' => '1', 'msg' => '', 'item' => $gearListItem]);
     }
 
     /**
@@ -233,7 +238,7 @@ class GearListItemsController extends Controller
         $user = Auth::user();
         $masterListId = $user->master_list_id;
         $updateMaster = $request->updateMaster ?? false;
-        $inputs = $request->except(['_token', 'q', 'list_id','updateMaster','id']);
+        $inputs = $request->except(['_token', 'q', 'list_id', 'updateMaster', 'id']);
 
         try {
             $gearList = GearLists::where('id', $listId)->first();
@@ -243,20 +248,19 @@ class GearListItemsController extends Controller
         }
 
 
-        if($updateMaster){
+        if ($updateMaster) {
             try {
-                $masterList = GearLists::where('user_id',$masterListId)->first();
+                $masterList = GearLists::where('user_id', $masterListId)->first();
             } catch (\Exception $e) {
                 Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 return response()->json(['status' => '0', 'msg' => 'Error fetching master list for user.']);
             }
-
         }
 
 
-        $gearListItem = GearListItems::updateGearItem($gearList,$id, $inputs);
+        $gearListItem = GearListItems::updateGearItem($gearList, $id, $inputs);
 
-        if(empty($gearListItem)){
+        if (empty($gearListItem)) {
 
             return response()->json(['status' => '0', 'msg' => 'Error fetching list item']);
         }
@@ -269,12 +273,12 @@ class GearListItemsController extends Controller
         }
 
 
-        if($updateMaster){
+        if ($updateMaster) {
 
-            $masterListItem = GearListItems::updateGearItem($masterList,$gearListItem->master_item_id, $inputs);
+            $masterListItem = GearListItems::updateGearItem($masterList, $gearListItem->master_item_id, $inputs);
         }
-        if($updateMaster){
-            if( empty($masterListItem)){
+        if ($updateMaster) {
+            if (empty($masterListItem)) {
                 return response()->json(['status' => '0', 'msg' => 'Error fetching master item for user.']);
             }
             try {
@@ -284,7 +288,6 @@ class GearListItemsController extends Controller
                 Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 return response()->json(['status' => '0', 'msg' => 'Error updating master list item']);
             }
-
         }
 
         return response()->json(['status' => '1', 'msg' => 'updated']);
@@ -338,17 +341,15 @@ class GearListItemsController extends Controller
             return response()->json($itemCategories);
         }
 
-        if(!empty($selectedCategories)){
+        if (!empty($selectedCategories)) {
 
             return $itemCategories->sortBy(function ($itemCategory) use ($selectedCategories) {
-                if(in_array($itemCategory->value, $selectedCategories)){
+                if (in_array($itemCategory->value, $selectedCategories)) {
                     return array_search($itemCategory->value, $selectedCategories);
-                }else{
+                } else {
                     return [];
                 }
-
             })->values();
-
         }
 
         return $itemCategories;
@@ -374,7 +375,7 @@ class GearListItemsController extends Controller
 
         if ($categoryId === 'list-items') {
 
-            $sortItemsInListView = GearListItems::sortItemsForListView($orderedIds,$isMasterItem);
+            $sortItemsInListView = GearListItems::sortItemsForListView($orderedIds, $isMasterItem);
             if (!$sortItemsInListView) {
                 $response = ['status' => '0', 'msg' => 'Failed to update the order of one or more items.'];
             } else {
@@ -385,41 +386,40 @@ class GearListItemsController extends Controller
         return response()->json($response);
     }
 
-    public function sortGearListCategories(Request $request){
+    public function sortGearListCategories(Request $request)
+    {
 
         $categories = $request->category_order ?? [];
 
-        if(empty($categories)){
-            return response()->json(['status'=>'1','msg'=>'No change in category sort.']);
+        if (empty($categories)) {
+            return response()->json(['status' => '1', 'msg' => 'No change in category sort.']);
         }
 
-        try{
+        try {
             $gearListItems = GearListItems::where('list_id', $request->list_id)->get();
-        }catch(\Exception $e){
-            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-            return response()->json(['status'=>'0','msg'=>'Error getting Gear item data. Please try again later.']);
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status' => '0', 'msg' => 'Error getting Gear item data. Please try again later.']);
         }
 
-        if(empty($gearListItems)){
-            return response()->json(['status'=>'0','msg'=>'No items associacted with gear list. Please add gear items.']);
+        if (empty($gearListItems)) {
+            return response()->json(['status' => '0', 'msg' => 'No items associacted with gear list. Please add gear items.']);
         }
 
-        $sortedForCategoryView = GearListItems::sortItemsForCategoryView($gearListItems,$categories);
+        $sortedForCategoryView = GearListItems::sortItemsForCategoryView($gearListItems, $categories);
 
-        if(!$sortedForCategoryView){
-            return response()->json(['status'=>'0','msg'=>'Failed to sort gear items by category. Please try again later.']);
+        if (!$sortedForCategoryView) {
+            return response()->json(['status' => '0', 'msg' => 'Failed to sort gear items by category. Please try again later.']);
         }
 
-        return response()->json(['status'=>'1','msg'=>'Category sort updates.']);
-
+        return response()->json(['status' => '1', 'msg' => 'Category sort updates.']);
     }
-    public function addMasterGearItems(Request $request){
+    public function addMasterGearItems(Request $request)
+    {
 
         $inputs = $request->input();
 
         GearListItems::createNewMasterItems($inputs);
         return redirect()->back();
     }
-
-
 }

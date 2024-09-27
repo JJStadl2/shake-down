@@ -3,6 +3,7 @@
 @section('content')
 @include('modals.search-modal')
 @include('modals.gear-list-chart-modal')
+@include('modals.delete-alert-modal')
 <div class="list-item-form-container">
     <div class="row">
         <div class="col-md-4">
