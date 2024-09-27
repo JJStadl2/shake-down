@@ -325,7 +325,6 @@ class GearListItems extends Model
         $isMasterItem = $gearList->master_list ?? false;
         $listId = $gearList->id;
 
-
         try {
             $gearListItem = GearListItems::where('id', $id)->first();
         } catch (\Exception $e) {

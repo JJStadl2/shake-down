@@ -298,13 +298,20 @@ class GearListItemsController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $gearListItem = GearListItems::where('id', $id)->first();
+
+        try {
+            $gearListItem = GearListItems::where('id', $id)->first();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error fetching item to delete. Try again later.');
+        }
 
         if (empty($gearListItem)) {
             return redirect()->back()->with('error', 'No item found to delete.');
         }
 
         try {
+            GearListItems::where('master_item_id',$gearListItem->id)->delete();
             $gearListItem->delete();
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
@@ -323,8 +330,7 @@ class GearListItemsController extends Controller
         }
 
         try {
-            $gearListItem->list_id = '';
-            $gearListItem->save();
+            $gearListItem->delete();
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to remove item from list.');
