@@ -10,11 +10,10 @@
             <a href="/gear-lists" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:left;margin-left:12%">Gear Lists</a>
 
         </div>
-        <div class="col-md-4"></div>
         <div class="col-md-4">
-
-
-            {{-- <input type="hidden" id="listByItems" data-column-name="list_items" value="{{ $gearList->list_items }}" /> --}}
+            <h3>Manage All Your Gear</h3>
+        </div>
+        <div class="col-md-4">
 
         </div>
     </div>

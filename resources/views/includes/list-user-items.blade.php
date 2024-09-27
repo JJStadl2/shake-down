@@ -32,10 +32,10 @@
             <th scope="col">UOM</th>
             <th class="master-number-th" scope="col">Weight</th>
              <th class="master-number-th" scope="col"># Packed</th>
-             <th class="master-number-th" scope="col">Total Packed Weight</th>
+             <th class="master-number-th" scope="col">Packed Weight</th>
             <th scope="col"></th>
-            <th scope="col">Assign</th>
-            <th scope="col">Remove</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
 
         </tr>
     </thead>
@@ -150,7 +150,9 @@
 
                     </td>
                     <td>
-                        <button  class="btn btn-primary btn-sm py-2 px-3"  data-bs-toggle="modal"   data-bs-target="#AssignItemToListModal" onclick="showListAssignModal('{{ $item->id }}','{{ $item->item_name }}')" >Assign</button>
+                        <button  class="btn btn-success btn-sm" title="Assign to List"  data-bs-toggle="modal"   data-bs-target="#AssignItemToListModal" onclick="showListAssignModal('{{ $item->id }}','{{ $item->item_name }}')" >
+                            <i class="fas fa-clipboard-list"></i>
+                        </button>
 
                     </td>
 

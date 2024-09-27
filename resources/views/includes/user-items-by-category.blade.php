@@ -29,8 +29,9 @@
                             <th class="master-number-th" scope="col"># Packed</th>
                             <th class="master-number-th" scope="col">Total Packed Weight</th>
                             <th scope="col"></th>
-                            <th scope="col">Assign</th>
-                            <th scope="col">Remove</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody id="categoryTable-{{ $categoryCounter }}">
@@ -165,11 +166,17 @@
                                             @endif
                                         </select>
                                     </td>
+                                    <td>
+                                        <button  class="btn btn-success btn-sm" title="Assign to List"  data-bs-toggle="modal"   data-bs-target="#AssignItemToListModal" onclick="showListAssignModal('{{ $item->id }}','{{ $item->item_name }}')" >
+                                            <i class="fas fa-clipboard-list"></i>
+                                        </button>
+
+                                    </td>
 
                                     <td id="btn-td-{{ $i }}">
-                                        <a id="deleteBtn-{{ $i }}"
-                                            href="/destroy-list-item/{{ $item->id }}"
-                                            class="btn btn-primary btn-sm  py-2">x</a>
+                                        <button id="deleteItemBtn-{{ $i }}" class="btn btn-sm btn-danger" title="Delete Item" data-href="/destroy-list-item/{{ $item->id }}" data-object-type='item:' data-object-name='{{ $item->item_name }}' data-list-name="master" data-object-id="{{ $item->id }}" data-bs-toggle="modal" data-bs-target="#deleteAlertModal" onclick="confirmDelete(this)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
                                     </td>
 
                                 </tr>
