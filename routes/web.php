@@ -4,18 +4,25 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 
+//view routs
 Route::get('/', function () {
     return view('welcome');
 
 });
-//view routs
 Route::get('/dashboard', function () {
     if(Auth::check()){
         return  view('dashboard');
     }else{
         return redirect('/login');
     }
-    //  return view('dashboard');
+
+});
+Route::get('/about', function () {
+    return view('about');
+
+});
+Route::get('/faqs', function () {
+    return view('faqs');
 
 });
 

@@ -30,6 +30,7 @@
                     @endif
 
                     <a href="/about" class="nav-link-text">About</a>
+                    <a href="/faqs" class="nav-link-text">Faqs</a>
 
                 </nav>
 

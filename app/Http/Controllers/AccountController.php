@@ -9,6 +9,8 @@ use App\Models\Validation;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GearLists;
+use App\Mail\AccountVerification;
+use Illuminate\Support\Facades\Mail;
 
 class AccountController extends Controller
 {

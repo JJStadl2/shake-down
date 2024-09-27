@@ -14,9 +14,10 @@
             <h3>Manage All Your Gear</h3>
         </div>
         <div class="col-md-4">
-
+            <a href="/gear-list" class="btn btn-primary  btn-sm mt-2 py-2 px-3" style="float: right;" >New List</a>
         </div>
     </div>
+    <br>
     <div class="gear-list-container">
         @include('includes.user-items-header')
 
