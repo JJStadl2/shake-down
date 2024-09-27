@@ -34,7 +34,8 @@ class ItemCategorySeeder extends Seeder
              'cooking',
              'tools',
              'emergency',
-             'sleep_system'
+             'sleep_system',
+             'unassigned'
          ];
          sort($categories);
 
