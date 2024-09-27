@@ -7,7 +7,7 @@
             <div class="draggable-container"  data-category-value="{{$itemCat->value}}">
             <div class="item-collapsible-header" >
                 <span>
-        
+
                 <i class="fas fa-grip-vertical"></i>
                 </span>
                 {{ $itemCat->category }}
@@ -23,8 +23,8 @@
                             <th scope="col">Category</th>
                             <th scope="col">UOM</th>
                             <th class="master-number-th" scope="col">Weight</th>
-                            <th class="master-number-th" scope="col"># Packed</th>
-                            <th class="master-number-th" scope="col">Total Packed Weight</th>
+                            {{-- <th class="master-number-th" scope="col"># Packed</th>
+                            <th class="master-number-th" scope="col">Total Packed Weight</th> --}}
                             <th scope="col"></th>
                             <th scope="col"></th>
                             <th scope="col"></th>
@@ -38,6 +38,14 @@
                                 <tr data-id="{{ $item->id }}">
                                     <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[]"
                                         value="{{ $item->id }}" />
+                                    <input type="hidden" data-column-name="amount"
+                                    id="packedAmount-{{ $i }}" name="pakedAmount[]"
+                                    value="{{  1 }}" />
+                                    <input type="hidden"
+                                    data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}"
+                                    name="totalLineWeight[]"
+                                    value="{{  floatval($item->item_weight) }}"/>
+
                                     <th scope="row">
                                         <i class="fas fa-grip-vertical"></i>
                                     </th>
@@ -109,19 +117,8 @@
                                             value="{{ $item->item_weight ?? 0 }}"
                                             onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
                                     </td>
-                                    <td>
-                                        <input class="form-control" type="number" data-column-name="amount"
-                                            id="packedAmount-{{ $i }}" name="pakedAmount[]"
-                                            value="{{ $item->amount ?? 1 }}"
-                                            onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
-                                    </td>
-                                    <td>
-                                        <input class="form-control for-total-list-weight" type="number"
-                                            data-column-name="total_line_weight" id="totalLineWeight-{{ $i }}"
-                                            name="totalLineWeight[]"
-                                            value="{{ floatval($item->total_line_weight) ?? floatval($item->item_weight * $item->amount) }}"
-                                            readonly />
-                                    </td>
+
+                                 
                                     <td class="uom-td">
                                         @if ($item->in_ounces)
                                             <label class="form-check-label us-radio"
