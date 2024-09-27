@@ -46,10 +46,11 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             let cell6 = document.createElement("td");
             cell6.id = "btn-td-" +i;
-            let deleteBtn = document.createElement("a");
-            deleteBtn.id = "deleteBtn-" + i;
-            deleteBtn.className = "btn btn-primary btn-sm  py-2";
-            deleteBtn.innerHTML = "x";
+            // let deleteBtn = document.createElement("a");
+            // deleteBtn.id = "deleteBtn-" + i;
+            // deleteBtn.className = "btn btn-primary btn-sm  py-2";
+            // deleteBtn.innerHTML = "x";
+            let deleteBtn = createDeleteButton(i);
 
 
             let cell2 = document.createElement("td");
@@ -64,7 +65,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             itemWeight.classList.add("for-weight");
             itemWeight.classList.add("number-input");
             itemWeight.classList.add("form-control");
-            itemWeight.style.width = '40%';
+            //itemWeight.style.width = '40%';
             cell2.classList.add("number-col");
 
             let cell3 = document.createElement("td");

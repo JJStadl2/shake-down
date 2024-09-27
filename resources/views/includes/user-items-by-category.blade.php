@@ -155,17 +155,7 @@
                                         @endif
 
                                     </td>
-                                    <td>
-                                        <select class="form-control" id="listIdSelect-{{ $i }}" data-column-name="list_id" value='{{ $item->list_id ?? '' }}' onchange="assignToGearList('{{ $item->id }}',this.value);">
-                                            <option value='' @if($item->list_id === '') selected @endif>Assign to a gear list</option>
-                                            @if(!empty($userLists))
-                                                @foreach($userLists as $userList){
-                                                    <option value='{{ $userList->id }}' @if($item->list_id === $userList->id) selected @endif>{{ $userList->name }}</option>
-                                                }
-                                                @endforeach
-                                            @endif
-                                        </select>
-                                    </td>
+                                  
                                     <td>
                                         <button  class="btn btn-success btn-sm" title="Assign to List"  data-bs-toggle="modal"   data-bs-target="#AssignItemToListModal" onclick="showListAssignModal('{{ $item->id }}','{{ $item->item_name }}')" >
                                             <i class="fas fa-clipboard-list"></i>

@@ -1,7 +1,7 @@
 <!-- Modal structure -->
 <div class='modal-container'>
     <div class="modal fade" id="addMasterItemModal" tabindex="-1" aria-labelledby="addMasterItemModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg" style="max-width: 90%;">
+      <div class="modal-dialog modal-lg" >
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="addMasterItemModalLabel">Add New Items</h5>
@@ -20,7 +20,7 @@
                       <th scope="col">Category</th>
                       <th scope="col">UOM</th>
                       <th scope="col">Weight</th>
-                      <th scope="col">Remove</th>
+                      <th scope="col"></th>
                     </tr>
                   </thead>
                   <tbody id="modal-item-table-body">
