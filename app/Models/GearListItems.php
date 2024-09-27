@@ -27,7 +27,7 @@ class GearListItems extends Model
     protected $fillable = [
         'list_id',
         'user_id',
-        'user_item_id',
+        'master_item_id',
         'item_name',
         'item_category',
         'minimum_unit_weight',
@@ -39,6 +39,7 @@ class GearListItems extends Model
         'amount',
         'list_order',
         'category_order',
+        'master_list_id'
 
     ];
 
@@ -171,7 +172,7 @@ class GearListItems extends Model
         $user = Auth::user();
         $masterListId = $user->master_list_id;
         $itemCount = $inputs['newItemCount'] ?? 0;
-
+        $amount = 1;
         for ($i = 0; $i < $itemCount; $i++) {
 
             $uomArray = self::$uomArray;
@@ -182,6 +183,8 @@ class GearListItems extends Model
             $masterItem->item_name = $inputs['itemName'][$i] ?? '';
             $masterItem->item_category = $inputs['itemCategory'][$i] ?? 'unassigned';
             $masterItem->item_weight = $inputs['itemWeight'][$i] ?? 0;
+            $masterItem->amount = $amount;
+            $masterItem->total_line_weight =  $masterItem->item_weight *  $amount;
             $masterItem->list_order = 0;
             $masterItem->category_order = 0;
 
@@ -331,7 +334,7 @@ class GearListItems extends Model
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return [];
         }
-       
+
         foreach ($inputs as $key => $value) {
             if(!$listItems && $key === 'item_category'){
                 if(empty($value)){

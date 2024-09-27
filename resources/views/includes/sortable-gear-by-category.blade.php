@@ -52,7 +52,7 @@
         @if (in_array($itemCat->value, $selectedCategories))
             <div class="draggable-container"  data-category-value="{{$itemCat->value}}">
             <div class="item-collapsible-header" >
-               
+
                 <span>
 
                 <i class="fas fa-grip-vertical"></i>
@@ -213,7 +213,7 @@
                     <div class="col-md-3"> </div>
                     <div class="col-md-3"></div>
                     <div class="col-md-3">
-                        <a href="/remove-category/{{ $gearList->id }}/{{ $itemCat->value}}" class="btn btn-primary btn-sm py-2 px-3"> Delete Category</a>
+                        <button  id="deleteItemBtn-{{ $i }}"  class="btn btn-primary btn-sm py-2 px-3" title="Delete Category" data-href="/remove-category/{{ $gearList->id }}/{{ $itemCat->value}}" data-object-type='category:' data-object-name='{{ $itemCat->category }}' data-list-name="{{ $gearList->name }}" data-object-id="{{ $gearList->id }}" data-bs-toggle="modal" data-bs-target="#deleteAlertModal" onclick="confirmDelete(this)"> Delete Category</button>
                     </div>
 
 

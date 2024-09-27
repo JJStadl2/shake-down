@@ -248,13 +248,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
             counter.value = "new-" + finalI;
             counter.setAttribute("data-column-name", "id");
 
-            let updateMasterList = document.createElement("input");
-            updateMasterList.type = "hidden";
-            updateMasterList.name = "";
-            updateMasterList.id = "updateMaster-"+finalI;
-            updateMasterList.value = "true";
-
-
             let itemName = createListItemInput(
                 "text",
                 "itemName",
@@ -378,7 +371,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
             iconCell.appendChild(icon);
 
             cell1.appendChild(counter);
-            cell1.appendChild(updateMasterList);
             cell1.appendChild(itemName);
             cell2.appendChild(itemWeight);
 
@@ -591,7 +583,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let url = "/list-item";
         let data = {};
         let userId = document.getElementById("userId").value;
-        let updateMaster = null;
         let create = true;
         let isMasterList = document.getElementById('isMaster').value;
         // let inputRow = document.getElementById('row-'+row);
@@ -616,11 +607,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
                 data['updateMaster'] = true;
             }
-            // updateMaster = document.getElementById('updateMaster-'+row);
-            // if(updateMaster !== null){
-            //     updateMaster = updateMaster.value;
-            //     data['updateMaster'] = updateMaster;
-            // }
+
         }
 
         axios
@@ -997,18 +984,24 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let modalBody = document.getElementById('deleteModalBody');
         let text = `Are you sure you want to delete ${objectType} ${name}?`;
         let helperDiv = document.getElementById('deleteHelper');
+        let helptext;
         helperDiv.innerText = '';
 
 
         if(objectType === 'item:' && isMaster === 'false'){
             let listName = element.getAttribute('data-list-name');
-            let helptext = `*Deleting an item from this list (${listName}) will not delete it the 'Your Gear' section.`;
+            helptext = `*Deleting an item from this list (${listName}) will not delete it the 'Your Gear' section.`;
             helperDiv.append(helptext);
         }
         else if(objectType === 'item:' && isMaster === 'true'){
-            let listName = element.getAttribute('data-list-name');
-            let helptext = `*Deleting an item from the 'Your Gear' section will delete it from all 'Gear Lists'.`;
+            helptext = `*Deleting an item from the 'Your Gear' section will delete it from all 'Gear Lists'.`;
             helperDiv.append(helptext);
+        }
+        else if(objectType === 'category:' && isMaster ==='false'){
+            text = `Are you sure you want to delete all items in the ${name} category from this list?`;
+        }
+        else if(objectType === 'category:' && isMaster ==='true'){
+            text = `Are you sure you want to delete all items in the ${name} category from ALL your lists?`;
         }
         else{
             helperDiv.style.display = 'none';

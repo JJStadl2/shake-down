@@ -238,17 +238,21 @@ class GearListsController extends Controller
             return redirect()->back()->with('error','Category not found in list.');
         }
 
+        $isMaster = ($gearListItems[0]->list_id === $gearListItems[0]->master_list_id) ? true : false;
+        $masterListId =  $gearListItems[0]->master_list_id;
+
         foreach($gearListItems as $item){
-            //$listItem = GearListItems::where('id',$item->id)->first();
-            $item->list_id = '';
 
             try{
-                $item->save();
+                $item->delete();
             }catch(\Exception $e){
                 Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
                 return redirect()->back()->with('error','Failed to save changes to list.');
             }
 
+        }
+        if($isMaster){
+            GearListItems::where('master_list_id',$masterListId)->where('item_category',$category)->delete();
         }
 
         return redirect()->back()->with('success','Gear list updated.');

@@ -1,6 +1,6 @@
 
 <div class="master-gear-items-catergory-container">
-    @php $categoryCounter = 1; @endphp
+    @php $i = 0; $categoryCounter = 1; @endphp
     <div class="parent-container">
     @foreach ($sortedItemCategories as $itemCat)
         @if (in_array($itemCat->value, $selectedCategories))
@@ -118,7 +118,7 @@
                                             onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
                                     </td>
 
-                                 
+
                                     <td class="uom-td">
                                         @if ($item->in_ounces)
                                             <label class="form-check-label us-radio"
@@ -167,6 +167,19 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="row">
+                    <div class="col-md-3">
+
+                    </div>
+                    <div class="col-md-3"> </div>
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3">
+                        <button  id="deleteItemBtn-{{ $i }}"  class="btn btn-primary btn-sm py-2 px-3" title="Delete Category" data-href="/remove-category/{{ $gearList->id }}/{{ $itemCat->value}}" data-object-type='category:' data-object-name='{{ $itemCat->category }}' data-list-name="{{ $gearList->name }}" data-object-id="{{ $gearList->id }}" data-bs-toggle="modal" data-bs-target="#deleteAlertModal" onclick="confirmDelete(this)"> Delete Category</button>
+                    </div>
+
+
+
+                </div>
               </div>
             @php $categoryCounter++; @endphp
             </div>
