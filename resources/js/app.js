@@ -1050,6 +1050,8 @@ window.addEventListener("DOMContentLoaded", function (e) {
         alert('Changing this value will also update the units of measure and associated values for any item on this gear list.');
     }
     this.window.confirmDelete = function confirmDelete(element) {
+
+        let isMaster = document.getElementById('isMaster').value;
         let href = element.getAttribute('data-href');
         let name = element.getAttribute('data-object-name');
         let objectType = element.getAttribute('data-object-type');
@@ -1060,11 +1062,17 @@ window.addEventListener("DOMContentLoaded", function (e) {
         helperDiv.innerText = '';
 
 
-        if(objectType === 'item:'){
+        if(objectType === 'item:' && isMaster === 'false'){
             let listName = element.getAttribute('data-list-name');
-            let helptext = `* Deleting an item from from this list (${listName}) will not delete it the 'Your Gear' section.`;
+            let helptext = `*Deleting an item from this list (${listName}) will not delete it the 'Your Gear' section.`;
             helperDiv.append(helptext);
-        }else{
+        }
+        else if(objectType === 'item:' && isMaster === 'true'){
+            let listName = element.getAttribute('data-list-name');
+            let helptext = `*Deleting an item from the 'Your Gear' section will delete it from all 'Gear Lists'.`;
+            helperDiv.append(helptext);
+        }
+        else{
             helperDiv.style.display = 'none';
         }
         modalBody.innerHTML = text;
