@@ -266,57 +266,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             let cell6 = document.createElement("td");
             cell6.id = "btn-td-" + finalI;
-            // let deleteBtn = document.createElement("a");
-            // deleteBtn.id = "deleteBtn-" + finalI;
-            // deleteBtn.className = "btn btn-primary btn-sm  py-2";
-            // deleteBtn.innerHTML = "x";
             let deleteBtn = createDeleteButton(finalI);
-            // deleteBtn.id = "deleteBtn-" + finalI;
-            // deleteBtn.className = "btn btn-primary btn-sm  py-2";
-            // deleteBtn.innerHTML = "x";
-
-            // let data = {};
-            // let url = "/list-item";
-
-            // if (listUOM == "us") {
-            //     data = getBooleanData("in_ounces");
-            // } else {
-            //     data = getBooleanData("in_grams");
-            // }
-            // data["list_id"] = listId;
-            // data["user_id"] = userId;
-            // data["item_name"] = "";
-            // if(groupCategory !== null){
-            //     data['item_category'] = groupCategory;
-            // }
-
-            // let updateItem;
-            // updateItem = async function () {
-            //     try {
-            //         const response = await axios.post(url, data);
-            //         // alert(
-            //         //     "response fro new input: " + JSON.stringify(response)
-            //         // );
-            //         return response.data;
-            //     } catch (error) {
-            //         // handle error
-            //         console.log(error);
-            //     }
-            // };
-
-            // // To use the function and handle the response data
-            // updateItem().then((data) => {
-            //     // Do something with the response data
-            //     counter.value = data.newId;
-            //     row.setAttribute("data-id", data.newId);
-            //     deleteBtn.setAttribute(
-            //         "href",
-            //         "/destroy-list-item/" + data.newId
-            //     );
-            // });
-
-
             let cell2 = document.createElement("td");
+
             let itemWeight = createListItemInput(
                 "number",
                 "itemWeight",
@@ -821,9 +773,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
             }
         };
 
-        // To use the function and handle the response data
+
         optionList().then((data) => {
-            // Do something with the response data
+
             for (let i = 0; i < data.length; i++) {
                 let option = document.createElement("option");
                 option.value = data[i].value;
@@ -1080,8 +1032,14 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
     }
 
+    function removeRow(row){
+        console.log('in remove row');
+        let tableRow = document.getElementById(`row-${row}`)
+            tableRow.remove();
+
+    }
     function createDeleteButton(row) {
-        // Create the button element
+        let isMaster = document.getElementById('isMaster').value;
         const button = document.createElement('button');
         button.className = 'btn btn-sm btn-danger';
         button.title = 'Delete Item';
@@ -1090,23 +1048,19 @@ window.addEventListener("DOMContentLoaded", function (e) {
         button.setAttribute('data-object-name','');
         button.setAttribute('data-object-id','');
         button.setAttribute('data-object-type','item:');
-        button.setAttribute('data-list-name',document.getElementById('listName').value);
-        button.setAttribute('data-bs-toggle',"modal")
-        button.setAttribute('data-bs-target',"#deleteAlertModal");
+        if(isMaster === 'false'){
+            button.setAttribute('data-list-name',document.getElementById('listName').value);
+        }else{
+            button.setAttribute('data-list-name','master');
+        }
 
-        // Create the icon element
+
         const icon = document.createElement('i');
-        icon.className = 'fas fa-trash'; // Font Awesome trash icon
+        icon.className = 'fas fa-trash';
 
-        // Add the icon to the button
         button.appendChild(icon);
-
-        // Add text to the button (optional)
-        // button.appendChild(document.createTextNode('Delete'));
-
-        // Add the onclick event to the button
         button.onclick = function() {
-            confirmDelete(button);
+            removeRow(row);
         };
 
         return button;
@@ -1128,6 +1082,11 @@ window.addEventListener("DOMContentLoaded", function (e) {
             deleteBtn.setAttribute('data-href',`/remove-list-item/${item.id}`);
             deleteBtn.setAttribute('data-object-name',item.item_name);
             deleteBtn.setAttribute('data-object-id',item.id);
+            deleteBtn.setAttribute('data-bs-toggle',"modal")
+            deleteBtn.setAttribute('data-bs-target',"#deleteAlertModal");
+            deleteBtn.onclick = function(){
+                confirmDelete(deleteBtn);
+            }
 
         })
         .catch((err) => {

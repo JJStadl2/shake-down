@@ -76,7 +76,7 @@
                             <th scope="col"># Packed</th>
                             <th scope="col">Total Packed Weight</th>
                             <th scope="col"></th>
-                            <th scope="col">Remove</th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody id="categoryTable-{{ $categoryCounter }}">
