@@ -46,12 +46,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             let cell6 = document.createElement("td");
             cell6.id = "btn-td-" +i;
-            // let deleteBtn = document.createElement("a");
-            // deleteBtn.id = "deleteBtn-" + i;
-            // deleteBtn.className = "btn btn-primary btn-sm  py-2";
-            // deleteBtn.innerHTML = "x";
             let deleteBtn = createDeleteButton(i);
-
 
             let cell2 = document.createElement("td");
             let itemWeight = createListItemInput(
@@ -203,6 +198,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
     this.window.addListItem = function addListItem(categorycounter = null, groupCategory = null) {
         let numberOfItemsToAdd = document.getElementById("linesToAdd");
         let linesToAdd = 1;
+        let listViewInput;
         if (numberOfItemsToAdd === null || +numberOfItemsToAdd.value < 1) {
             numberOfItemsToAdd.value = linesToAdd;
         } else {
@@ -247,6 +243,14 @@ window.addEventListener("DOMContentLoaded", function (e) {
             counter.id = "id-" + finalI;
             counter.value = "new-" + finalI;
             counter.setAttribute("data-column-name", "id");
+
+            let listViewType = document.createElement("input");
+            listViewType.type = "hidden";
+
+            listViewType.id = "listViewType";
+            listViewType.value = listByItems
+            listViewInput = listViewType;
+
 
 
             let newRow = document.createElement("input");
@@ -414,6 +418,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
             addEventListenerWeightCalc(finalI);
         }
         numberOfItemsToAdd.value = 1;
+
+        let container = document.querySelector('.gear-items-container');
+        container.appendChild(listViewInput);
     };
 
     this.window.updateUOM = function updateUOM(value) {
@@ -617,6 +624,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let userId = document.getElementById("userId")?.value || "";
         let create = true;
         let isMasterList = document.getElementById('isMaster')?.value === 'true';
+        let updateCategoryValue = document.getElementById('listViewType')?.value === 'false';
         let isNewRow = document.getElementById(`newRow-${row}`) ? document.getElementById(`newRow-${row}`).value : false;
         data[columnName] = value;
 
@@ -628,6 +636,10 @@ window.addEventListener("DOMContentLoaded", function (e) {
         data["list_id"] = listId;
         data["user_id"] = userId;
         data["id"] = itemIdValue;
+        if(updateCategoryValue){
+            let select = document.getElementById('itemCategory-'+row).value;
+            data['item_category'] = select;
+        }
 
 
         if (itemIdValue.startsWith('new')) {
@@ -761,7 +773,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
     function getCategroySelect(row, groupCategory = null, listen = true) {
 
         let select = document.createElement("select");
-        select.id = "ItemCategory-" + row;
+        select.id = "itemCategory-" + row;
         select.name = "itemCategory-" + row;
         select.setAttribute("data-column-name", "item_category");
         select.className = "form-control";
