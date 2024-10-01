@@ -48,7 +48,7 @@ class AccountController extends Controller
 
         $gearList = new GearLists();
         $gearList->user_id = $newUser->id;
-        $gearList->name = $newUser->name.'|MASTER GEAR LIST';
+        $gearList->name = $newUser->name.' | MASTER GEAR LIST';
         $gearList->notes = '';
         $gearList->sort = 'cat_asc';
         $gearList->uom = 'us';
@@ -62,9 +62,17 @@ class AccountController extends Controller
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
             return redirect()->back()->with('error','Unable to save list at this time.')->withInput();
         }
+        try{
+            $newUser->master_list_id = $gearList->id;
+            $newUser->save();
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return redirect()->back()->with('error','Failed to assign master gear list to user.')->withInput();
+        }
+
 
         $gearList->weightUom = ($gearList->uom === 'us') ? 'LBS' : 'KG';
 
-        return redirect('/login')->with('success','Your accoutn has been created. Please login.');
+        return redirect('/login')->with('success','Your account has been created. Please login.');
     }
 }
