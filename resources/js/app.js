@@ -248,6 +248,13 @@ window.addEventListener("DOMContentLoaded", function (e) {
             counter.value = "new-" + finalI;
             counter.setAttribute("data-column-name", "id");
 
+
+            let newRow = document.createElement("input");
+            newRow.type = "hidden";
+            newRow.id = "newRow-" + finalI;
+            newRow.value = true;
+
+
             let itemName = createListItemInput(
                 "text",
                 "itemName",
@@ -371,6 +378,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             iconCell.appendChild(icon);
 
             cell1.appendChild(counter);
+            cell1.appendChild(newRow);
             cell1.appendChild(itemName);
             cell2.appendChild(itemWeight);
 
@@ -544,6 +552,13 @@ window.addEventListener("DOMContentLoaded", function (e) {
         });
 
     }
+    function flashBorder(element, isSuccess) {
+        element.style.backgroundColor = isSuccess ? '#A8E6CF' : '#F08080';
+        // Set a timeout to remove the border after 2 seconds
+        setTimeout(() => {
+            element.style.backgroundColor = '';
+        }, 2000);
+    }
     function getBooleanData(columnName) {
         let data = {};
         data["in_ounces"] = false;
@@ -568,73 +583,94 @@ window.addEventListener("DOMContentLoaded", function (e) {
         }
         return data;
     }
-    this.window.updateListItem = function updateListItem(element) {
 
+    this.window.updateListItem = function updateListItem(element) {
+        // Checking if element is a valid DOM element
+        if (!element || !(element instanceof HTMLElement)) {
+            console.error("Invalid element provided to updateListItem.");
+            return;
+        }
 
         let columnName = element.getAttribute("data-column-name");
         let value = element.value;
         let id = element.id;
         let idArr = id.split("-");
-        let arrLength = idArr.length;
-        let row = idArr[arrLength - 1];
+
+        if (idArr.length === 0) {
+            console.error("Invalid ID format.");
+            return;
+        }
+
+        let row = idArr[idArr.length - 1];
         let itemId = document.getElementById("id-" + row);
+
+        // Check if itemId exists
+        if (!itemId) {
+            console.error(`Element with ID 'id-${row}' not found.`);
+            return;
+        }
+
         let itemIdValue = itemId.value;
-        let listId = document.getElementById("listId").value;
+        let listId = document.getElementById("listId")?.value || "";
         let url = "/list-item";
         let data = {};
-        let userId = document.getElementById("userId").value;
+        let userId = document.getElementById("userId")?.value || "";
         let create = true;
-        let isMasterList = document.getElementById('isMaster').value;
-        // let inputRow = document.getElementById('row-'+row);
-        // let inputsAndSelects = inputRow.querySelector(' td input, td select');
-        // inputsAndSelects.forEach(element => {
-        //     console.log(element);
-                // });
-
+        let isMasterList = document.getElementById('isMaster')?.value === 'true';
+        let isNewRow = document.getElementById(`newRow-${row}`) ? document.getElementById(`newRow-${row}`).value : false;
         data[columnName] = value;
 
-        if (columnName.substring(0, 3) === "in_") {
+        if (columnName.startsWith("in_")) {
             data = getBooleanData(columnName);
         }
 
+        // Assign additional properties to data object
         data["list_id"] = listId;
         data["user_id"] = userId;
         data["id"] = itemIdValue;
-        if(itemIdValue.substring(0,3) !== 'new'){
+
+
+        if (itemIdValue.startsWith('new')) {
+            create = true;
+        } else {
             create = false;
-            url = url +'/'+ itemIdValue;
-            if(isMasterList === 'true'){
-
+            url += '/' + itemIdValue;
+            if (isMasterList) {
                 data['updateMaster'] = true;
+            } else if (isNewRow) {
+                data['isNewRow'] = true;
             }
-
         }
 
-        axios
-            .post(url, data, itemId)
+        //POST request
+        axios.post(url, data)
             .then((res) => {
-
                 let resData = res.data;
-                if(resData.status !== '1'){
-                    alert(resData.msg);
-                    return;
+
+                if (resData.status === '1') {
+                    flashBorder(element, true);
+
+                    if (create) {
+                        itemId.value = resData.newId;
+                    }
+                    getDeleteBtnData(itemId.value, row);
+                } else {
+                    flashBorder(element, false);
+                    alert(resData.msg || "Update failed, please check your input.");
                 }
-                if(create){
-                    itemId.value = resData.newId;
-                }
-                getDeleteBtnData(itemId.value,row);
             })
             .catch((err) => {
+                // Enhanced error handling
+                flashBorder(element, false);
                 alert("Failed to update list item. Please try again later.");
-                console.error(err);
+                console.error("Update error:", err);
             });
 
-        if(isMasterList === 'false'){
+        if (!isMasterList) {
             updateTotalListWeights();
         }
-
-
     };
+
 
     function updateTotalListWeights() {
         let weightsForPW = document.querySelectorAll(".for-total-list-weight");
@@ -870,6 +906,12 @@ window.addEventListener("DOMContentLoaded", function (e) {
         axios
             .post(url, data, listId)
             .then((res) => {
+                if(res.data.status === '1'){
+                    flashBorder(element, true);
+                }else{
+                    flashBorder(element, false);
+                    alert(res.data.msg);
+                }
                 // alert(res.data.msg);
             })
             .catch((err) => {

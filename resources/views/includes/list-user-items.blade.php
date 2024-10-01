@@ -31,11 +31,8 @@
             <th scope="col">Category</th>
             <th scope="col">UOM</th>
             <th class="master-number-th" scope="col">Weight</th>
-             {{-- <th class="master-number-th" scope="col"># Packed</th>
-             <th class="master-number-th" scope="col">Packed Weight</th> --}}
             <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
+            <th scope="col">Actions</th>
 
         </tr>
     </thead>
@@ -60,7 +57,7 @@
                     <td>
                         <input class="form-control" type="text" data-column-name="item_name"
                             id="itemName-{{ $i }}" name="itemName[]" placeholder="Item Name"
-                            value="{{ $item->item_name ?? '' }}" onblur="updateListItem(this);" />
+                            value="{{ $item->item_name ?? '' }}" onblur="updateListItem(this);"/>
                     </td>
                     <td>
                         <select class="form-control" id="itemCategory-{{ $i }}" name="itemCategory[]"
@@ -119,7 +116,7 @@
                             value="{{ $item->item_weight ?? 0 }}"
                             onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
                     </td>
-            
+
                     <td class="uom-td">
                         @if ($item->in_ounces)
                             <label class="form-check-label us-radio" id="line-uom-label-{{ $i }}"
@@ -144,14 +141,17 @@
                         @endif
 
                     </td>
-                    <td>
+                    {{-- <td>
                         <button  class="btn btn-success btn-sm" title="Assign to List"  data-bs-toggle="modal"   data-bs-target="#AssignItemToListModal" onclick="showListAssignModal('{{ $item->id }}','{{ $item->item_name }}')" >
                             <i class="fas fa-clipboard-list"></i>
                         </button>
 
-                    </td>
+                    </td> --}}
 
                     <td id="btn-td-{{ $i }}">
+                        <button  class="btn btn-success btn-sm" title="Assign to List"  data-bs-toggle="modal"   data-bs-target="#AssignItemToListModal" onclick="showListAssignModal('{{ $item->id }}','{{ $item->item_name }}')" >
+                            <i class="fas fa-clipboard-list"></i>
+                        </button>
                         <button id="deleteItemBtn-{{ $i }}" class="btn btn-sm btn-danger" title="Delete Item" data-href="/destroy-list-item/{{ $item->id }}" data-object-type='item:' data-object-name='{{ $item->item_name }}' data-list-name="master" data-object-id="{{ $item->id }}" data-bs-toggle="modal" data-bs-target="#deleteAlertModal" onclick="confirmDelete(this)">
                             <i class="fa fa-trash"></i>
                         </button>

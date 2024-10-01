@@ -23,12 +23,8 @@
                             <th scope="col">Category</th>
                             <th scope="col">UOM</th>
                             <th class="master-number-th" scope="col">Weight</th>
-                            {{-- <th class="master-number-th" scope="col"># Packed</th>
-                            <th class="master-number-th" scope="col">Total Packed Weight</th> --}}
                             <th scope="col"></th>
-                            <th scope="col"></th>
-                            <th scope="col"></th>
-                            <th scope="col"></th>
+                            <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="categoryTable-{{ $categoryCounter }}">
@@ -147,15 +143,10 @@
                                         @endif
 
                                     </td>
-
-                                    <td>
+                                    <td id="btn-td-{{ $i }}">
                                         <button  class="btn btn-success btn-sm" title="Assign to List"  data-bs-toggle="modal"   data-bs-target="#AssignItemToListModal" onclick="showListAssignModal('{{ $item->id }}','{{ $item->item_name }}')" >
                                             <i class="fas fa-clipboard-list"></i>
                                         </button>
-
-                                    </td>
-
-                                    <td id="btn-td-{{ $i }}">
                                         <button id="deleteItemBtn-{{ $i }}" class="btn btn-sm btn-danger" title="Delete Item" data-href="/destroy-list-item/{{ $item->id }}" data-object-type='item:' data-object-name='{{ $item->item_name }}' data-list-name="master" data-object-id="{{ $item->id }}" data-bs-toggle="modal" data-bs-target="#deleteAlertModal" onclick="confirmDelete(this)">
                                             <i class="fa fa-trash"></i>
                                         </button>
