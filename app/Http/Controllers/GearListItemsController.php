@@ -233,8 +233,10 @@ class GearListItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Log::debug(__FILE__.' '.__LINE__.' request in update item: '.print_r($request->input(),true));
         $updateMaster = $request->updateMaster ?? false;
-        $inputs = $request->except(['_token', 'q', 'list_id', 'updateMaster', 'id']);
+        $isNewRow = $request->isNewRow ?? false;
+        $inputs = $request->except(['_token', 'q', 'list_id', 'updateMaster', 'id','isNewRow']);
 
         try {
             GearListItems::where('id',$id)->update($inputs);
@@ -242,10 +244,23 @@ class GearListItemsController extends Controller
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
         }
+        if($isNewRow){
+            try {
+                $gearListItem = GearListItems::where('id',$id)->first('master_item_id');
+                Log::debug('master item in update: '.print_r($gearListItem,true));
+                GearListItems::where('id',$gearListItem->master_item_id)->update($inputs);
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                return response()->json(['status' => '0', 'msg' => 'Error fetching and updating master item.']);
+            }
+
+
+        }
 
         if($updateMaster){
             return $this->updateAllChildItems($inputs, $id);
         }
+
 
         return response()->json(['status' => '1', 'msg' => 'updated']);
     }
