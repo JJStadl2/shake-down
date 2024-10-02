@@ -15,17 +15,17 @@
                 <input style="width: 30%; margin-top:7%; margin-left:35%;" class="form-control" type="number" id='linesToAdd' name="linesToAdd"
                     min='1' value="1" />
             </div>
-            <div class="col-md-2 mb-3" style="margin-right: -9%;">
+            <div class="col-md-2 mb-3" style="margin-right: -8.4%;">
                 <button style="margin-left: -150%; margin-top:10%;" class="btn btn-primary btn-sm py-2 px-3" onclick="addListItem();">+ Gear</button>
             </div>
             <div class="col-md-2 mb-3" style="margin-top: 1%;">
 
-                <button  id="listChartBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3"  data-bs-toggle="modal" data-bs-target="#gearListChartModal">
+                <button  id="listChartBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="width: 100%;"  data-bs-toggle="modal" data-bs-target="#gearListChartModal">
                     Analytics
                     </button>
-                    <button id="searchGearBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: right;"  data-bs-toggle="modal" data-bs-target="#productSearchModal">
+                    {{-- <button id="searchGearBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: right;"  data-bs-toggle="modal" data-bs-target="#productSearchModal">
                         Search
-                        </button>
+                        </button> --}}
 
             </div>
 
