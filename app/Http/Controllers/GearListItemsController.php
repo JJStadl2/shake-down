@@ -205,8 +205,8 @@ class GearListItemsController extends Controller
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error Saving list item']);;
         }
-        GearListItems::calculateItemWeight($gearListItem);
-        GearListItems::calculateItemWeight($masterItem);
+        GearListItems::calculateItemWeight($gearListItem, $inputs);
+        GearListItems::calculateItemWeight($masterItem, $inputs);
         return response()->json(['status' => '1', 'newId' => $gearListItem->id]);
     }
 
@@ -245,7 +245,7 @@ class GearListItemsController extends Controller
         $updateMaster = $request->updateMaster ?? false;
         $isNewRow = $request->isNewRow ?? false;
         $inputs = $request->except(['_token', 'q', 'list_id', 'updateMaster', 'id','isNewRow']);
-        Log::debug('input in update: '.print_r($request->input(),true));
+        
         try {
             $gearListItem = GearListItems::where('id',$id)->first();
          } catch (\Exception $e) {
@@ -253,36 +253,17 @@ class GearListItemsController extends Controller
              $gearListItem = [];
          }
 
-         try {
-            $masterItem = GearListItems::where('id',$id)->first('master_item_id');
-            GearListItems::where('id',$masterItem->master_item_id)->update($inputs);
-        } catch (\Exception $e) {
-            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-           // return response()->json(['status' => '0', 'msg' => 'Error fetching and updating master item.']);
-           $masterItem = [];
-        }
-
-        try {
-            GearListItems::where('id',$id)->update($inputs);
-        } catch (\Exception $e) {
-            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-            return response()->json(['status' => '0', 'msg' => 'Error updating item.']);
-        }
-        $gearListItem = GearListItems::where('id',$id)->first();
-        // Log::debug(' new updated item: '.print_r($gearListItem,true));
-        GearListItems::calculateItemWeight($gearListItem);
+         GearListItems::calculateItemWeight($gearListItem, $inputs);
 
         if($isNewRow){
             try {
                 $masterItem = GearListItems::where('id',$id)->first('master_item_id');
-                GearListItems::where('id',$masterItem->master_item_id)->update($inputs);
+                $masterItem = GearListItems::where('id',$masterItem->master_item_id)->first();
+                GearListItems::calculateItemWeight($masterItem, $inputs);
             } catch (\Exception $e) {
                 Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 return response()->json(['status' => '0', 'msg' => 'Error fetching and updating master item.']);
             }
-            $masterItem = GearListItems::where('id',$masterItem->master_item_id)->first();
-            GearListItems::calculateItemWeight($masterItem);
-
 
         }
 
