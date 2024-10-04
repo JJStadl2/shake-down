@@ -137,6 +137,7 @@ class GearListItemsController extends Controller
     {
         $listId = $request->list_id;
         $user = Auth::user();
+        $uom = $request->uom ?? false;
         try {
             $masterGearList = GearLists::where('user_id', $user->id)->where('master_list', true)->first();
         } catch (\Exception $e) {
@@ -154,13 +155,19 @@ class GearListItemsController extends Controller
             return response()->json(['status' => '0', 'msg' => 'No list found for adding item.']);
         }
 
+        if(empty($uom)){
+            $uom = $gearList->uom;
+        }
+
         $inputs = $request->except(['_token', 'q', 'id']);
         $listItems = $gearList->list_items;
         $masterItem = new GearListItems();
         $gearListItem = new GearListItems();
 
 
+
         foreach ($inputs as $key => $value) {
+
             if (!$listItems && $key === 'item_category') {
                 if (empty($value)) {
                     $value = 'unassigned';
@@ -176,20 +183,21 @@ class GearListItemsController extends Controller
             $masterItem->$key = $value;
         }
 
+        $gearListItem->master_list_id = $masterGearList->id;
+        $gearListItem->uom = $uom;
+
         $masterItem->list_id = $masterGearList->id;
         $masterItem->master_list_id =  $masterGearList->id;
+        $masterItem->uom = $uom;
         $masterItem->amount = 1;
-        $gearListItem->master_list_id = $masterGearList->id;
 
         try {
             $masterItem->save();
+            $gearListItem->master_item_id = $masterItem->id;
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error Saving item to master list.']);;
         }
-
-        $gearListItem->master_item_id = $masterItem->id;
-
 
         try {
             $gearListItem->save();
@@ -197,7 +205,8 @@ class GearListItemsController extends Controller
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error Saving list item']);;
         }
-
+        GearListItems::calculateItemWeight($gearListItem);
+        GearListItems::calculateItemWeight($masterItem);
         return response()->json(['status' => '1', 'newId' => $gearListItem->id]);
     }
 
@@ -236,21 +245,43 @@ class GearListItemsController extends Controller
         $updateMaster = $request->updateMaster ?? false;
         $isNewRow = $request->isNewRow ?? false;
         $inputs = $request->except(['_token', 'q', 'list_id', 'updateMaster', 'id','isNewRow']);
+        Log::debug('input in update: '.print_r($request->input(),true));
+        try {
+            $gearListItem = GearListItems::where('id',$id)->first();
+         } catch (\Exception $e) {
+             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+             $gearListItem = [];
+         }
+
+         try {
+            $masterItem = GearListItems::where('id',$id)->first('master_item_id');
+            GearListItems::where('id',$masterItem->master_item_id)->update($inputs);
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+           // return response()->json(['status' => '0', 'msg' => 'Error fetching and updating master item.']);
+           $masterItem = [];
+        }
 
         try {
             GearListItems::where('id',$id)->update($inputs);
         } catch (\Exception $e) {
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-            return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
+            return response()->json(['status' => '0', 'msg' => 'Error updating item.']);
         }
+        $gearListItem = GearListItems::where('id',$id)->first();
+        // Log::debug(' new updated item: '.print_r($gearListItem,true));
+        GearListItems::calculateItemWeight($gearListItem);
+
         if($isNewRow){
             try {
-                $gearListItem = GearListItems::where('id',$id)->first('master_item_id');
-                GearListItems::where('id',$gearListItem->master_item_id)->update($inputs);
+                $masterItem = GearListItems::where('id',$id)->first('master_item_id');
+                GearListItems::where('id',$masterItem->master_item_id)->update($inputs);
             } catch (\Exception $e) {
                 Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 return response()->json(['status' => '0', 'msg' => 'Error fetching and updating master item.']);
             }
+            $masterItem = GearListItems::where('id',$masterItem->master_item_id)->first();
+            GearListItems::calculateItemWeight($masterItem);
 
 
         }
@@ -419,5 +450,43 @@ class GearListItemsController extends Controller
 
         GearListItems::createNewMasterItems($inputs);
         return redirect()->back();
+    }
+    public function updateGearItemUOM(Request $request){
+
+        $id = $request->id ?? false;
+        $newUOM = $request->newUOM ?? false;
+        $isNewRow = $request->isNewRow ?? false;
+        $inputs = $request->except(['_token', 'q', 'id', 'newUOM']);
+
+        try {
+            $gearListItem = GearListItems::where('id',$id)->first();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status' => '0', 'msg' => 'Failed to update and convert.', 'item'=>[]]);
+        }
+        if (empty($gearListItem) ?? $gearListItem->isEmpty()) {
+            return response()->json(['status' => '0', 'msg' => 'Failed to update and convert.', 'item'=>[]]);
+        }
+
+
+        if(empty($id) || empty($newUOM)){
+            return response()->json(['status' => '0', 'msg' => 'No item Id provided.', 'item'=>[]]);
+        }
+        $item = GearListItems::updateItemUomValues($gearListItem,$newUOM, $inputs);
+
+        if($isNewRow){
+            try {
+                $masterListItem = GearListItems::where('id',$gearListItem->master_item_id)->first();
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                return response()->json(['status' => '0', 'msg' => 'Failed to update and convert.', 'item'=>[]]);
+            }
+            GearListItems::updateItemUomValues($masterListItem,$newUOM, $inputs);
+        }
+        if(empty($item)){
+            return response()->json(['status' => '0', 'msg' => 'Failed to update and convert.', 'item'=>[]]);
+        }
+        return response()->json(['status' => '1', 'msg' => 'updated and converted.', 'item'=>$item]);
+
     }
 }

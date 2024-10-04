@@ -149,7 +149,7 @@ class GearListsController extends Controller
         }
 
         if($updatItemUOM){
-            $updatItemUOM = GearListItems::updateItemUomValues($id, $oldUOM);
+            $updatItemUOM = GearListItems::updateAllListItemsUomValues($id, $oldUOM);
             if(!$updatItemUOM){
                 return redirect()->back()->with('error','Gear List changes saved, but an error occurred when updatig the gear items weight values.')->withInput();
             }
@@ -258,18 +258,18 @@ class GearListsController extends Controller
         return redirect()->back()->with('success','Gear list updated.');
     }
 
-    public function updateSession(Request $request){
+    // public function updateSession(Request $request){
 
-        $masterItemOptions = Session::get('masterItemOptions') ?? [];
+    //     $masterItemOptions = Session::get('masterItemOptions') ?? [];
 
-        foreach($request->input() as $key => $value){
+    //     foreach($request->input() as $key => $value){
 
-            $masterItemOptions->$key = $value;
-        }
-        Session::put('masterItemOptions',$masterItemOptions);
+    //         $masterItemOptions->$key = $value;
+    //     }
+    //     Session::put('masterItemOptions',$masterItemOptions);
 
-        return response()->json(['status'=>'1','msg'=>'Updated session vars.']);
-    }
+    //     return response()->json(['status'=>'1','msg'=>'Updated session vars.']);
+    // }
 
     public function getUserLists($itemId){
 

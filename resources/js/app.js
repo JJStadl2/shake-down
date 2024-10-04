@@ -251,14 +251,10 @@ window.addEventListener("DOMContentLoaded", function (e) {
             listViewType.value = listByItems
             listViewInput = listViewType;
 
-
-
             let newRow = document.createElement("input");
             newRow.type = "hidden";
             newRow.id = "newRow-" + finalI;
             newRow.value = true;
-
-
             let itemName = createListItemInput(
                 "text",
                 "itemName",
@@ -290,28 +286,45 @@ window.addEventListener("DOMContentLoaded", function (e) {
             let lineUomCell = document.createElement("td");
             cell3.classList.add("uom-td");
             lineUomCell.classList.add("uom-td");
-            let radio1;
-            let radio2;
-            let radioLabel1;
-            let radioLabel2;
-            let radioLabel3;
+            let rowUom = document.createElement("input");
+            rowUom.type = 'hidden';
+            rowUom.id = "uom-" + finalI;
+
+
+            let  radio1 = createRadio("in_ounces", "", "oz", finalI);
+            let radioLabel1 = createLabel(
+                "OZ",
+                "uom-oz-" + finalI,
+                "oz",
+                finalI
+            );
+            let radio2 = createRadio("in_lbs", "", "lbs", finalI);
+            let radioLabel2 = createLabel(
+                "LBS",
+                "uom-lbs-" + finalI,
+                "lbs",
+                finalI
+            );
+            let   radio3 = createRadio("in_grams", "", "gram", finalI);
+            let radioLabel3 = createLabel(
+                "G",
+                "uom-gram-" + finalI,
+                "gram",
+                finalI
+            );
+            let radio4 = createRadio("in_kilos", "", "kg", finalI);
+            let radioLabel4 = createLabel(
+                "KG",
+                "uom-kg-" + finalI,
+                "kg",
+                finalI
+            );
+            let radioLabel5;
 
             if (listUOM === "us") {
-                radio1 = createRadio("in_ounces", "", "oz", finalI);
-                radioLabel1 = createLabel(
-                    "OZ",
-                    "uom-oz-" + finalI,
-                    "oz",
-                    finalI
-                );
-                radio2 = createRadio("in_lbs", "", "lbs", finalI);
-                radioLabel2 = createLabel(
-                    "LBS",
-                    "uom-lbs-" + finalI,
-                    "lbs",
-                    finalI
-                );
-                radioLabel3 = createLabel(
+                rowUom.value = "us";
+                radio1.checked = true;
+                radioLabel5 = createLabel(
                     "OZ",
                     "uom-oz-" + finalI,
                     "oz",
@@ -319,21 +332,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
                     true
                 );
             } else {
-                radio1 = createRadio("in_grams", "", "gram", finalI);
-                radioLabel1 = createLabel(
-                    "G",
-                    "uom-gram-" + finalI,
-                    "gram",
-                    finalI
-                );
-                radio2 = createRadio("in_kilos", "", "kg", finalI);
-                radioLabel2 = createLabel(
-                    "KG",
-                    "uom-kg-" + finalI,
-                    "kg",
-                    finalI
-                );
-                radioLabel3 = createLabel(
+                rowUom.value = "metric";
+                radio3.checked = true;
+                radioLabel5 = createLabel(
                     "G",
                     "uom-gram-" + finalI,
                     "gram",
@@ -350,6 +351,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 finalI,
                 "amount"
             );
+
             packedAmount.value = 1;
 
             packedAmount.classList.add("for-weight");
@@ -390,15 +392,22 @@ window.addEventListener("DOMContentLoaded", function (e) {
             let categorySelect = getCategroySelect(finalI, groupCategory);
 
             selectCell.append(categorySelect);
-
+            cell3.appendChild(rowUom);
             cell3.appendChild(radio1);
             cell3.appendChild(radioLabel1);
             cell3.appendChild(radio2);
             cell3.appendChild(radioLabel2);
 
+            cell3.appendChild(radio3);
+            cell3.appendChild(radioLabel3);
+            cell3.appendChild(radio4);
+            cell3.appendChild(radioLabel4);
+
+
+
             cell4.appendChild(packedAmount);
             cell5.appendChild(totalLineWeight);
-            lineUomCell.appendChild(radioLabel3);
+            lineUomCell.appendChild(radioLabel5);
             cell6.appendChild(deleteBtn);
 
             // Append cells to the row.
@@ -462,14 +471,14 @@ window.addEventListener("DOMContentLoaded", function (e) {
         convert = false
     ) {
         let listId = document.getElementById('listId').value;
-        let uom;
+        let uom =  document.getElementById("uom-"+row).value;
         let isMasterList = document.getElementById('isMaster').value;
 
-        if(isMasterList === 'true'){
-            uom = document.getElementById("uom-"+row).value;
-        }else{
-            uom = document.getElementById("uom").value;
-        }
+        // if(isMasterList === 'true'){
+        //     uom = document.getElementById("uom-"+row).value;
+        // }else{
+        //     uom = document.getElementById("uom").value;
+        // }
 
         // if(listId == 'master'){
         //     uom = document.getElementById("uom-"+row).value;
@@ -524,6 +533,85 @@ window.addEventListener("DOMContentLoaded", function (e) {
         updateListItem(weight);
         updateListItem(totalWeight);
     };
+    this.window.updateItemUOM = function updateItemUOM(
+        row,
+       element
+    ) {
+
+        if (!element || !(element instanceof HTMLElement)) {
+            console.error("Invalid element provided to updateListItem.");
+            return;
+        }
+
+        let uomElement = document.getElementById(`uom-${row}`);
+        let itemWeight = document.getElementById(`itemWeight-${row}`).value;
+        let columnName = element.getAttribute('data-column-name');
+        let uom = uomElement.value;
+        let itemId = document.getElementById(`id-${row}`).value;
+        let label = document.getElementById(`line-uom-label-${row}`);
+        let labelHTML;
+        let newUOM;
+        let url = '/update-item-uom';
+        let isNewRow = document.getElementById(`newRow-${row}`) ? document.getElementById(`newRow-${row}`).value : false;
+
+        if(itemId.startsWith('new')){
+            return updateListItem(element);
+        }
+
+        if(element.classList.contains("us-radio")){
+            newUOM = 'us';
+        }else{
+            newUOM = 'metric';
+        }
+        if(uom === newUOM){
+
+            return convertMeasurement(row);
+        }
+        let data = getBooleanData(columnName);
+        data['id'] = itemId;
+        data['newUOM'] = newUOM;
+        data['item_weight'] = itemWeight;
+        data['isNewRow'] = isNewRow;
+
+        axios.post(url, data)
+        .then((res) => {
+            let resData = res.data;
+            let item = resData.item;
+            // console.log('response: '+ JSON.stringify(res));
+            if (resData.status === '1') {
+                flashBorder(element, true);
+                document.getElementById(`itemWeight-${row}`).value = item['item_weight'];
+                document.getElementById(`packedAmount-${row}`).value = item['amount'];
+                document.getElementById(`totalLineWeight-${row}`).value = item['total_line_weight'];
+                uomElement.value = newUOM;
+                if(item['in_ounces']){
+                    labelHTML = "OZ";
+                }
+                else if(item['in_lbs']){
+                    labelHTML = "LBS";
+                }
+                else if(item['in_grams']){
+                    labelHTML = "G";
+                }
+                else if(item['in_kilos']){
+                    labelHTML = "KG";
+                }
+
+                label.innerHTML = labelHTML;
+
+            } else {
+                flashBorder(element, false);
+                alert(resData.msg || "Update failed, please check your input.");
+            }
+        })
+        .catch((err) => {
+            // Enhanced error handling
+            flashBorder(element, false);
+            alert("Failed to update list item. Please try again later.");
+            console.error("Update error:", err);
+        });
+
+    };
     this.window.addCategoryGroup = function addCategoryGroup(listId,category, listUOM, userId){
 
         let columnName;
@@ -572,18 +660,23 @@ window.addEventListener("DOMContentLoaded", function (e) {
         data["in_lbs"] = false;
         data["in_grams"] = false;
         data["in_kilos"] = false;
+        data['uom'] = 'us';
         switch (columnName) {
             case "in_ounces":
                 data["in_ounces"] = true;
+                data['uom'] = 'us';
                 break;
             case "in_lbs":
                 data["in_lbs"] = true;
+                data['uom'] = 'us';
                 break;
             case "in_grams":
                 data["in_grams"] = true;
+                data['uom'] = 'metric';
                 break;
             case "in_kilos":
                 data["in_kilos"] = true;
+                data['uom'] = 'metric';
                 break;
             default:
                 break;
@@ -626,13 +719,27 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let isMasterList = document.getElementById('isMaster')?.value === 'true';
         let updateCategoryValue = document.getElementById('listViewType')?.value === 'false';
         let isNewRow = document.getElementById(`newRow-${row}`) ? document.getElementById(`newRow-${row}`).value : false;
-        data[columnName] = value;
+        let uomRadios = document.querySelectorAll(".form-check-input");
+        let uomElement;
+
+        uomRadios.forEach(function (uomRadio) {
+            if(uomRadio.type == 'radio' && uomRadio.checked){
+                uomElement = uomRadio;
+            }
+        });
+        let uomColumnName = uomElement.getAttribute("data-column-name");
+        // data[columnName] = value;
+
 
         if (columnName.startsWith("in_")) {
             data = getBooleanData(columnName);
+        }else{
+            data = getBooleanData(uomColumnName);
+            data[columnName] = value;
         }
 
         // Assign additional properties to data object
+
         data["list_id"] = listId;
         data["user_id"] = userId;
         data["id"] = itemIdValue;
@@ -640,7 +747,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
             let select = document.getElementById('itemCategory-'+row).value;
             data['item_category'] = select;
         }
-
 
         if (itemIdValue.startsWith('new')) {
             create = true;
@@ -653,7 +759,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 data['isNewRow'] = true;
             }
         }
-
+        // console.log('data in update: '+ JSON.stringify(data));
         //POST request
         axios.post(url, data)
             .then((res) => {
@@ -883,11 +989,13 @@ window.addEventListener("DOMContentLoaded", function (e) {
         radio.id = "uom-" + uom + "-" + row;
         radio.setAttribute("data-column-name", dataColumnName);
 
-        if (uom === "gram" || uom === "oz") {
-            radio.checked = true;
-        }
+        // if (uom === "gram" || uom === "oz") {
+        //     radio.checked = true;
+        // }
         radio.addEventListener("change", function () {
-            convertMeasurement(row);
+            // convertMeasurement(row);
+
+            updateItemUOM(row, radio);
         });
         return radio;
     }
@@ -1066,7 +1174,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
     }
 
     function removeRow(row){
-        console.log('in remove row');
+       
         let tableRow = document.getElementById(`row-${row}`)
             tableRow.remove();
 

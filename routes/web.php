@@ -86,6 +86,8 @@ Route::get('/destroy-list-item/{id}', [App\Http\Controllers\GearListItemsControl
 )->name('item-destroy');
 Route::get('/remove-list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'remove']
 )->name('item-remove');
+Route::post('/update-item-uom', [App\Http\Controllers\GearListItemsController::class, 'updateGearItemUOM']
+)->name('item-update-uom');
 
 
 //master list and item routes

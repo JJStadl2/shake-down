@@ -136,7 +136,8 @@ class GearLists extends Model
         $totalPackWeight = 0;
         $sort = ['item_weight','ASC'];
         $fromWeight = true;
-        $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom,$fromWeight);
+        // $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom,$fromWeight);
+        $gearListItems = GearListItems::where('list_id',$gearList->id)->get();
         $maxListWeight = self::getlistClassByKey($gearList->list_class);
         $listClassWarning = $maxListWeight->display;
 
@@ -149,7 +150,8 @@ class GearLists extends Model
         }
 
         foreach($gearListItems as $item){
-            $line_weight = ($item->item_unit_weight * $item->amount);
+            // $line_weight = ($item->item_unit_weight * $item->amount);
+            $line_weight = ($item->minimum_unit_weight * $item->amount);
             $totalPackWeight+= $line_weight;
 
             if($item->item_category !== 'consumables' ){
@@ -159,8 +161,10 @@ class GearLists extends Model
 
 
         if($gearList->uom === 'us'){
-            $baseWeight = $baseWeight/GearListItems::$usConversionFactor;
-            $totalPackWeight = $totalPackWeight/GearListItems::$usConversionFactor;
+            // $baseWeight = $baseWeight/GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
+            // $totalPackWeight = $totalPackWeight/GearListItems::$usConversionFactor;
+            $baseWeight = ($baseWeight * GearListItems::$gramsToOunceConversionFactor) /GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
+            $totalPackWeight = ($totalPackWeight * GearListItems::$gramsToOunceConversionFactor)/GearListItems::$usConversionFactor;
         }else{
             $baseWeight = $baseWeight/GearListItems::$metricConversionFactor;
             $totalPackWeight = $totalPackWeight/GearListItems::$metricConversionFactor;

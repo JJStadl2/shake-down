@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('item_category')->nullable();
             $table->float('item_weight')->default(0);
             $table->float('minimum_unit_weight')->default(0);
+            $table->string('uom')->default('us');
             $table->boolean('in_grams')->default(false);
             $table->boolean('in_kilos')->default(false);
             $table->boolean('in_ounces')->default(true);
@@ -29,8 +30,6 @@ return new class extends Migration
             $table->float('total_line_weight')->default(0);
             $table->integer('list_order')->default(0);
             $table->integer('category_order')->default(0);
-            // $table->integer('master_list_order')->default(0);
-            // $table->integer('master_category_order')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
