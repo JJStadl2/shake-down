@@ -365,7 +365,7 @@ class GearListItems extends Model
         $newUnit = static::findUnitInputValue($inputs);
 
         $itemWeight = $inputs['item_weight'] ??  $gearListItem->item_weight;
-        $uom = $inuts['uom'] ?? $gearListItem->uom;
+        $uom = $inputs['uom'] ?? $gearListItem->uom;
         if(empty($uom)){
             $uom = $gearListItem->uom;
         }

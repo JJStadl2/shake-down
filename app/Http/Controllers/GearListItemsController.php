@@ -245,7 +245,7 @@ class GearListItemsController extends Controller
         $updateMaster = $request->updateMaster ?? false;
         $isNewRow = $request->isNewRow ?? false;
         $inputs = $request->except(['_token', 'q', 'list_id', 'updateMaster', 'id','isNewRow']);
-        
+
         try {
             $gearListItem = GearListItems::where('id',$id)->first();
          } catch (\Exception $e) {
@@ -254,6 +254,13 @@ class GearListItemsController extends Controller
          }
 
          GearListItems::calculateItemWeight($gearListItem, $inputs);
+         try {
+            GearListItems::where('id',$id)->update($inputs);
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
+        }
+
 
         if($isNewRow){
             try {
@@ -264,7 +271,12 @@ class GearListItemsController extends Controller
                 Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 return response()->json(['status' => '0', 'msg' => 'Error fetching and updating master item.']);
             }
-
+            try {
+                GearListItems::where('id',$masterItem->master_item_id)->update($inputs);
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
+            }
         }
 
         if($updateMaster){
