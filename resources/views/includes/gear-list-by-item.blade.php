@@ -81,7 +81,6 @@
                                 @endforeach
                             </select>
                         </td>
-                        {{-- onchange="convertMeasurement({{ $i }});" --}}
                         <td class="uom-td">
                             <input type="hidden" id="uom-{{ $i }}" value="{{ $item->uom }}"/>
                                 <input class="form-check-input us-radio for-conversion" type="radio"
