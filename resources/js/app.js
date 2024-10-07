@@ -645,11 +645,15 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
     }
     function flashBorder(element, isSuccess) {
-        element.style.backgroundColor = isSuccess ? '#A8E6CF' : '#F08080';
-        // Set a timeout to remove the border after 2 seconds
-        setTimeout(() => {
-            element.style.backgroundColor = '';
-        }, 2000);
+        let columnName = element.getAttribute('data-column-name');
+        if(columnName !== 'total_line_weight'){
+            element.style.backgroundColor = isSuccess ? '#A8E6CF' : '#F08080';
+            // Set a timeout to remove the border after 2 seconds
+            setTimeout(() => {
+                element.style.backgroundColor = '';
+            }, 2000);
+        }
+
     }
     function getBooleanData(columnName) {
         let data = {};
