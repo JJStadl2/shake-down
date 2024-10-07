@@ -430,3 +430,8 @@ html,body {
     color: #6c757d;
 }
 
+.custom-scrollbar {
+    max-height: 600px; /* Set the maximum height of the modal body */
+    overflow-y: auto;  /* Enable vertical scrollbar */
+  }
+

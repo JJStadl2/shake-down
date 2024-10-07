@@ -10,7 +10,7 @@
 
           <form action="/add-gear-items" method="post">
             @csrf
-            <div class="modal-body">
+            <div class="modal-body custom-scrollbar">
               <div class="table-responsive">
                 <table class="table table-dark" data-category-id="list-items">
                   <thead>

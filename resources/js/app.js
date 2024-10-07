@@ -60,6 +60,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             itemWeight.classList.add("for-weight");
             itemWeight.classList.add("number-input");
             itemWeight.classList.add("form-control");
+            itemWeight.setAttribute('step','0.01');
             //itemWeight.style.width = '40%';
             cell2.classList.add("number-col");
 
