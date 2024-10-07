@@ -432,7 +432,7 @@ class GearListItemsController extends Controller
         return redirect()->back();
     }
     public function updateGearItemUOM(Request $request){
-        
+        Log::debug("inputs in updateGearItemUOM: ".print_r($request->input(),true));
         $id = $request->id ?? false;
         $newUOM = $request->newUOM ?? false;
         $isNewRow = $request->isNewRow ?? false;
@@ -453,7 +453,7 @@ class GearListItemsController extends Controller
             return response()->json(['status' => '0', 'msg' => 'No item Id provided.', 'item'=>[]]);
         }
         $item = GearListItems::updateItemUomValues($gearListItem,$newUOM, $inputs);
-
+      
         if($isNewRow){
             try {
                 $masterListItem = GearListItems::where('id',$gearListItem->master_item_id)->first();

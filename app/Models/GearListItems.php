@@ -178,6 +178,7 @@ class GearListItems extends Model
         for ($i = 0; $i < $itemCount; $i++) {
 
             $uomArray = self::$uomArray;
+            $inputUomArray = $uomArray;
             $masterItem = new GearListItems();
             $masterItem->list_id = $masterListId;
             $masterItem->master_list_id = $masterListId;
@@ -189,6 +190,7 @@ class GearListItems extends Model
             $masterItem->total_line_weight =  $masterItem->item_weight *  $amount;
             $masterItem->list_order = 0;
             $masterItem->category_order = 0;
+            $masterItem->uom = ($inputs['uom'][$i] === 'in_ounces' || $inputs['uom'][$i] === 'in_lbs') ? 'us' : 'metric';
 
             $listOrders = self::getCategoryOrder($masterItem->item_category);
 
@@ -200,8 +202,10 @@ class GearListItems extends Model
 
             foreach ($uomArray as $key => $value) {
                 $masterItem->$key = false;
+                $inputUomArray[$key] = false;
                 if ($inputs['uom'][$i] === $key) {
                     $masterItem->$key = true;
+                    $inputUomArray[$key] = true;
                 }
             }
             try {
@@ -210,6 +214,7 @@ class GearListItems extends Model
                 Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 return false;
             }
+            static::calculateItemWeight($masterItem,$inputUomArray );
         }
         return true;
     }
