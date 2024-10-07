@@ -115,7 +115,7 @@ class GearListsController extends Controller
         $id = $request->id ?? false;
         $inputs = $request->except(['_token', 'q', 'id']);
         $updatItemUOM = false;
-        $oldUOM = '';
+        $newUOM = '';
 
         if(empty($id)){
             return redirect()->back()->with('error','No list id provided. Please try again later')->withInput();
@@ -132,10 +132,16 @@ class GearListsController extends Controller
             return redirect()->back()->with('error','No gear list found.')->withInput();
         }
         foreach($inputs as $key => $value){
-            //TODO-> Add weight conversion from us-> metric for all items and check/for when Item is added from master items view.
+
             if($key === 'uom' && $value !== $gearList->uom){
-                $oldUOM = $gearList->uom;
+                $newUOM = $value;
+                array_merge($inputs,GearListItems::$uomArray);
                 $updatItemUOM = true;
+                if($newUOM === 'us'){
+                    $inputs['in_ounces'] = true;
+                }else{
+                    $inputs['in_grams'] = true;
+                }
 
             }
             $gearList->$key = $value;
@@ -149,9 +155,23 @@ class GearListsController extends Controller
         }
 
         if($updatItemUOM){
-            $updatItemUOM = GearListItems::updateAllListItemsUomValues($id, $oldUOM);
-            if(!$updatItemUOM){
-                return redirect()->back()->with('error','Gear List changes saved, but an error occurred when updatig the gear items weight values.')->withInput();
+
+            try{
+                $gearListItems = GearListItems::where('list_id',$gearList->id)->get();
+            }catch(\Exception $e){
+                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                return redirect()->back()->with('error','Failed to find items for list.')->withInput();
+            }
+            if(empty($gearListItems) || $gearListItems->isEmpty()){
+                return redirect()->back()->with('error','Failed to find items for list.')->withInput();
+            }
+            foreach($gearListItems as $gearListItem){
+                $updatItemUOM = GearListItems::updateItemUomValues($gearListItem, $newUOM, $inputs);
+                if(!$updatItemUOM){
+                    Log::error(__FILE__.' '.__LINE__.' failed to update/convert UOM for items at edit list level: '.print_r($gearListItem,true));
+                   continue;
+                }
+
             }
         }
         return redirect()->back()->with('success','Changes saved.')->withInput();
@@ -258,19 +278,6 @@ class GearListsController extends Controller
         return redirect()->back()->with('success','Gear list updated.');
     }
 
-    // public function updateSession(Request $request){
-
-    //     $masterItemOptions = Session::get('masterItemOptions') ?? [];
-
-    //     foreach($request->input() as $key => $value){
-
-    //         $masterItemOptions->$key = $value;
-    //     }
-    //     Session::put('masterItemOptions',$masterItemOptions);
-
-    //     return response()->json(['status'=>'1','msg'=>'Updated session vars.']);
-    // }
-
     public function getUserLists($itemId){
 
         $userId = Auth::user()->id;
@@ -323,4 +330,19 @@ class GearListsController extends Controller
 
     }
 
+    public function getPackData($listId){
+        try {
+            $gearList = GearLists::where('id', $listId)->first();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Error fetching gear list.']);
+        }
+
+        if (empty($gearList)) {
+            return response()->json(['status'=>'0','msg'=>'No list found.']);
+        }
+        GearLists::checkWeight($gearList);
+
+        return response()->json(['status'=>'1','msg'=>'found.','listData'=>$gearList]);
+    }
 }

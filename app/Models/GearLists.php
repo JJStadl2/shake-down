@@ -237,7 +237,8 @@ class GearLists extends Model
             }
             $weight = $listData[$category]['weight'];
             // $weight += ($item->item_unit_weight * $item->amount)/$conversionFactor;
-            $weight += ($item->minimum_unit_weight * $item->amount)/$conversionFactor;
+            // $weight += ($item->minimum_unit_weight * $item->amount)/$conversionFactor;
+            $weight += ($item->minimum_unit_weight * $item->amount);
 
             $listData[$category]['weight'] = $weight;
 
@@ -251,8 +252,9 @@ class GearLists extends Model
                 if($gearList->uom === 'us'){
                     // $baseWeight = $baseWeight/GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
                     // $totalPackWeight = $totalPackWeight/GearListItems::$usConversionFactor;
-                    $newWeight = ( $data['weight'] * GearListItems::$gramsToOunceConversionFactor) /GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
-
+                    // $newWeight = ( $data['weight'] * GearListItems::$gramsToOunceConversionFactor) /GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
+                    // $newWeight = ( $data['weight'] * GearListItems::$gramsToOunceConversionFactor) /GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
+                    $newWeight = ( $data['weight'] / GearListItems::$poundToGramsConversionFactor);
                 }else{
                     $newWeight =  $data['weight']/GearListItems::$metricConversionFactor;
 

@@ -18,6 +18,7 @@ class GearListItems extends Model
     public static int $metricConversionFactor = 1000;
     public static float $gramsToOunceConversionFactor = 0.035274;
     public static float $ouncesToGramsConversionFactor = 28.34952;
+    public static float $poundToGramsConversionFactor = 453.592;
     public static $uomArray = ['in_ounces' => false, 'in_lbs' => false, 'in_grams' => false, 'in_kilos' => false];
     /**
      * The attributes that are mass assignable.
@@ -234,110 +235,28 @@ class GearListItems extends Model
         return $orders[0];
     }
 
-    public static function updateAllListItemsUomValues($listId, $oldUOM)
-    {
-
-        $sort = ['item_weight', 'ASC'];
-
-        if ($oldUOM == 'us') {
-            $unitConversionFactor = self::$ouncesToGramsConversionFactor;
-            $conversionFactor = self::$metricConversionFactor;
-        } else {
-            $unitConversionFactor = self::$gramsToOunceConversionFactor;
-            $conversionFactor = self::$usConversionFactor;
-        }
-        try {
-            $gearListItems = self::getSortedListItems($listId, $sort, $oldUOM);
-        } catch (\Exception $e) {
-            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-            return false;
-        }
-
-        if (empty($gearListItems)) {
-            return false;
-        }
-
-        foreach ($gearListItems as $item) {
-
-            try {
-                $gearItem = GearListItems::find($item->id);
-            } catch (\Exception $e) {
-                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-                continue;
-            }
-            if (empty($gearItem)) {
-                Log::info(__FILE__ . ' ' . __LINE__ . ' ' . ' Empty gear item record for list id: ' . $listId . ' and item id: ' . $item->id);
-                continue;
-            }
-
-            $convertedUnitWeight = $item->item_unit_weight * $unitConversionFactor;
-            $convertedItemWeight = $convertedUnitWeight;
-
-            if ($item->in_lbs || $item->in_kilos) {
-                $convertedItemWeight = $convertedItemWeight / $conversionFactor;
-            }
-
-            $convertedTotalWeight = $convertedItemWeight * $item->amount;
-            $gearItem->item_weight = round($convertedItemWeight, 3);
-            $gearItem->total_line_weight = round($convertedTotalWeight, 3);
-            $gearItem->minimum_unit_weight = round($convertedUnitWeight, 3);
-
-
-            if ($oldUOM === 'us') {
-                if ($item->in_ounces) {
-                    $gearItem->in_ounces = false;
-                    $gearItem->in_grams = true;
-                } else {
-                    $gearItem->in_lbs = false;
-                    $gearItem->in_kilos = true;
-                }
-            } else {
-                if ($item->in_grams) {
-                    $gearItem->in_ounces = true;
-                    $item->in_grams = false;
-                } else {
-                    $gearItem->in_lbs = true;
-                    $gearItem->in_kilos = false;
-                }
-            }
-            try {
-                $gearItem->save();
-            } catch (\Exception $e) {
-                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-                continue;
-            }
-        }
-
-        return true;
-    }
 
     public static function updateItemUomValues($gearListItem, $newUOM, $inputs)
     {
         $newUnit = static::findUnitInputValue($inputs);
 
-        if ($newUOM === 'us') {
-
-            if ($gearListItem->in_grams && $newUnit == 'in_ounces') {
-                $gearListItem->item_weight = $gearListItem->minimum_unit_weight * static::$gramsToOunceConversionFactor;
-            }
-            else if($gearListItem->in_grams && $newUnit == 'in_lbs') {
-               $gearListItem->item_weight = ($gearListItem->minimum_unit_weight * static::$gramsToOunceConversionFactor)/ static::$usConversionFactor;
-            }
-            else if($gearListItem->in_kilos && $newUnit == 'in_ounces') {
-                $gearListItem->item_weight = ($gearListItem->minimum_unit_weight * static::$gramsToOunceConversionFactor);
-            }
-            else if($gearListItem->in_kilos && $newUnit == 'in_lbs') {
-                $gearListItem->item_weight = ($gearListItem->minimum_unit_weight * static::$gramsToOunceConversionFactor)/ static::$usConversionFactor;
-
-            }
-
-        } else {
-            if ( $newUnit === 'in_grams') {
-               $gearListItem->item_weight = $gearListItem->minimum_unit_weight;
-            }
-            else if( $newUnit === 'in_kilos') {
-                 $gearListItem->item_weight = $gearListItem->minimum_unit_weight/static::$metricConversionFactor;
-            }
+        if ($newUnit === 'in_grams') {
+            $gearListItem->item_weight = $gearListItem->minimum_unit_weight;
+         }
+         else if($newUnit === 'in_kilos') {
+              $gearListItem->item_weight = $gearListItem->minimum_unit_weight/static::$metricConversionFactor;
+         }
+        else if ($newUnit == 'in_ounces') {
+            $gearListItem->item_weight = $gearListItem->minimum_unit_weight * static::$gramsToOunceConversionFactor;
+        }
+        else if($newUnit == 'in_lbs') {
+           $gearListItem->item_weight = ($gearListItem->minimum_unit_weight * static::$gramsToOunceConversionFactor)/ static::$usConversionFactor;
+        }
+        else if($newUnit == 'in_ounces') {
+            $gearListItem->item_weight = ($gearListItem->minimum_unit_weight * static::$gramsToOunceConversionFactor);
+        }
+        else if($newUnit == 'in_lbs') {
+            $gearListItem->item_weight = ($gearListItem->minimum_unit_weight * static::$gramsToOunceConversionFactor)/ static::$usConversionFactor;
 
         }
 
@@ -361,7 +280,6 @@ class GearListItems extends Model
         return $gearListItem;
     }
     public static function calculateItemWeight(&$gearListItem,$inputs, $uom = false){
-
         $newUnit = static::findUnitInputValue($inputs);
 
         $itemWeight = $inputs['item_weight'] ??  $gearListItem->item_weight;
@@ -373,24 +291,33 @@ class GearListItems extends Model
             $gearListItem->minimum_unit_weight = $itemWeight;
         }
         else  if ( $newUnit == 'in_kilos') {
-            $gearListItem->minimum_unit_weight = $itemWeight / static::$metricConversionFactor;
+            $gearListItem->minimum_unit_weight = $itemWeight * static::$metricConversionFactor;
         }
         else  if ( $newUnit == 'in_ounces') {
             $gearListItem->minimum_unit_weight = $itemWeight * static::$ouncesToGramsConversionFactor;
         }
         else  if ( $newUnit == 'in_lbs') {
-            $gearListItem->minimum_unit_weight = $itemWeight * static::$usConversionFactor * static::$ouncesToGramsConversionFactor;
+            $gearListItem->minimum_unit_weight = $itemWeight * static::$poundToGramsConversionFactor;
         }
 
-        $gearListItem->in_ounces = $inputs['in_ounces'] ?? false;
-        $gearListItem->in_grams = $inputs['in_grams'] ?? false;
-        $gearListItem->in_lbs = $inputs['in_lbs'] ?? false;
-        $gearListItem->in_kilos = $inputs['in_kilos'] ?? false;
+        foreach($gearListItem->getAttributes() as $key => $value){
+            if(array_key_exists($key,$inputs)){
+                $gearListItem->$key = $inputs[$key];
+            }
+
+        }
+
         $gearListItem->uom = $uom;
         $gearListItem->minimum_unit_weight = round($gearListItem->minimum_unit_weight,3);
         $gearListItem->item_weight = round($itemWeight,3);
         $gearListItem->total_line_weight = $gearListItem->item_weight * $gearListItem->amount;
-        $gearListItem->save();
+        try {
+            $gearListItem->save();
+         } catch (\Exception $e) {
+             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+
+         }
+
 
     }
 

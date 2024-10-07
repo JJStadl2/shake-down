@@ -104,4 +104,6 @@ Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsControlle
 )->name('get-categories');
 Route::get('/get-user-lists/{masterItemId}', [App\Http\Controllers\GearListsController::class, 'getUserLists']
 )->name('get-user-lists');
+Route::get('/get-pack-data/{list_Id}', [App\Http\Controllers\GearListsController::class, 'getPackData']
+)->name('get-pack-data');
 

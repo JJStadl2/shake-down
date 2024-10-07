@@ -205,8 +205,7 @@ class GearListItemsController extends Controller
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error Saving list item']);;
         }
-        GearListItems::calculateItemWeight($gearListItem, $inputs);
-        GearListItems::calculateItemWeight($masterItem, $inputs);
+
         return response()->json(['status' => '1', 'newId' => $gearListItem->id]);
     }
 
@@ -254,35 +253,23 @@ class GearListItemsController extends Controller
          }
 
          GearListItems::calculateItemWeight($gearListItem, $inputs);
-         try {
-            GearListItems::where('id',$id)->update($inputs);
-        } catch (\Exception $e) {
-            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-            return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
-        }
 
 
         if($isNewRow){
             try {
                 $masterItem = GearListItems::where('id',$id)->first('master_item_id');
                 $masterItem = GearListItems::where('id',$masterItem->master_item_id)->first();
-                GearListItems::calculateItemWeight($masterItem, $inputs);
+
             } catch (\Exception $e) {
                 Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
                 return response()->json(['status' => '0', 'msg' => 'Error fetching and updating master item.']);
             }
-            try {
-                GearListItems::where('id',$masterItem->master_item_id)->update($inputs);
-            } catch (\Exception $e) {
-                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
-                return response()->json(['status' => '0', 'msg' => 'Error fetching list.']);
-            }
+            GearListItems::calculateItemWeight($masterItem, $inputs);
         }
 
         if($updateMaster){
             return $this->updateAllChildItems($inputs, $id);
         }
-
 
         return response()->json(['status' => '1', 'msg' => 'updated']);
     }
@@ -445,7 +432,7 @@ class GearListItemsController extends Controller
         return redirect()->back();
     }
     public function updateGearItemUOM(Request $request){
-
+        
         $id = $request->id ?? false;
         $newUOM = $request->newUOM ?? false;
         $isNewRow = $request->isNewRow ?? false;
@@ -475,6 +462,7 @@ class GearListItemsController extends Controller
                 return response()->json(['status' => '0', 'msg' => 'Failed to update and convert.', 'item'=>[]]);
             }
             GearListItems::updateItemUomValues($masterListItem,$newUOM, $inputs);
+
         }
         if(empty($item)){
             return response()->json(['status' => '0', 'msg' => 'Failed to update and convert.', 'item'=>[]]);

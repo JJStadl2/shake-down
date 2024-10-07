@@ -558,15 +558,12 @@ window.addEventListener("DOMContentLoaded", function (e) {
             return updateListItem(element);
         }
 
-        if(element.classList.contains("us-radio")){
+        if(columnName.endsWith('ounces') || columnName.endsWith('lbs')){
             newUOM = 'us';
         }else{
             newUOM = 'metric';
         }
-        if(uom === newUOM){
 
-            return convertMeasurement(row);
-        }
         let data = getBooleanData(columnName);
         data['id'] = itemId;
         data['newUOM'] = newUOM;
@@ -577,7 +574,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         .then((res) => {
             let resData = res.data;
             let item = resData.item;
-            // console.log('response: '+ JSON.stringify(res));
+
             if (resData.status === '1') {
                 flashBorder(element, true);
                 document.getElementById(`itemWeight-${row}`).value = item['item_weight'];
@@ -791,70 +788,46 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
 
     function updateTotalListWeights() {
-        let weightsForPW = document.querySelectorAll(".for-total-list-weight");
         let baseWeight = 0;
         let totalPackWeight = 0;
         let maxPackWeight = document.getElementById("maxPackWeight").value;
         let classWarningValue = document.getElementById('classWarningValue').value;
         let uomText = "LBS";
-        weightsForPW.forEach(function (weightForPW) {
-            let id = weightForPW.id;
-            let idArr = id.split("-");
-            let arrLength = idArr.length;
-            let row = idArr[arrLength - 1];
-            let packedAmount = document.getElementById(
-                "packedAmount-" + row
-            ).value;
-            let converter = 1;
-            let rowWeight = 0;
-            let itemWeight = document.getElementById("itemWeight-" + row).value;
-            let uom = document.getElementById("uom").value;
-            let itemCategoryElement = document.getElementById(
-                "itemCategory-" + row
-            );
 
-            let itemCategory = "";
-            if (itemCategoryElement) {
-                itemCategory = itemCategoryElement.value;
+        let listId = document.getElementById('listId').value;
+        let url = `/get-pack-data/${listId}`;
+
+        axios.get(url)
+        .then((res) => {
+            let data = res.data;
+            let listData = data.listData;
+            if(data.status === '1'){
+               baseWeight = listData['baseWeight'];
+               totalPackWeight = listData['totalPackWeight'];
+               maxPackWeight = listData['maxPackWeight'];
+               uomText= listData['weightUOM'];
+               classWarningValue =listData['classWarningValue']
+
+               if (+baseWeight > +maxPackWeight) {
+                   let divElement = document.getElementById("weightWarning-div");
+                   divElement.innerText ="Base weight (" +  baseWeight.toFixed(3) +" " +uomText +") exceedes the weight for the '" +classWarningValue+"' style of hiking.";
+
+                   divElement.style.display = "block";
+               } else {
+                   document.getElementById("weightWarning-div").style.display = "none";
+               }
+
+               document.getElementById("baseWeight").value = baseWeight.toFixed(3);
+               document.getElementById("totalPackWeight").value =
+                   totalPackWeight.toFixed(3);
+            }else{
+                alert(data.msg);
+                return;
             }
 
-            if (itemCategory === undefined || itemCategory === null) {
-                itemCategory = "";
-            }
 
-            if (uom === "us") {
-                if (document.getElementById("uom-oz-" + row).checked === true) {
-                    converter = ounceConverter;
-                }
-            } else {
-                uomText = "KG";
-                if (
-                    document.getElementById("uom-gram-" + row).checked === true
-                ) {
-                    converter = gramConverter;
-                }
-            }
-
-            rowWeight = +packedAmount * (+itemWeight / converter);
-            totalPackWeight = totalPackWeight + rowWeight;
-
-            if (itemCategory !== "consumables") {
-                baseWeight = baseWeight + rowWeight;
-            }
         });
 
-        if (+baseWeight > +maxPackWeight) {
-            let divElement = document.getElementById("weightWarning-div");
-            divElement.innerText ="Base weight (" +  baseWeight.toFixed(3) +" " +uomText +") exceedes the weight for the '" +classWarningValue+"' style of hiking.";
-
-            divElement.style.display = "block";
-        } else {
-            document.getElementById("weightWarning-div").style.display = "none";
-        }
-
-        document.getElementById("baseWeight").value = baseWeight.toFixed(3);
-        document.getElementById("totalPackWeight").value =
-            totalPackWeight.toFixed(3);
     }
     function createListItemInput(
         type,
@@ -989,12 +962,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         radio.id = "uom-" + uom + "-" + row;
         radio.setAttribute("data-column-name", dataColumnName);
 
-        // if (uom === "gram" || uom === "oz") {
-        //     radio.checked = true;
-        // }
         radio.addEventListener("change", function () {
-            // convertMeasurement(row);
-
             updateItemUOM(row, radio);
         });
         return radio;
@@ -1174,7 +1142,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
     }
 
     function removeRow(row){
-       
+
         let tableRow = document.getElementById(`row-${row}`)
             tableRow.remove();
 
