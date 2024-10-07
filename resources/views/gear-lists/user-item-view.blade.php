@@ -10,10 +10,10 @@
             <a href="/gear-lists" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:left;margin-left:12%">Gear Lists</a>
 
         </div>
-        <div class="col-md-4">
-            <h3>Manage All Your Gear</h3>
+        <div class="col-md-6">
+           
         </div>
-        <div class="col-md-4">
+        <div class="col-md-2">
             <a href="/gear-list" class="btn btn-primary  btn-sm mt-2 py-2 px-3" style="float: right;" >New List</a>
         </div>
     </div>

@@ -1081,7 +1081,12 @@ window.addEventListener("DOMContentLoaded", function (e) {
                                 display: false,
                             },
                             plugins: {
-                                datalabels: false, // Removing this line shows the datalabels again
+                                datalabels: false,
+                                legend: {
+                                    labels: {
+                                        color: '#fff'
+                                    }
+                                }
                             },
                             animation: {
                                 animateRotate: true,

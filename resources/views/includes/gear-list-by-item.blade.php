@@ -119,47 +119,6 @@
 
 
                         </td>
-
-
-
-                        {{-- <td class="uom-td">
-                            @if ($item->in_ounces || $item->in_lbs)
-                                <input class="form-check-input us-radio for-conversion" type="radio"
-                                    data-column-name="in_ounces" name="uom-{{ $i }}-[]"
-                                    id="uom-oz-{{ $i }}" @if ($item->in_ounces) checked @endif
-                                    onchange="convertMeasurement({{ $i }});" />
-                                <label class="form-check-label us-radio" id="uom-oz-label-{{ $i }}"
-                                    for="uom-oz-{{ $i }}">
-                                    OZ
-                                </label>
-                                <input class="form-check-input us-radio for-conversion" type="radio"
-                                    data-column-name="in_lbs" name="uom-{{ $i }}-[]"
-                                    id="uom-lbs-{{ $i }}" @if ($item->in_lbs) checked @endif
-                                    onchange="convertMeasurement({{ $i }});" />
-                                <label class="form-check-label us-radio" id="uom-lbs-label-{{ $i }}"
-                                    for="uom-lbs-{{ $i }}">
-                                    LBS
-                                </label>
-                            @else
-                                <input class="form-check-input metric-radio for-conversion" type="radio"
-                                    data-column-name="in_grams" name="uom-{{ $i }}-[]"
-                                    id="uom-gram-{{ $i }}" @if ($item->in_grams) checked @endif
-                                    onchange="convertMeasurement({{ $i }});" />
-                                <label class="form-check-label metric-radio" id="uom-gram-label-{{ $i }}"
-                                    for="uom-gram-{{ $i }}">
-                                    G
-                                </label>
-                                <input class="form-check-input metric-radio for-conversion" type=radio
-                                    data-column-name="in_kilos" name="uom-{{ $i }}-[]"
-                                    id="uom-kg-{{ $i }}" @if ($item->in_kilos) checked @endif
-                                    onchange="convertMeasurement({{ $i }});" />
-                                <label class="form-check-label metric-radio" id="uom-kg-label-{{ $i }}"
-                                    for="uom-kg-{{ $i }}">
-                                    KG
-                                </label>
-                            @endif
-
-                        </td> --}}
                         <td>
                             <input class="form-control" type="number" data-column-name="item_weight"
                                 id="itemWeight-{{ $i }}" name="itemWeight[]"
