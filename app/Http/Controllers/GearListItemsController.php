@@ -432,7 +432,7 @@ class GearListItemsController extends Controller
         return redirect()->back();
     }
     public function updateGearItemUOM(Request $request){
-        Log::debug("inputs in updateGearItemUOM: ".print_r($request->input(),true));
+       
         $id = $request->id ?? false;
         $newUOM = $request->newUOM ?? false;
         $isNewRow = $request->isNewRow ?? false;
@@ -453,7 +453,7 @@ class GearListItemsController extends Controller
             return response()->json(['status' => '0', 'msg' => 'No item Id provided.', 'item'=>[]]);
         }
         $item = GearListItems::updateItemUomValues($gearListItem,$newUOM, $inputs);
-      
+
         if($isNewRow){
             try {
                 $masterListItem = GearListItems::where('id',$gearListItem->master_item_id)->first();
@@ -469,5 +469,23 @@ class GearListItemsController extends Controller
         }
         return response()->json(['status' => '1', 'msg' => 'updated and converted.', 'item'=>$item]);
 
+    }
+
+    public function getUserItemsToAssign($listId){
+
+        if(empty($listId)){
+            return response()->json(['status' => '0', 'msg' => 'No list Id provided.', 'userItems'=>[]]);
+        }
+
+        $userId = Auth::user()->id;
+        $userItems = GearListItems::getUserItemsForAssignment($userId,$listId);
+        Log::debug(__FILE__.' '.__LINE__.' user items 1: '.print_r($userItems,true));
+
+        if(empty($userItems)){
+            return response()->json(['status' => '0', 'msg' => "You do not have any gear items saved that are not on this list. You can add items to this list directly, or add them in the 'Your Gear' section.", 'userItems'=>[]]);
+        }
+        $userItems =  GearListItems::formatItemsForAssignment($userItems);
+        Log::debug(__FILE__.' '.__LINE__.' user items 1: '.print_r($userItems,true));
+        return response()->json(['status' => '1', 'msg' => "items", 'userItems'=>$userItems]);
     }
 }

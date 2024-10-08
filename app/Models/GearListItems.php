@@ -472,4 +472,50 @@ class GearListItems extends Model
             }
         }
     }
+    public static function getUserItemsForAssignment($userId,$listId){
+
+        $sql = "SELECT  gli.*, ic.category AS 'category'
+                FROM gear_list_items gli INNER JOIN item_categories ic ON gli.item_category = ic.value
+                WHERE master_item_id IS NULL
+                 AND user_id = ?
+                AND gli.id NOT IN (SELECT master_item_id FROM gear_list_items WHERE list_id = ?)";
+
+
+
+        $params = [$userId, $listId];
+
+        try{
+            $userItems = DB::select($sql,$params);
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            $userItems = [];
+
+        }
+
+        return $userItems;
+
+    }
+    public static function formatItemsForAssignment($userItems){
+
+        $response = [];
+
+        foreach($userItems as $item){
+            $uom = '';
+            if($item->in_ounces){
+                $uom = 'OZ';
+            }else if( $item->in_lbs){
+                $uom = 'LBS';
+            }else if($item->in_grams){
+                $uom = 'G';
+            }else{
+                $uom = 'KG';
+            }
+
+            $response[] = ['item_id'=>$item->id,'item_name'=> $item->item_name, 'item_category'=>$item->category, 'item_weight' => $item->item_weight, 'uom'=> $uom];
+        }
+
+        return $response;
+
+
+    }
 }

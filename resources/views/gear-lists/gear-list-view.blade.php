@@ -1,7 +1,7 @@
 @extends('layouts.header-footer')
 @section('title','Gear | ')
 @section('content')
-@include('modals.search-modal')
+@include('modals.add-gear-to-list-modal')
 @include('modals.gear-list-chart-modal')
 @include('modals.delete-alert-modal')
 <div class="list-item-form-container">

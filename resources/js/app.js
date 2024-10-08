@@ -166,6 +166,59 @@ window.addEventListener("DOMContentLoaded", function (e) {
         });
 
     }
+    this.window.showGearAssignModal = function showGearAssignModal(listId){
+
+        let table = document.getElementById("add-item-table-body");
+
+        let url = '/get-user-items/'+listId;
+        let userItems;
+
+        axios.get(url)
+        .then((res) => {
+            let data = res.data;
+            userItems = data.userItems;
+            alert('user items to add to list: '+ JSON.stringify(userItems));
+            if(data.status !== '1'){
+                alert(data.msg);
+                return;
+            }
+
+            for (let i = 0; i < userItems.length; i++) {
+
+                let row = document.createElement("tr");
+                let itemNameCell = document.createElement("td");
+                let itemCategoryCell = document.createElement("td");
+                let itemWeightCell = document.createElement("td");
+                let itemUOMCell = document.createElement("td");
+                let assignCell = document.createElement("td");
+
+                itemNameCell.innerHTML = userItems[i].item_name;
+                itemCategoryCell.innerHTML = userItems[i].item_category;
+                itemWeightCell.innerHTML = userItems[i].item_weight;
+                itemUOMCell.innerHTML = userItems[i].uom;
+
+
+                let checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = 'itemCheckBox-'+i;
+                checkbox.name = 'itemIds[]';
+                checkbox.value = userItems[i].item_id;
+                assignCell.appendChild(checkbox);
+
+                row.appendChild(itemNameCell);
+                row.appendChild(itemCategoryCell);
+                row.appendChild(itemWeightCell);
+                row.appendChild(itemUOMCell);
+
+                row.appendChild(assignCell);
+                table.appendChild(row);
+            }
+
+
+        });
+
+    }
+
     this.window.assignToGearList = function assignToGearList(element){
         let listId = element.getAttribute('data-list-id');
         let itemId = element.getAttribute('data-item-id');
@@ -1271,5 +1324,24 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
         });
     }
+
+    // let assignGeartToListModal =  document.getElementById('gearSearchModal');
+    // if(assignGeartToListModal !== undefined && assignGeartToListModal !== null){
+    //     $('#gearSearchModal').on('shown.bs.modal', function () {
+    //         $('#add-item-table').DataTable({
+    //             paging: true,      // Enable pagination
+    //             searching: true,   // Enable searching
+    //             ordering: true,    // Enable column-based ordering
+    //             autoWidth: false   // Disable auto width to allow responsive behavior
+    //         });
+    //     });
+
+    //     // To destroy the DataTable when the modal is closed to avoid re-initialization issues
+    //     $('#gearSearchModal').on('hidden.bs.modal', function () {
+    //         $('#add-item-table').DataTable().destroy();
+    //     });
+    // }
+
+
 
 });

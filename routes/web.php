@@ -88,7 +88,8 @@ Route::get('/remove-list-item/{id}', [App\Http\Controllers\GearListItemsControll
 )->name('item-remove');
 Route::post('/update-item-uom', [App\Http\Controllers\GearListItemsController::class, 'updateGearItemUOM']
 )->name('item-update-uom');
-
+Route::get('/get-user-items/{listId}', [App\Http\Controllers\GearListItemsController::class, 'getUserItemsToAssign']
+)->name('get-assign-item');
 
 //master list and item routes
 Route::post('/add-gear-items',  [App\Http\Controllers\GearListItemsController::class, 'addMasterGearItems']
