@@ -177,7 +177,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
         .then((res) => {
             let data = res.data;
             userItems = data.userItems;
-            alert('user items to add to list: '+ JSON.stringify(userItems));
             if(data.status !== '1'){
                 alert(data.msg);
                 return;
@@ -1324,24 +1323,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
         });
     }
-
-    // let assignGeartToListModal =  document.getElementById('gearSearchModal');
-    // if(assignGeartToListModal !== undefined && assignGeartToListModal !== null){
-    //     $('#gearSearchModal').on('shown.bs.modal', function () {
-    //         $('#add-item-table').DataTable({
-    //             paging: true,      // Enable pagination
-    //             searching: true,   // Enable searching
-    //             ordering: true,    // Enable column-based ordering
-    //             autoWidth: false   // Disable auto width to allow responsive behavior
-    //         });
-    //     });
-
-    //     // To destroy the DataTable when the modal is closed to avoid re-initialization issues
-    //     $('#gearSearchModal').on('hidden.bs.modal', function () {
-    //         $('#add-item-table').DataTable().destroy();
-    //     });
-    // }
-
 
 
 });

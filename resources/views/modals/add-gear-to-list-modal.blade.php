@@ -8,9 +8,9 @@
         <h5 class="modal-title" id="gearSearchModalLabel">Add Your Gear</h5>
         <button type="button" class="btn-close modal-x" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        {{-- action="/search-api" method="get" --}}
-        <form >
 
+        <form action="/add-user-gear-to-list/{{ $gearList->id }}" method="post" >
+            @csrf
             <div class="modal-body custom-scrollbar">
                 Search your existing gear and add it to this list.
                 <div>

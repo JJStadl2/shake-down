@@ -345,4 +345,38 @@ class GearListsController extends Controller
 
         return response()->json(['status'=>'1','msg'=>'found.','listData'=>$gearList]);
     }
+
+    public function assignUserItemsToList(Request $request, $listId){
+        Log::debug(__FILE__.' '.__LINE__.' request in assign to list: '.print_r($request->input(),true));
+        $itemIds = $request->itemIds ?? false;
+        if(empty($listId)){
+            return redirect()->back()->with('error','No list Id provided.');
+        }
+        if(empty($itemIds)){
+            return redirect()->back()->with('error','Please check the checkbox next to the items you want added to this list.');
+        }
+
+        foreach($itemIds as $item_id){
+            $masterItem = GearListItems::where('id',$item_id)->first();
+            $gearItem = new GearListItems();
+            foreach($masterItem->getAttributes() as $key => $value){
+                if($key !=='id' && $key !=='list_id' && $key !== 'master_item_id'){
+                    $gearItem->$key = $value;
+                }
+
+            }
+            $gearItem->list_id = $listId;
+            $gearItem->master_item_id = $item_id;
+            try{
+               $gearItem->save();
+            }catch(\Exception $e){
+                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                return redirect()->back()->with('error','Failed to add items to list.');
+            }
+
+        }
+
+        return redirect('/list-items/'.$listId)->with('success','Items added to list.');
+
+    }
 }
