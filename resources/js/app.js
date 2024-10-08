@@ -612,6 +612,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         data['item_weight'] = 0;
         data['amount'] = 1;
         data['item_category'] = category;
+        data['newCategory'] = true;
         let url = '/list-item'
 
         axios

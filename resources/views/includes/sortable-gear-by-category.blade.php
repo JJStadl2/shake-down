@@ -29,12 +29,13 @@
                                         </select>
         </div>
         <div class="col-md-2 mb-3 mt-3">
-            <button class="btn btn-primary btn-sm mt-2 py-2 px-3" style="width:100%"  id="listChartBtn" data-bs-toggle="modal" data-bs-target="#gearListChartModal">
-                Analytics
-                </button>
-                {{-- <button id="searchGearBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float:right;" data-bs-toggle="modal" data-bs-target="#productSearchModal">
-                    Search
-                    </button> --}}
+
+                    <button id="searchGearBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: left;"  data-bs-toggle="modal" data-bs-target="#gearSearchModal" onclick="showGearAssignModal('{{ $gearList->id }}')">
+                        Search
+                    </button>
+                    <button  id="listChartBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: right;"  data-bs-toggle="modal" data-bs-target="#gearListChartModal">
+                        Analytics
+                    </button>
         </div>
         <div class="col-md-3 mb-3"></div>
 
@@ -61,7 +62,7 @@
                 <span class="item-arrow">&#9660;</span>
 
             </div>
-            <div class="item-collapsible-content">
+            <div class="item-collapsible-content @if(!empty($newCategory) && $newCategory === $itemCat->value) open @endif">
                 <table class="table table-dark sortable" data-category-id="list-items">
                     <thead>
                         <tr>

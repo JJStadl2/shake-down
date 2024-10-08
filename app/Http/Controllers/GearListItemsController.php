@@ -28,6 +28,8 @@ class GearListItemsController extends Controller
         $listSortingOptions = GearLists::getSortingOptions();
         $listClasses = GearLists::getListClasses();
         $sortedItemCategories = [];
+        $newCategory = Session::get('newCategory') ?? false;
+        Session::forget('newCategory');
         try {
             $gearList = GearLists::where('id', $listId)->first();
         } catch (\Exception $e) {
@@ -61,7 +63,7 @@ class GearListItemsController extends Controller
         }
 
         GearLists::checkWeight($gearList);
-        return view('gear-lists.gear-list-view', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories, 'sortedItemCategories' => $sortedItemCategories]);
+        return view('gear-lists.gear-list-view', ['gearList' => $gearList, 'gearListItems' => $gearListItems, 'user' => $user, 'itemCategories' => $itemCategories, 'sortingOptions' => $listSortingOptions, 'listClasses' => $listClasses, 'selectedCategories' => $selectedCategories, 'sortedItemCategories' => $sortedItemCategories, 'newCategory'=>$newCategory]);
     }
 
     public function itemsMaster()
@@ -138,6 +140,7 @@ class GearListItemsController extends Controller
         $listId = $request->list_id;
         $user = Auth::user();
         $uom = $request->uom ?? false;
+      
         try {
             $masterGearList = GearLists::where('user_id', $user->id)->where('master_list', true)->first();
         } catch (\Exception $e) {
@@ -159,7 +162,8 @@ class GearListItemsController extends Controller
             $uom = $gearList->uom;
         }
 
-        $inputs = $request->except(['_token', 'q', 'id']);
+        $isNewCategory = $request->newCategory ?? false;
+        $inputs = $request->except(['_token', 'q', 'id','newCategory']);
         $listItems = $gearList->list_items;
         $masterItem = new GearListItems();
         $gearListItem = new GearListItems();
@@ -205,7 +209,9 @@ class GearListItemsController extends Controller
             Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
             return response()->json(['status' => '0', 'msg' => 'Error Saving list item']);;
         }
-
+        if($isNewCategory){
+            Session::put('newCategory',$inputs['item_category']);
+        }
         return response()->json(['status' => '1', 'newId' => $gearListItem->id]);
     }
 
