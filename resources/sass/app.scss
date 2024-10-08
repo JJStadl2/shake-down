@@ -434,4 +434,11 @@ html,body {
     max-height: 600px; /* Set the maximum height of the modal body */
     overflow-y: auto;  /* Enable vertical scrollbar */
   }
+  .tooltip-custom {
+    cursor: pointer;
+    text-decoration: underline dotted;
+}
+.gear-section {
+    margin: 1rem 0;
+}
 

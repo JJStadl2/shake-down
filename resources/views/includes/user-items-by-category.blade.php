@@ -104,7 +104,7 @@
                                         <input class="form-control" type="number" data-column-name="item_weight"
                                             id="itemWeight-{{ $i }}" name="itemWeight[]"
                                             value="{{ $item->item_weight ?? 0 }}"
-                                            onblur="updateListItem(this);getLineTotalWeight('{{ $i }}')" />
+                                            onblur="updateListItem(this);" />
                                     </td>
 
 

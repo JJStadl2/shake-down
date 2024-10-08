@@ -1104,6 +1104,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
         // let isMaster = document.getElementById('isMaster').value;
         let isMaster = document.getElementById('isMaster')?.value === 'true';
+        if(!isMaster){
+            console.log('is master: '+ isMaster);
+        }
         let href = element.getAttribute('data-href');
         let name = element.getAttribute('data-object-name');
         let objectType = element.getAttribute('data-object-type');
@@ -1113,20 +1116,22 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let helperDiv = document.getElementById('deleteHelper');
         let helptext;
         helperDiv.innerText = '';
-
-        if(objectType === 'item:' && isMaster === 'false'){
+        if(name == '' || name === null || name === undefined){
+            text = `Are you sure?`;
+        }
+        if(objectType === 'item:' && isMaster === false){
             let listName = element.getAttribute('data-list-name');
             helptext = `*Deleting an item from this list (${listName}) will not delete it the 'Your Gear' section.`;
             helperDiv.append(helptext);
         }
-        else if(objectType === 'item:' && isMaster === 'true'){
+        else if(objectType === 'item:' && isMaster === true){
             helptext = `*Deleting an item from the 'Your Gear' section will delete it from all 'Gear Lists'.`;
             helperDiv.append(helptext);
         }
-        else if(objectType === 'category:' && isMaster ==='false'){
+        else if(objectType === 'category:' && isMaster ===false){
             text = `Are you sure you want to delete all items in the ${name} category from this list?`;
         }
-        else if(objectType === 'category:' && isMaster ==='true'){
+        else if(objectType === 'category:' && isMaster ===true){
             text = `Are you sure you want to delete all items in the ${name} category from ALL your lists?`;
         }
         else if(objectType === 'list:' ){
@@ -1135,6 +1140,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         else{
             helperDiv.style.display = 'none';
         }
+
         modalBody.innerHTML = text;
         anchor.setAttribute('href',href);
 

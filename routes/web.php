@@ -25,6 +25,10 @@ Route::get('/faqs', function () {
     return view('faqs');
 
 });
+Route::get('/how-to', function () {
+    return view('how-to');
+
+});
 
 //auth routes
 Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm']

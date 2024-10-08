@@ -26,8 +26,8 @@ class ListSortingOptionsSeeder extends Seeder
             ['value'=>'cat_desc','display'=>'Item Category(Z-A)','ordinal'=>2, 'order_by'=>'item_category DESC'],
             ['value'=>'name_asc','display'=>'Item Name(A-Z)','ordinal'=>3, 'order_by'=>'item_name ASC'],
             ['value'=>'name_desc','display'=>'Item Name(Z-A)','ordinal'=>4, 'order_by'=>'item_name DESC'],
-            ['value'=>'weight_asc','display'=>'Item Weight(Low-High)','ordinal'=>5, 'order_by'=>'item_weight ASC'],
-            ['value'=>'weight_desc','display'=>'Item Weight(High-Low)','ordinal'=>6, 'order_by'=>'item_weight DESC'],
+            ['value'=>'weight_asc','display'=>'Item Weight(Low-High)','ordinal'=>5, 'order_by'=>'minimum_unit_weight ASC'],
+            ['value'=>'weight_desc','display'=>'Item Weight(High-Low)','ordinal'=>6, 'order_by'=>'minimum_unit_weight DESC'],
             ['value'=>'dont','display'=>"Don't Sort",'ordinal'=>7, 'order_by'=>'id ASC'],
             ['value'=>'drag_drop','display'=>"Manual (User Drag & Drop)",'ordinal'=>8, 'order_by'=>'list_order ASC'],
 
