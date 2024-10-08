@@ -467,73 +467,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
         updateListItem(lineTotalWeightElement);
     };
-    // this.window.convertMeasurement = function convertMeasurement(
-    //     row,
-    //     convert = false
-    // ) {
-    //     let listId = document.getElementById('listId').value;
-    //     let uom =  document.getElementById("uom-"+row).value;
-    //     let isMasterList = document.getElementById('isMaster').value;
 
-    //     // if(isMasterList === 'true'){
-    //     //     uom = document.getElementById("uom-"+row).value;
-    //     // }else{
-    //     //     uom = document.getElementById("uom").value;
-    //     // }
-
-    //     // if(listId == 'master'){
-    //     //     uom = document.getElementById("uom-"+row).value;
-    //     // }else{
-    //     //     uom = document.getElementById("uom").value;
-    //     // }
-    //     let weight = document.getElementById("itemWeight-" + row);
-    //     let packedAmount = document.getElementById("packedAmount-" + row).value;
-    //     let totalWeight = document.getElementById("totalLineWeight-" + row);
-    //     let totalLineWeightValue = 0;
-    //     let weightValue = weight.value;
-    //     let small;
-    //     let large;
-    //     let element;
-    //     let label = document.getElementById("line-uom-label-" + row);
-    //     let labelHTML;
-
-    //     if (uom === "us") {
-    //         small = document.getElementById("uom-oz-" + row);
-    //         large = document.getElementById("uom-lbs-" + row);
-    //         if (small.checked === true) {
-    //             weightValue = +weightValue * 16;
-    //             element = small;
-    //             labelHTML = "OZ";
-    //         } else {
-    //             weightValue = +weightValue / 16;
-    //             element = large;
-    //             labelHTML = "LBS";
-    //         }
-    //     } else {
-    //         small = document.getElementById("uom-gram-" + row);
-    //         large = document.getElementById("uom-kg-" + row);
-
-    //         if (small.checked === true) {
-    //             weightValue = +weightValue * 1000;
-    //             element = small;
-    //             labelHTML = "G";
-    //         } else {
-    //             weightValue = +weightValue / 1000;
-    //             element = large;
-    //             labelHTML = "KG";
-    //         }
-    //     }
-
-    //     totalLineWeightValue = +weightValue * +packedAmount;
-    //     weight.value = weightValue.toFixed(3).replace(/[.,]00$/, "");
-    //     totalWeight.value = totalLineWeightValue
-    //         .toFixed(3)
-    //         .replace(/[.,]00$/, "");
-    //     label.innerHTML = labelHTML;
-    //     updateListItem(element);
-    //     updateListItem(weight);
-    //     updateListItem(totalWeight);
-    // };
     this.window.updateItemUOM = function updateItemUOM(
         row,
        element
@@ -725,13 +659,11 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let uomElement;
 
         uomRadios.forEach(function (uomRadio) {
-            if(uomRadio.type == 'radio' && uomRadio.checked){
+            if(uomRadio.type == 'radio' && uomRadio.id.endsWith(row) && uomRadio.checked){
                 uomElement = uomRadio;
             }
         });
         let uomColumnName = uomElement.getAttribute("data-column-name");
-        // data[columnName] = value;
-
 
         if (columnName.startsWith("in_")) {
             data = getBooleanData(columnName);
@@ -1117,7 +1049,8 @@ window.addEventListener("DOMContentLoaded", function (e) {
     }
     this.window.confirmDelete = function confirmDelete(element) {
 
-        let isMaster = document.getElementById('isMaster').value;
+        // let isMaster = document.getElementById('isMaster').value;
+        let isMaster = document.getElementById('isMaster')?.value === 'true';
         let href = element.getAttribute('data-href');
         let name = element.getAttribute('data-object-name');
         let objectType = element.getAttribute('data-object-type');
@@ -1127,7 +1060,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
         let helperDiv = document.getElementById('deleteHelper');
         let helptext;
         helperDiv.innerText = '';
-
 
         if(objectType === 'item:' && isMaster === 'false'){
             let listName = element.getAttribute('data-list-name');
@@ -1143,6 +1075,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
         }
         else if(objectType === 'category:' && isMaster ==='true'){
             text = `Are you sure you want to delete all items in the ${name} category from ALL your lists?`;
+        }
+        else if(objectType === 'list:' ){
+            text = `Are you sure you want to delete the ${name} list?`;
         }
         else{
             helperDiv.style.display = 'none';

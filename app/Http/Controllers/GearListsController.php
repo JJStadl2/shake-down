@@ -232,15 +232,15 @@ class GearListsController extends Controller
             return redirect()->back()->with('error','Failed to deleted list.');
         }
 
-        // try{
-        //     foreach($gearListItems as $item){
-        //         $item->delete();
-        //     }
+        try{
+            foreach($gearListItems as $item){
+                $item->delete();
+            }
 
-        // }catch(\Exception $e){
-        //     Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-        //     return redirect()->back()->with('error','List deleted but failed to delte items.');
-        // }
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return redirect()->back()->with('error','List deleted but failed to delte items.');
+        }
 
         return redirect()->back()->with('success','List and items deleted.');
 
