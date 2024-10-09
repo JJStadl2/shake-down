@@ -46,11 +46,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             let cell6 = document.createElement("td");
             cell6.id = "btn-td-" +i;
-            let deleteBtn = document.createElement("a");
-            deleteBtn.id = "deleteBtn-" + i;
-            deleteBtn.className = "btn btn-primary btn-sm  py-2";
-            deleteBtn.innerHTML = "x";
-
+            let deleteBtn = createDeleteButton(i);
 
             let cell2 = document.createElement("td");
             let itemWeight = createListItemInput(
@@ -64,7 +60,8 @@ window.addEventListener("DOMContentLoaded", function (e) {
             itemWeight.classList.add("for-weight");
             itemWeight.classList.add("number-input");
             itemWeight.classList.add("form-control");
-            itemWeight.style.width = '40%';
+            itemWeight.setAttribute('step','0.01');
+            //itemWeight.style.width = '40%';
             cell2.classList.add("number-col");
 
             let cell3 = document.createElement("td");
@@ -120,16 +117,16 @@ window.addEventListener("DOMContentLoaded", function (e) {
         document.getElementById('newItemCount').value = linesToAdd;
         numberOfItemsToAdd.value = 1;
     };
-    this.window.showListAssignModal = function showListAssignModal(itemId,userItemId,itemName){
+    this.window.showListAssignModal = function showListAssignModal(itemId,itemName){
 
         document.getElementById('itemIdforAssign').value = itemId;
-        document.getElementById('userItemIdforAssign').value = userItemId;
+        // document.getElementById('userItemIdforAssign').value = userItemId;
 
         let table = document.getElementById("modal-assign-item-table-body");
         let header = document.getElementById('AssignItemToListModalLabel');
         header.innerHTML = 'Assign/Unassign item: '+itemName;
 
-        let url = '/get-user-lists/'+userItemId;
+        let url = '/get-user-lists/'+itemId;
         let userLists;
 
         axios.get(url)
@@ -169,13 +166,62 @@ window.addEventListener("DOMContentLoaded", function (e) {
         });
 
     }
+    this.window.showGearAssignModal = function showGearAssignModal(listId){
+
+        let table = document.getElementById("add-item-table-body");
+
+        let url = '/get-user-items/'+listId;
+        let userItems;
+
+        axios.get(url)
+        .then((res) => {
+            let data = res.data;
+            userItems = data.userItems;
+            if(data.status !== '1'){
+                alert(data.msg);
+                return;
+            }
+
+            for (let i = 0; i < userItems.length; i++) {
+
+                let row = document.createElement("tr");
+                let itemNameCell = document.createElement("td");
+                let itemCategoryCell = document.createElement("td");
+                let itemWeightCell = document.createElement("td");
+                let itemUOMCell = document.createElement("td");
+                let assignCell = document.createElement("td");
+
+                itemNameCell.innerHTML = userItems[i].item_name;
+                itemCategoryCell.innerHTML = userItems[i].item_category;
+                itemWeightCell.innerHTML = userItems[i].item_weight;
+                itemUOMCell.innerHTML = userItems[i].uom;
+
+
+                let checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = 'itemCheckBox-'+i;
+                checkbox.name = 'itemIds[]';
+                checkbox.value = userItems[i].item_id;
+                assignCell.appendChild(checkbox);
+
+                row.appendChild(itemNameCell);
+                row.appendChild(itemCategoryCell);
+                row.appendChild(itemWeightCell);
+                row.appendChild(itemUOMCell);
+
+                row.appendChild(assignCell);
+                table.appendChild(row);
+            }
+
+
+        });
+
+    }
+
     this.window.assignToGearList = function assignToGearList(element){
         let listId = element.getAttribute('data-list-id');
         let itemId = element.getAttribute('data-item-id');
 
-        console.log('list id in assign gear to list new: '+listId);
-        console.log('item id in assign gear to list new: '+itemId);
-        console.log('checked: '+element.checked);
         if(!element.checked){
             listId = '';
         }
@@ -201,29 +247,11 @@ window.addEventListener("DOMContentLoaded", function (e) {
           });
 
     }
-    this.window.updateSessionData = function updateSessionData(element){
-        let value = element.value;
-        let columnName = element.getAttribute('data-column-name');
-        let url = '/update-session';
-        let data = {};
-        data[columnName] = value;
 
-        axios.post(url,data)
-          .then((response) => {
-            response = response.data;
-            if(response.status == 1){
-                location.reload();
-            }
-
-          }, (error) => {
-            console.log(error);
-          });
-
-
-    }
     this.window.addListItem = function addListItem(categorycounter = null, groupCategory = null) {
         let numberOfItemsToAdd = document.getElementById("linesToAdd");
         let linesToAdd = 1;
+        let listViewInput;
         if (numberOfItemsToAdd === null || +numberOfItemsToAdd.value < 1) {
             numberOfItemsToAdd.value = linesToAdd;
         } else {
@@ -253,6 +281,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
             finalIElement.value = +finalI + 1;
 
             let row = document.createElement("tr");
+            row.id = 'row-'+finalI;
 
             // Create cells and input elements.
             let cell0 = document.createElement("th");
@@ -268,6 +297,17 @@ window.addEventListener("DOMContentLoaded", function (e) {
             counter.value = "new-" + finalI;
             counter.setAttribute("data-column-name", "id");
 
+            let listViewType = document.createElement("input");
+            listViewType.type = "hidden";
+
+            listViewType.id = "listViewType";
+            listViewType.value = listByItems
+            listViewInput = listViewType;
+
+            let newRow = document.createElement("input");
+            newRow.type = "hidden";
+            newRow.id = "newRow-" + finalI;
+            newRow.value = true;
             let itemName = createListItemInput(
                 "text",
                 "itemName",
@@ -280,53 +320,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
             let cell6 = document.createElement("td");
             cell6.id = "btn-td-" + finalI;
-            let deleteBtn = document.createElement("a");
-            deleteBtn.id = "deleteBtn-" + finalI;
-            deleteBtn.className = "btn btn-primary btn-sm  py-2";
-            deleteBtn.innerHTML = "x";
-
-            let data = {};
-            let url = "/list-item";
-
-            if (listUOM == "us") {
-                data = getBooleanData("in_ounces");
-            } else {
-                data = getBooleanData("in_grams");
-            }
-            data["list_id"] = listId;
-            data["user_id"] = userId;
-            data["item_name"] = "";
-            if(groupCategory !== null){
-                data['item_category'] = groupCategory;
-            }
-
-            let updateItem;
-            updateItem = async function () {
-                try {
-                    const response = await axios.post(url, data);
-                    // alert(
-                    //     "response fro new input: " + JSON.stringify(response)
-                    // );
-                    return response.data;
-                } catch (error) {
-                    // handle error
-                    console.log(error);
-                }
-            };
-
-            // To use the function and handle the response data
-            updateItem().then((data) => {
-                // Do something with the response data
-                counter.value = data.newId;
-                row.setAttribute("data-id", data.newId);
-                deleteBtn.setAttribute(
-                    "href",
-                    "/destroy-list-item/" + data.newId
-                );
-            });
-
-
+            let deleteBtn = createDeleteButton(finalI);
             let cell2 = document.createElement("td");
+
             let itemWeight = createListItemInput(
                 "number",
                 "itemWeight",
@@ -343,28 +339,45 @@ window.addEventListener("DOMContentLoaded", function (e) {
             let lineUomCell = document.createElement("td");
             cell3.classList.add("uom-td");
             lineUomCell.classList.add("uom-td");
-            let radio1;
-            let radio2;
-            let radioLabel1;
-            let radioLabel2;
-            let radioLabel3;
+            let rowUom = document.createElement("input");
+            rowUom.type = 'hidden';
+            rowUom.id = "uom-" + finalI;
+
+
+            let  radio1 = createRadio("in_ounces", "", "oz", finalI);
+            let radioLabel1 = createLabel(
+                "OZ",
+                "uom-oz-" + finalI,
+                "oz",
+                finalI
+            );
+            let radio2 = createRadio("in_lbs", "", "lbs", finalI);
+            let radioLabel2 = createLabel(
+                "LBS",
+                "uom-lbs-" + finalI,
+                "lbs",
+                finalI
+            );
+            let   radio3 = createRadio("in_grams", "", "gram", finalI);
+            let radioLabel3 = createLabel(
+                "G",
+                "uom-gram-" + finalI,
+                "gram",
+                finalI
+            );
+            let radio4 = createRadio("in_kilos", "", "kg", finalI);
+            let radioLabel4 = createLabel(
+                "KG",
+                "uom-kg-" + finalI,
+                "kg",
+                finalI
+            );
+            let radioLabel5;
 
             if (listUOM === "us") {
-                radio1 = createRadio("in_ounces", "", "oz", finalI);
-                radioLabel1 = createLabel(
-                    "OZ",
-                    "uom-oz-" + finalI,
-                    "oz",
-                    finalI
-                );
-                radio2 = createRadio("in_lbs", "", "lbs", finalI);
-                radioLabel2 = createLabel(
-                    "LBS",
-                    "uom-lbs-" + finalI,
-                    "lbs",
-                    finalI
-                );
-                radioLabel3 = createLabel(
+                rowUom.value = "us";
+                radio1.checked = true;
+                radioLabel5 = createLabel(
                     "OZ",
                     "uom-oz-" + finalI,
                     "oz",
@@ -372,21 +385,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
                     true
                 );
             } else {
-                radio1 = createRadio("in_grams", "", "gram", finalI);
-                radioLabel1 = createLabel(
-                    "G",
-                    "uom-gram-" + finalI,
-                    "gram",
-                    finalI
-                );
-                radio2 = createRadio("in_kilos", "", "kg", finalI);
-                radioLabel2 = createLabel(
-                    "KG",
-                    "uom-kg-" + finalI,
-                    "kg",
-                    finalI
-                );
-                radioLabel3 = createLabel(
+                rowUom.value = "metric";
+                radio3.checked = true;
+                radioLabel5 = createLabel(
                     "G",
                     "uom-gram-" + finalI,
                     "gram",
@@ -403,6 +404,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
                 finalI,
                 "amount"
             );
+
             packedAmount.value = 1;
 
             packedAmount.classList.add("for-weight");
@@ -428,48 +430,37 @@ window.addEventListener("DOMContentLoaded", function (e) {
             totalLineWeight.classList.add("for-total-list-weight");
 
             //append inputs to cells.
-
-            // Define the SVG namespace
-            const svgNamespace = "http://www.w3.org/2000/svg";
             let iconCell = document.createElement("th");
-            // Create a new SVG element
-            let icon = document.createElementNS(svgNamespace, "svg");
-            icon.setAttribute("width", "16");
-            icon.setAttribute("height", "16");
-            icon.setAttribute("fill", "currentColor");
-            icon.setAttribute("class", "bi bi-grip-vertical");
-            icon.setAttribute("viewBox", "0 0 16 16");
 
-            // Create the <path> element
-            let path = document.createElementNS(svgNamespace, "path");
-            path.setAttribute(
-                "d",
-                "M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
-            );
-
-            // Append the path to the SVG
-            icon.appendChild(path);
-
-            // // Append the SVG icon to the cell
+            let icon = document.createElement('i');
+            icon.className = 'fas fa-grip-vertical';
             iconCell.appendChild(icon);
 
             cell1.appendChild(counter);
-            // cell1.appendChild(icon);
+            cell1.appendChild(newRow);
             cell1.appendChild(itemName);
             cell2.appendChild(itemWeight);
 
             let selectCell = document.createElement("td");
             let categorySelect = getCategroySelect(finalI, groupCategory);
-            selectCell.append(categorySelect);
 
+            selectCell.append(categorySelect);
+            cell3.appendChild(rowUom);
             cell3.appendChild(radio1);
             cell3.appendChild(radioLabel1);
             cell3.appendChild(radio2);
             cell3.appendChild(radioLabel2);
 
+            cell3.appendChild(radio3);
+            cell3.appendChild(radioLabel3);
+            cell3.appendChild(radio4);
+            cell3.appendChild(radioLabel4);
+
+
+
             cell4.appendChild(packedAmount);
             cell5.appendChild(totalLineWeight);
-            lineUomCell.appendChild(radioLabel3);
+            lineUomCell.appendChild(radioLabel5);
             cell6.appendChild(deleteBtn);
 
             // Append cells to the row.
@@ -489,6 +480,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
             addEventListenerWeightCalc(finalI);
         }
         numberOfItemsToAdd.value = 1;
+
+        let container = document.querySelector('.gear-items-container');
+        container.appendChild(listViewInput);
     };
 
     this.window.updateUOM = function updateUOM(value) {
@@ -525,65 +519,82 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
         updateListItem(lineTotalWeightElement);
     };
-    this.window.convertMeasurement = function convertMeasurement(
+
+    this.window.updateItemUOM = function updateItemUOM(
         row,
-        convert = false
+       element
     ) {
-        let listId = document.getElementById('listId').value;
-        let uom;
 
-        if(listId == 'master'){
-            uom = document.getElementById("uom-"+row).value;
-        }else{
-            uom = document.getElementById("uom").value;
+        if (!element || !(element instanceof HTMLElement)) {
+            console.error("Invalid element provided to updateListItem.");
+            return;
         }
-        let weight = document.getElementById("itemWeight-" + row);
-        let packedAmount = document.getElementById("packedAmount-" + row).value;
-        let totalWeight = document.getElementById("totalLineWeight-" + row);
-        let totalLineWeightValue = 0;
-        let weightValue = weight.value;
-        let small;
-        let large;
-        let element;
-        let label = document.getElementById("line-uom-label-" + row);
+
+        let uomElement = document.getElementById(`uom-${row}`);
+        let itemWeight = document.getElementById(`itemWeight-${row}`).value;
+        let columnName = element.getAttribute('data-column-name');
+        let uom = uomElement.value;
+        let itemId = document.getElementById(`id-${row}`).value;
+        let label = document.getElementById(`line-uom-label-${row}`);
         let labelHTML;
+        let newUOM;
+        let url = '/update-item-uom';
+        let isNewRow = document.getElementById(`newRow-${row}`) ? document.getElementById(`newRow-${row}`).value : false;
 
-        if (uom === "us") {
-            small = document.getElementById("uom-oz-" + row);
-            large = document.getElementById("uom-lbs-" + row);
-            if (small.checked === true) {
-                weightValue = +weightValue * 16;
-                element = small;
-                labelHTML = "OZ";
-            } else {
-                weightValue = +weightValue / 16;
-                element = large;
-                labelHTML = "LBS";
-            }
-        } else {
-            small = document.getElementById("uom-gram-" + row);
-            large = document.getElementById("uom-kg-" + row);
-
-            if (small.checked === true) {
-                weightValue = +weightValue * 1000;
-                element = small;
-                labelHTML = "G";
-            } else {
-                weightValue = +weightValue / 1000;
-                element = large;
-                labelHTML = "KG";
-            }
+        if(itemId.startsWith('new')){
+            return updateListItem(element);
         }
 
-        totalLineWeightValue = +weightValue * +packedAmount;
-        weight.value = weightValue.toFixed(3).replace(/[.,]00$/, "");
-        totalWeight.value = totalLineWeightValue
-            .toFixed(3)
-            .replace(/[.,]00$/, "");
-        label.innerHTML = labelHTML;
-        updateListItem(element);
-        updateListItem(weight);
-        updateListItem(totalWeight);
+        if(columnName.endsWith('ounces') || columnName.endsWith('lbs')){
+            newUOM = 'us';
+        }else{
+            newUOM = 'metric';
+        }
+
+        let data = getBooleanData(columnName);
+        data['id'] = itemId;
+        data['newUOM'] = newUOM;
+        data['item_weight'] = itemWeight;
+        data['isNewRow'] = isNewRow;
+
+        axios.post(url, data)
+        .then((res) => {
+            let resData = res.data;
+            let item = resData.item;
+
+            if (resData.status === '1') {
+                flashBorder(element, true);
+                document.getElementById(`itemWeight-${row}`).value = item['item_weight'];
+                document.getElementById(`packedAmount-${row}`).value = item['amount'];
+                document.getElementById(`totalLineWeight-${row}`).value = item['total_line_weight'];
+                uomElement.value = newUOM;
+                if(item['in_ounces']){
+                    labelHTML = "OZ";
+                }
+                else if(item['in_lbs']){
+                    labelHTML = "LBS";
+                }
+                else if(item['in_grams']){
+                    labelHTML = "G";
+                }
+                else if(item['in_kilos']){
+                    labelHTML = "KG";
+                }
+
+                label.innerHTML = labelHTML;
+
+            } else {
+                flashBorder(element, false);
+                alert(resData.msg || "Update failed, please check your input.");
+            }
+        })
+        .catch((err) => {
+            // Enhanced error handling
+            flashBorder(element, false);
+            alert("Failed to update list item. Please try again later.");
+            console.error("Update error:", err);
+        });
+
     };
     this.window.addCategoryGroup = function addCategoryGroup(listId,category, listUOM, userId){
 
@@ -601,6 +612,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
         data['item_weight'] = 0;
         data['amount'] = 1;
         data['item_category'] = category;
+        data['newCategory'] = true;
         let url = '/list-item'
 
         axios
@@ -620,133 +632,193 @@ window.addEventListener("DOMContentLoaded", function (e) {
         });
 
     }
+    function flashBorder(element, isSuccess) {
+        let columnName = element.getAttribute('data-column-name');
+        if(columnName !== 'total_line_weight'){
+            element.style.backgroundColor = isSuccess ? '#A8E6CF' : '#F08080';
+            // Set a timeout to remove the border after 2 seconds
+            setTimeout(() => {
+                element.style.backgroundColor = '';
+            }, 2000);
+        }
+
+    }
     function getBooleanData(columnName) {
         let data = {};
         data["in_ounces"] = false;
         data["in_lbs"] = false;
         data["in_grams"] = false;
         data["in_kilos"] = false;
+        data['uom'] = 'us';
         switch (columnName) {
             case "in_ounces":
                 data["in_ounces"] = true;
+                data['uom'] = 'us';
                 break;
             case "in_lbs":
                 data["in_lbs"] = true;
+                data['uom'] = 'us';
                 break;
             case "in_grams":
                 data["in_grams"] = true;
+                data['uom'] = 'metric';
                 break;
             case "in_kilos":
                 data["in_kilos"] = true;
+                data['uom'] = 'metric';
                 break;
             default:
                 break;
         }
         return data;
     }
-    this.window.updateListItem = function updateListItem(element,) {
+
+    this.window.updateListItem = function updateListItem(element) {
+        // Checking if element is a valid DOM element
+        if (!element || !(element instanceof HTMLElement)) {
+            console.error("Invalid element provided to updateListItem.");
+            return;
+        }
+
         let columnName = element.getAttribute("data-column-name");
         let value = element.value;
         let id = element.id;
         let idArr = id.split("-");
-        let arrLength = idArr.length;
-        let row = idArr[arrLength - 1];
-        let itemId = document.getElementById("id-" + row);
-        let itemIdValue = itemId.value;
-        let listId = document.getElementById("listId").value;
-        let url = "/list-item/" + itemIdValue;
-        let data = {};
-        let userId = document.getElementById("userId").value;
 
-        data[columnName] = value;
-
-        if (columnName.substring(0, 3) === "in_") {
-            data = getBooleanData(columnName);
+        if (idArr.length === 0) {
+            console.error("Invalid ID format.");
+            return;
         }
+
+        let row = idArr[idArr.length - 1];
+        let itemId = document.getElementById("id-" + row);
+
+        // Check if itemId exists
+        if (!itemId) {
+            console.error(`Element with ID 'id-${row}' not found.`);
+            return;
+        }
+
+        let itemIdValue = itemId.value;
+        let listId = document.getElementById("listId")?.value || "";
+        let url = "/list-item";
+        let data = {};
+        let userId = document.getElementById("userId")?.value || "";
+        let create = true;
+        let isMasterList = document.getElementById('isMaster')?.value === 'true';
+        let updateCategoryValue = document.getElementById('listViewType')?.value === 'false';
+        let isNewRow = document.getElementById(`newRow-${row}`) ? document.getElementById(`newRow-${row}`).value : false;
+        let uomRadios = document.querySelectorAll(".form-check-input");
+        let uomElement;
+
+        uomRadios.forEach(function (uomRadio) {
+            if(uomRadio.type == 'radio' && uomRadio.id.endsWith(row) && uomRadio.checked){
+                uomElement = uomRadio;
+            }
+        });
+        let uomColumnName = uomElement.getAttribute("data-column-name");
+
+        if (columnName.startsWith("in_")) {
+            data = getBooleanData(columnName);
+        }else{
+            data = getBooleanData(uomColumnName);
+            data[columnName] = value;
+        }
+
+        // Assign additional properties to data object
 
         data["list_id"] = listId;
         data["user_id"] = userId;
         data["id"] = itemIdValue;
-
-        axios
-            .post(url, data, itemId)
-            .then((res) => {
-                console.log('res from update for master: '+JSON.stringify(res));
-            })
-            .catch((err) => {
-                alert("Failed to update list item. Please try again later.");
-                console.error(err);
-            });
-        if(listId !== 'master'){
-            updateTotalListWeights();
+        if(updateCategoryValue){
+            let select = document.getElementById('itemCategory-'+row).value;
+            data['item_category'] = select;
         }
 
+        if (itemIdValue.startsWith('new')) {
+            create = true;
+        } else {
+            create = false;
+            url += '/' + itemIdValue;
+            if (isMasterList) {
+                data['updateMaster'] = true;
+            } else if (isNewRow) {
+                data['isNewRow'] = true;
+            }
+        }
+        // console.log('data in update: '+ JSON.stringify(data));
+        //POST request
+        axios.post(url, data)
+            .then((res) => {
+                let resData = res.data;
+
+                if (resData.status === '1') {
+                    flashBorder(element, true);
+
+                    if (create) {
+                        itemId.value = resData.newId;
+                    }
+                    getDeleteBtnData(itemId.value, row);
+                } else {
+                    flashBorder(element, false);
+                    alert(resData.msg || "Update failed, please check your input.");
+                }
+            })
+            .catch((err) => {
+                // Enhanced error handling
+                flashBorder(element, false);
+                alert("Failed to update list item. Please try again later.");
+                console.error("Update error:", err);
+            });
+
+        if (!isMasterList) {
+            updateTotalListWeights();
+        }
     };
+
+
     function updateTotalListWeights() {
-        let weightsForPW = document.querySelectorAll(".for-total-list-weight");
         let baseWeight = 0;
         let totalPackWeight = 0;
         let maxPackWeight = document.getElementById("maxPackWeight").value;
         let classWarningValue = document.getElementById('classWarningValue').value;
         let uomText = "LBS";
-        weightsForPW.forEach(function (weightForPW) {
-            let id = weightForPW.id;
-            let idArr = id.split("-");
-            let arrLength = idArr.length;
-            let row = idArr[arrLength - 1];
-            let packedAmount = document.getElementById(
-                "packedAmount-" + row
-            ).value;
-            let converter = 1;
-            let rowWeight = 0;
-            let itemWeight = document.getElementById("itemWeight-" + row).value;
-            let uom = document.getElementById("uom").value;
-            let itemCategoryElement = document.getElementById(
-                "itemCategory-" + row
-            );
 
-            let itemCategory = "";
-            if (itemCategoryElement) {
-                itemCategory = itemCategoryElement.value;
+        let listId = document.getElementById('listId').value;
+        let url = `/get-pack-data/${listId}`;
+
+        axios.get(url)
+        .then((res) => {
+            let data = res.data;
+            let listData = data.listData;
+            console.log('list data for pack weights: '+ JSON.stringify(listData));
+            if(data.status === '1'){
+               baseWeight = listData['baseWeight'];
+               totalPackWeight = listData['totalPackWeight'];
+               maxPackWeight = listData['maxPackWeight'];
+               uomText= listData['weightUom'];
+               classWarningValue =listData['classWarningValue']
+
+               if (+baseWeight > +maxPackWeight) {
+                   let divElement = document.getElementById("weightWarning-div");
+                   divElement.innerText ="Base weight (" +  baseWeight.toFixed(3) +" " +uomText +") exceedes the weight for the '" +classWarningValue+"' style of hiking.";
+
+                   divElement.style.display = "block";
+               } else {
+                   document.getElementById("weightWarning-div").style.display = "none";
+               }
+
+               document.getElementById("baseWeight").value = baseWeight.toFixed(3);
+               document.getElementById("totalPackWeight").value =
+                   totalPackWeight.toFixed(3);
+            }else{
+                alert(data.msg);
+                return;
             }
 
-            if (itemCategory === undefined || itemCategory === null) {
-                itemCategory = "";
-            }
 
-            if (uom === "us") {
-                if (document.getElementById("uom-oz-" + row).checked === true) {
-                    converter = ounceConverter;
-                }
-            } else {
-                uomText = "KG";
-                if (
-                    document.getElementById("uom-gram-" + row).checked === true
-                ) {
-                    converter = gramConverter;
-                }
-            }
-
-            rowWeight = +packedAmount * (+itemWeight / converter);
-            totalPackWeight = totalPackWeight + rowWeight;
-
-            if (itemCategory !== "consumables") {
-                baseWeight = baseWeight + rowWeight;
-            }
         });
 
-        if (+baseWeight > +maxPackWeight) {
-            let divElement = document.getElementById("weightWarning-div");
-            divElement.innerText ="Base weight (" +  baseWeight.toFixed(3) +" " +uomText +") exceedes the weight for the '" +classWarningValue+"' style of hiking.";
-
-            divElement.style.display = "block";
-        } else {
-            document.getElementById("weightWarning-div").style.display = "none";
-        }
-
-        document.getElementById("baseWeight").value = baseWeight.toFixed(3);
-        document.getElementById("totalPackWeight").value =
-            totalPackWeight.toFixed(3);
     }
     function createListItemInput(
         type,
@@ -771,7 +843,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
     function getCategroySelect(row, groupCategory = null, listen = true) {
 
         let select = document.createElement("select");
-        select.id = "ItemCategory-" + row;
+        select.id = "itemCategory-" + row;
         select.name = "itemCategory-" + row;
         select.setAttribute("data-column-name", "item_category");
         select.className = "form-control";
@@ -792,9 +864,9 @@ window.addEventListener("DOMContentLoaded", function (e) {
             }
         };
 
-        // To use the function and handle the response data
+
         optionList().then((data) => {
-            // Do something with the response data
+
             for (let i = 0; i < data.length; i++) {
                 let option = document.createElement("option");
                 option.value = data[i].value;
@@ -881,11 +953,8 @@ window.addEventListener("DOMContentLoaded", function (e) {
         radio.id = "uom-" + uom + "-" + row;
         radio.setAttribute("data-column-name", dataColumnName);
 
-        if (uom === "gram" || uom === "oz") {
-            radio.checked = true;
-        }
         radio.addEventListener("change", function () {
-            convertMeasurement(row);
+            updateItemUOM(row, radio);
         });
         return radio;
     }
@@ -916,6 +985,12 @@ window.addEventListener("DOMContentLoaded", function (e) {
         axios
             .post(url, data, listId)
             .then((res) => {
+                if(res.data.status === '1'){
+                    flashBorder(element, true);
+                }else{
+                    flashBorder(element, false);
+                    alert(res.data.msg);
+                }
                 // alert(res.data.msg);
             })
             .catch((err) => {
@@ -992,7 +1067,12 @@ window.addEventListener("DOMContentLoaded", function (e) {
                                 display: false,
                             },
                             plugins: {
-                                datalabels: false, // Removing this line shows the datalabels again
+                                datalabels: false,
+                                legend: {
+                                    labels: {
+                                        color: '#fff'
+                                    }
+                                }
                             },
                             animation: {
                                 animateRotate: true,
@@ -1020,8 +1100,115 @@ window.addEventListener("DOMContentLoaded", function (e) {
     this.window.showConvrsionAlert = function showConvrsionAlert(){
         alert('Changing this value will also update the units of measure and associated values for any item on this gear list.');
     }
+    this.window.confirmDelete = function confirmDelete(element) {
+
+        // let isMaster = document.getElementById('isMaster').value;
+        let isMaster = document.getElementById('isMaster')?.value === 'true';
+        if(!isMaster){
+            console.log('is master: '+ isMaster);
+        }
+        let href = element.getAttribute('data-href');
+        let name = element.getAttribute('data-object-name');
+        let objectType = element.getAttribute('data-object-type');
+        let anchor = document.getElementById('deleteObjectAnchor');
+        let modalBody = document.getElementById('deleteModalBody');
+        let text = `Are you sure you want to delete ${objectType} ${name}?`;
+        let helperDiv = document.getElementById('deleteHelper');
+        let helptext;
+        helperDiv.innerText = '';
+        if(name == '' || name === null || name === undefined){
+            text = `Are you sure?`;
+        }
+        if(objectType === 'item:' && isMaster === false){
+            let listName = element.getAttribute('data-list-name');
+            helptext = `*Deleting an item from the '${listName}' Gear List will not delete it from your Gear Shed.`;
+            helperDiv.append(helptext);
+        }
+        else if(objectType === 'item:' && isMaster === true){
+            helptext = `*Deleting an item from your Gear Shed will delete it from all Gear Lists.`;
+            helperDiv.append(helptext);
+        }
+        else if(objectType === 'category:' && isMaster ===false){
+            text = `Are you sure you want to delete all items in the ${name} category from this list?`;
+        }
+        else if(objectType === 'category:' && isMaster ===true){
+            text = `Are you sure you want to delete all items in the ${name} category from ALL your lists?`;
+        }
+        else if(objectType === 'list:' ){
+            text = `Are you sure you want to delete the ${name} list?`;
+        }
+        else{
+            helperDiv.style.display = 'none';
+        }
+
+        modalBody.innerHTML = text;
+        anchor.setAttribute('href',href);
+
+    }
+
+    function removeRow(row){
+
+        let tableRow = document.getElementById(`row-${row}`)
+            tableRow.remove();
+
+    }
+    function createDeleteButton(row) {
+        let isMaster = document.getElementById('isMaster').value;
+        const button = document.createElement('button');
+        button.className = 'btn btn-sm btn-danger';
+        button.title = 'Delete Item';
+        button.id =`deleteItemBtn-${row}`;
+        button.setAttribute('data-href','');
+        button.setAttribute('data-object-name','');
+        button.setAttribute('data-object-id','');
+        button.setAttribute('data-object-type','item:');
+        if(isMaster === 'false'){
+            button.setAttribute('data-list-name',document.getElementById('listName').value);
+        }else{
+            button.setAttribute('data-list-name','master');
+        }
 
 
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-trash';
+
+        button.appendChild(icon);
+        button.onclick = function() {
+            removeRow(row);
+        };
+
+        return button;
+    }
+
+    function getDeleteBtnData(id,row){
+        let deleteBtn = document.getElementById(`deleteItemBtn-${row}`);
+        let url = `/list-item/${id}`;
+
+        axios
+        .get(url)
+        .then((res) => {
+            if (res.data.status != "1") {
+                alert(res.data.msg);
+                return;
+            }
+
+            let item = res.data.item;
+            deleteBtn.setAttribute('data-href',`/remove-list-item/${item.id}`);
+            deleteBtn.setAttribute('data-object-name',item.item_name);
+            deleteBtn.setAttribute('data-object-id',item.id);
+            deleteBtn.setAttribute('data-bs-toggle',"modal")
+            deleteBtn.setAttribute('data-bs-target',"#deleteAlertModal");
+            deleteBtn.onclick = function(){
+                confirmDelete(deleteBtn);
+            }
+
+        })
+        .catch((err) => {
+            alert(err);
+        });
+
+
+    }
 
     document.querySelectorAll(".sortable").forEach(function (table) {
         const categoryId = table.getAttribute("data-category-id");
@@ -1134,7 +1321,7 @@ window.addEventListener("DOMContentLoaded", function (e) {
     let assignToListModal =  document.getElementById('AssignItemToListModal');
 
     if(assignToListModal !== undefined && assignToListModal !== null){
-        console.log('assign to list modal: '+JSON.stringify(assignToListModal));
+
         assignToListModal.addEventListener('hide.bs.modal', function () {
             let tableBody = document.getElementById('modal-assign-item-table-body');
             while(tableBody.firstChild){
@@ -1143,4 +1330,6 @@ window.addEventListener("DOMContentLoaded", function (e) {
 
         });
     }
+
+
 });

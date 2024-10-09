@@ -2,10 +2,10 @@
 <div class='modal-container'>
     <div class="modal fade" id="AssignItemToListModal" tabindex="-1" aria-labelledby="AssignItemToListModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="font-family:'Roboto', sans-serif;color: #f5f5f5;background-color: #1a1a1a;">
+        <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="AssignItemToListModalLabel"></h5>
-            <button style="background-color: #f5f5f5" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button  type="button" class="btn-close modal-x" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
           <form action="/assign-to-gear-list" method="post">

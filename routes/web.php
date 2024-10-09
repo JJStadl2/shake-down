@@ -4,18 +4,29 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 
+//view routs
 Route::get('/', function () {
     return view('welcome');
 
 });
-//view routs
 Route::get('/dashboard', function () {
     if(Auth::check()){
         return  view('dashboard');
     }else{
         return redirect('/login');
     }
-    //  return view('dashboard');
+
+});
+Route::get('/about', function () {
+    return view('about');
+
+});
+Route::get('/faqs', function () {
+    return view('faqs');
+
+});
+Route::get('/how-to', function () {
+    return view('how-to');
 
 });
 
@@ -40,7 +51,6 @@ Route::get('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 
 )->name('list-show');
 Route::post('/gear-list/{id}', [App\Http\Controllers\GearListsController::class, 'update']
 )->name('list-update');
-
 Route::post('/edit-gear-list', [App\Http\Controllers\GearListsController::class, 'edit']
 )->name('list-edit');
 Route::get('/gear-list', [App\Http\Controllers\GearListsController::class, 'create']
@@ -53,6 +63,8 @@ Route::get('/gear-list-analytics/{id}', [App\Http\Controllers\GearListsControlle
 )->name('list-analytics');
 Route::get('/remove-category/{id}/{category}', [App\Http\Controllers\GearListsController::class, 'removeCategory']
 )->name('list-remove-category');
+Route::post('/add-user-gear-to-list/{listId}', [App\Http\Controllers\GearListsController::class, 'assignUserItemsToList']
+)->name('assign-item-to-list');
 
 //gear list item routes
 Route::get('/all-list-items', [App\Http\Controllers\GearListItemsController::class, 'itemsMaster']
@@ -69,6 +81,8 @@ Route::post('/update-caterogry-order',  [App\Http\Controllers\GearListItemsContr
 //item routes
 Route::post('/list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'update']
 )->name('item-update');
+Route::get('/list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'show']
+)->name('item-show');
 Route::get('/list-item', [App\Http\Controllers\GearListItemsController::class, 'create']
 )->name('item-create');
 Route::post('/list-item', [App\Http\Controllers\GearListItemsController::class, 'store']
@@ -77,12 +91,16 @@ Route::get('/destroy-list-item/{id}', [App\Http\Controllers\GearListItemsControl
 )->name('item-destroy');
 Route::get('/remove-list-item/{id}', [App\Http\Controllers\GearListItemsController::class, 'remove']
 )->name('item-remove');
+Route::post('/update-item-uom', [App\Http\Controllers\GearListItemsController::class, 'updateGearItemUOM']
+)->name('item-update-uom');
+Route::get('/get-user-items/{listId}', [App\Http\Controllers\GearListItemsController::class, 'getUserItemsToAssign']
+)->name('get-assign-item');//"/add-user-gear-to-list/{{ $gearList->id }}"
 
 
-//user item routes
-Route::post('/add-gear-items',  [App\Http\Controllers\UserItemsController::class, 'addUserItems']
+//master list and item routes
+Route::post('/add-gear-items',  [App\Http\Controllers\GearListItemsController::class, 'addMasterGearItems']
 )->name('add-master-items');
-Route::post('/assign-to-gear-list',  [App\Http\Controllers\UserItemsController::class, 'assignUserItem']
+Route::post('/assign-to-gear-list',  [App\Http\Controllers\GearListsController::class, 'assignMasterItem']
 )->name('assign-master-items');
 
 //gear item API search
@@ -91,8 +109,8 @@ Route::get('/search-api', [App\Http\Controllers\GearSearchController::class, 'se
 //js helpers
 Route::get('/list-item-categories', [App\Http\Controllers\GearListItemsController::class, 'getCategories']
 )->name('get-categories');
-Route::post('/update-session', [App\Http\Controllers\GearListsController::class, 'updateSession']
-)->name('update-session');
-Route::get('/get-user-lists/{userItemId}', [App\Http\Controllers\GearListsController::class, 'getUserLists']
+Route::get('/get-user-lists/{masterItemId}', [App\Http\Controllers\GearListsController::class, 'getUserLists']
 )->name('get-user-lists');
+Route::get('/get-pack-data/{list_Id}', [App\Http\Controllers\GearListsController::class, 'getPackData']
+)->name('get-pack-data');
 

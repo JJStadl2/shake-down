@@ -136,7 +136,8 @@ class GearLists extends Model
         $totalPackWeight = 0;
         $sort = ['item_weight','ASC'];
         $fromWeight = true;
-        $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom,$fromWeight);
+        // $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom,$fromWeight);
+        $gearListItems = GearListItems::where('list_id',$gearList->id)->get();
         $maxListWeight = self::getlistClassByKey($gearList->list_class);
         $listClassWarning = $maxListWeight->display;
 
@@ -149,7 +150,8 @@ class GearLists extends Model
         }
 
         foreach($gearListItems as $item){
-            $line_weight = ($item->item_unit_weight * $item->amount);
+            // $line_weight = ($item->item_unit_weight * $item->amount);
+            $line_weight = ($item->minimum_unit_weight * $item->amount);
             $totalPackWeight+= $line_weight;
 
             if($item->item_category !== 'consumables' ){
@@ -159,8 +161,10 @@ class GearLists extends Model
 
 
         if($gearList->uom === 'us'){
-            $baseWeight = $baseWeight/GearListItems::$usConversionFactor;
-            $totalPackWeight = $totalPackWeight/GearListItems::$usConversionFactor;
+            // $baseWeight = $baseWeight/GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
+            // $totalPackWeight = $totalPackWeight/GearListItems::$usConversionFactor;
+            $baseWeight = ($baseWeight * GearListItems::$gramsToOunceConversionFactor) /GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
+            $totalPackWeight = ($totalPackWeight * GearListItems::$gramsToOunceConversionFactor)/GearListItems::$usConversionFactor;
         }else{
             $baseWeight = $baseWeight/GearListItems::$metricConversionFactor;
             $totalPackWeight = $totalPackWeight/GearListItems::$metricConversionFactor;
@@ -183,7 +187,8 @@ class GearLists extends Model
         }
 
         $sort = ['item_weight','ASC'];
-        $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
+       // $gearListItems = GearListItems::getSortedListItems($gearList->id,$sort,$gearList->uom);
+       $gearListItems = GearListItems::where('list_id',$gearList->id)->get();
         $categories = DB::table('item_categories')->orderBy('category','asc')->get(['category','value']);
         $listData = [];
         $labels = [];
@@ -231,7 +236,10 @@ class GearLists extends Model
                 $category = $item->item_category;
             }
             $weight = $listData[$category]['weight'];
-            $weight += ($item->item_unit_weight * $item->amount)/$conversionFactor;
+            // $weight += ($item->item_unit_weight * $item->amount)/$conversionFactor;
+            // $weight += ($item->minimum_unit_weight * $item->amount)/$conversionFactor;
+            $weight += ($item->minimum_unit_weight * $item->amount);
+
             $listData[$category]['weight'] = $weight;
 
         }
@@ -240,8 +248,21 @@ class GearLists extends Model
         foreach($listData as $data){
             if($data['weight'] > 0){
                 $labels[] = $data['label'];
-                $weights[] = $data['weight'];
                 $chartColors[] = $data['color'];
+                if($gearList->uom === 'us'){
+                    // $baseWeight = $baseWeight/GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
+                    // $totalPackWeight = $totalPackWeight/GearListItems::$usConversionFactor;
+                    // $newWeight = ( $data['weight'] * GearListItems::$gramsToOunceConversionFactor) /GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
+                    // $newWeight = ( $data['weight'] * GearListItems::$gramsToOunceConversionFactor) /GearListItems::$usConversionFactor;//$gramsToOunceConversionFactor
+                    $newWeight = ( $data['weight'] / GearListItems::$poundToGramsConversionFactor);
+                }else{
+                    $newWeight =  $data['weight']/GearListItems::$metricConversionFactor;
+
+
+                }
+
+                $weights[] = $newWeight;
+
             }
 
         }

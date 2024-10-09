@@ -24,7 +24,7 @@ class GearListsController extends Controller
             return redirect()->back()->with('error','Please login');
         }
 
-        $gearLists = GearLists::where('user_id',$user->id)->get();
+        $gearLists = GearLists::where('user_id',$user->id)->where('master_list',false)->get();
 
         if(!count($gearLists)){
             return redirect('/gear-list')->with('info','Please create a gear list.');
@@ -115,7 +115,7 @@ class GearListsController extends Controller
         $id = $request->id ?? false;
         $inputs = $request->except(['_token', 'q', 'id']);
         $updatItemUOM = false;
-        $oldUOM = '';
+        $newUOM = '';
 
         if(empty($id)){
             return redirect()->back()->with('error','No list id provided. Please try again later')->withInput();
@@ -132,10 +132,16 @@ class GearListsController extends Controller
             return redirect()->back()->with('error','No gear list found.')->withInput();
         }
         foreach($inputs as $key => $value){
-            //TODO-> Add weight conversion from us-> metric for all items and check/for when Item is added from master items view.
+
             if($key === 'uom' && $value !== $gearList->uom){
-                $oldUOM = $gearList->uom;
+                $newUOM = $value;
+                array_merge($inputs,GearListItems::$uomArray);
                 $updatItemUOM = true;
+                if($newUOM === 'us'){
+                    $inputs['in_ounces'] = true;
+                }else{
+                    $inputs['in_grams'] = true;
+                }
 
             }
             $gearList->$key = $value;
@@ -149,9 +155,23 @@ class GearListsController extends Controller
         }
 
         if($updatItemUOM){
-            $updatItemUOM = GearListItems::updateItemUomValues($id, $oldUOM);
-            if(!$updatItemUOM){
-                return redirect()->back()->with('error','Gear List changes saved, but an error occurred when updatig the gear items weight values.')->withInput();
+
+            try{
+                $gearListItems = GearListItems::where('list_id',$gearList->id)->get();
+            }catch(\Exception $e){
+                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                return redirect()->back()->with('error','Failed to find items for list.')->withInput();
+            }
+            if(empty($gearListItems) || $gearListItems->isEmpty()){
+                return redirect()->back()->with('error','Failed to find items for list.')->withInput();
+            }
+            foreach($gearListItems as $gearListItem){
+                $updatItemUOM = GearListItems::updateItemUomValues($gearListItem, $newUOM, $inputs);
+                if(!$updatItemUOM){
+                    Log::error(__FILE__.' '.__LINE__.' failed to update/convert UOM for items at edit list level: '.print_r($gearListItem,true));
+                   continue;
+                }
+
             }
         }
         return redirect()->back()->with('success','Changes saved.')->withInput();
@@ -212,15 +232,15 @@ class GearListsController extends Controller
             return redirect()->back()->with('error','Failed to deleted list.');
         }
 
-        // try{
-        //     foreach($gearListItems as $item){
-        //         $item->delete();
-        //     }
+        try{
+            foreach($gearListItems as $item){
+                $item->delete();
+            }
 
-        // }catch(\Exception $e){
-        //     Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
-        //     return redirect()->back()->with('error','List deleted but failed to delte items.');
-        // }
+        }catch(\Exception $e){
+            Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+            return redirect()->back()->with('error','List deleted but failed to delte items.');
+        }
 
         return redirect()->back()->with('success','List and items deleted.');
 
@@ -238,44 +258,36 @@ class GearListsController extends Controller
             return redirect()->back()->with('error','Category not found in list.');
         }
 
+        $isMaster = ($gearListItems[0]->list_id === $gearListItems[0]->master_list_id) ? true : false;
+        $masterListId =  $gearListItems[0]->master_list_id;
+
         foreach($gearListItems as $item){
-            //$listItem = GearListItems::where('id',$item->id)->first();
-            $item->list_id = '';
 
             try{
-                $item->save();
+                $item->delete();
             }catch(\Exception $e){
                 Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
                 return redirect()->back()->with('error','Failed to save changes to list.');
             }
 
         }
+        if($isMaster){
+            GearListItems::where('master_list_id',$masterListId)->where('item_category',$category)->delete();
+        }
 
         return redirect()->back()->with('success','Gear list updated.');
     }
 
-    public function updateSession(Request $request){
-    
-        $masterItemOptions = Session::get('masterItemOptions') ?? [];
-
-        foreach($request->input() as $key => $value){
-
-            $masterItemOptions->$key = $value;
-        }
-        Session::put('masterItemOptions',$masterItemOptions);
-
-        return response()->json(['status'=>'1','msg'=>'Updated session vars.']);
-    }
-
-    public function getUserLists($userItemId){
+    public function getUserLists($itemId){
 
         $userId = Auth::user()->id;
+
         if(empty($userId)){
             return response()->json(['status'=>'0','msg'=>'No user ID provided.']);
         }
 
         try{
-             $userLists = GearLists::where('user_id',$userId)->orderBy('id','ASC')->get(['id','name']);
+             $userLists = GearLists::where('user_id',$userId)->where('master_list',false)->orderBy('id','ASC')->get(['id','name']);
 
         }catch(\Exception $e){
             Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
@@ -286,7 +298,7 @@ class GearListsController extends Controller
             return response()->json(['status'=>'0','msg'=>'No  gear lists found for this user.']);
         }
 
-        $assignedListArray = UserItems::getItemAssignments($userItemId);
+        $assignedListArray = GearListItems::getItemAssignments($itemId);
         foreach($userLists as $list){
 
             if(in_array($list->id, $assignedListArray)){
@@ -300,5 +312,71 @@ class GearListsController extends Controller
         return response()->json(['status'=>'1','userLists' => $userLists, 'msg'=>'Lists!']);
 
     }
+    public function assignMasterItem(Request $request){
 
+        $masterItemId = $request->assignItemId ?? false;
+
+        if(empty($masterItemId)){
+            return redirect()->back()->with('error','No item provided.');
+        }
+
+        $response =  GearListItems::manageListAssigments($request);
+
+        if($response['status'] !== 1){
+            return redirect()->back()->with('warning',$response['msg']);
+        }
+
+        return redirect()->back()->with('success',$response['msg']);
+
+    }
+
+    public function getPackData($listId){
+        try {
+            $gearList = GearLists::where('id', $listId)->first();
+        } catch (\Exception $e) {
+            Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+            return response()->json(['status'=>'0','msg'=>'Error fetching gear list.']);
+        }
+
+        if (empty($gearList)) {
+            return response()->json(['status'=>'0','msg'=>'No list found.']);
+        }
+        GearLists::checkWeight($gearList);
+
+        return response()->json(['status'=>'1','msg'=>'found.','listData'=>$gearList]);
+    }
+
+    public function assignUserItemsToList(Request $request, $listId){
+        Log::debug(__FILE__.' '.__LINE__.' request in assign to list: '.print_r($request->input(),true));
+        $itemIds = $request->itemIds ?? false;
+        if(empty($listId)){
+            return redirect()->back()->with('error','No list Id provided.');
+        }
+        if(empty($itemIds)){
+            return redirect()->back()->with('error','Please check the checkbox next to the items you want added to this list.');
+        }
+
+        foreach($itemIds as $item_id){
+            $masterItem = GearListItems::where('id',$item_id)->first();
+            $gearItem = new GearListItems();
+            foreach($masterItem->getAttributes() as $key => $value){
+                if($key !=='id' && $key !=='list_id' && $key !== 'master_item_id'){
+                    $gearItem->$key = $value;
+                }
+
+            }
+            $gearItem->list_id = $listId;
+            $gearItem->master_item_id = $item_id;
+            try{
+               $gearItem->save();
+            }catch(\Exception $e){
+                Log::error(__FILE__.' '.__LINE__.' '.$e->getMessage());
+                return redirect()->back()->with('error','Failed to add items to list.');
+            }
+
+        }
+
+        return redirect('/list-items/'.$listId)->with('success','Items added to list.');
+
+    }
 }

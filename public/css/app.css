@@ -189,6 +189,10 @@ html, body {
   color: #f5f5f5;
 }
 
+.btn-danger {
+  background-color: #c0392b;
+}
+
 .btn-primary {
   padding: 15px 30px;
   background-color: #c0392b;
@@ -198,6 +202,7 @@ html, body {
   text-decoration: none;
   border-radius: 5px;
   transition: background-color 0.3s ease;
+  border-color: #333;
 }
 
 .btn-primary:focus,
@@ -351,4 +356,126 @@ html, body {
 .master-gear-items-catergory-container {
   margin-left: 1%;
   margin-right: -4%;
+}
+
+.modal-x {
+  background-color: #f5f5f5;
+}
+
+.modal-content {
+  font-family: "Roboto", sans-serif;
+  color: #f5f5f5;
+  background-color: #1a1a1a;
+}
+
+#deleteHelper {
+  font-size: small;
+  text-align: center;
+}
+
+#deleteModalBody {
+  text-align: center;
+}
+
+.about-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.about-title {
+  font-size: 2rem;
+  color: #007bff;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.about-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #343a40;
+}
+
+.btn-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.faqs-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.faqs-title {
+  font-size: 2rem;
+  color: #007bff;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.faq-item {
+  margin-bottom: 15px;
+}
+
+.faq-question {
+  font-weight: bold;
+  color: #343a40;
+}
+
+.faq-answer {
+  color: #6c757d;
+}
+
+.custom-scrollbar {
+  max-height: 600px; /* Set the maximum height of the modal body */
+  overflow-y: auto; /* Enable vertical scrollbar */
+}
+
+.tooltip-custom {
+  cursor: pointer;
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
+  color: #007bff;
+}
+
+.gear-section {
+  margin: 1rem 0;
+}
+
+.how-to-container {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: black;
+}
+
+.how-to-title {
+  padding-top: 2.5%;
+  color: #007bff;
+  text-align: center;
+}
+
+.how-to-item {
+  margin-bottom: 15px;
+}
+
+.how-to-question {
+  font-weight: bold;
+  color: #343a40;
+}
+
+.how-to-answer {
+  color: #6c757d;
+}
+
+.how-to-card {
+  background-color: #1a1a1a;
+  color: #f5f5f5;
 }
