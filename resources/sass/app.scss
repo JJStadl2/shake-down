@@ -437,8 +437,34 @@ html,body {
   .tooltip-custom {
     cursor: pointer;
     text-decoration: underline dotted;
+    color: #007bff;
 }
 .gear-section {
     margin: 1rem 0;
 }
-
+.how-to-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    // color: #343a40;
+    color: black;
+}
+.how-to-title {
+    padding-top: 2.5%;
+    color: #007bff;
+    text-align: center;
+}
+.how-to-item {
+    margin-bottom: 15px;
+}
+.how-to-question {
+    font-weight: bold;
+    color: #343a40;
+}
+.how-to-answer {
+    color: #6c757d;
+}
+.how-to-card{
+    background-color: #1a1a1a;
+    color: #f5f5f5;
+}
