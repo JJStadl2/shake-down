@@ -62,7 +62,12 @@
                 <span class="item-arrow">&#9660;</span>
 
             </div>
-            <div class="item-collapsible-content @if(!empty($newCategory) && $newCategory === $itemCat->value) open @endif">
+            @php
+                $openClass = (!empty($newCategory) && $newCategory === $itemCat->value) ? 'open' : '';
+
+            @endphp
+           
+            <div class="item-collapsible-content {{ $openClass }}">
                 <table class="table table-dark sortable" data-category-id="list-items">
                     <thead>
                         <tr>
@@ -78,10 +83,13 @@
                         </tr>
                     </thead>
                     <tbody id="categoryTable-{{ $categoryCounter }}">
-                        {{-- @php $i = 1; @endphp --}}
+
                         @foreach ($gearListItems as $item)
                             @if ($item->item_category === $itemCat->value)
                                 <tr data-id="{{ $item->id }}">
+                                    @if(!empty($openClass))
+                                        <input type="hidden"  id="newRow-{{ $i }}"  value="true" />
+                                    @endif
                                     <input type="hidden" data-column-name="id" id="id-{{ $i }}" name="id[]"
                                         value="{{ $item->id }}" />
                                     <th scope="row">
