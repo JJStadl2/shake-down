@@ -14,7 +14,7 @@
                 <div id="listHelp" class="list-form-text">Add items once it is created.</div>
             </div>
             <div class="col-md-4">
-                <a href="/all-list-items" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: right;">Your Gear</a>
+                <a href="/all-list-items" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: right;">Gear Shed</a>
             </div>
         </div>
     </div>

@@ -1,5 +1,5 @@
 @extends('layouts.header-footer')
-@section('title','Gear | ')
+@section('title','Gear Shed | ')
 @section('content')
 @include('modals.add-list-item-modal')
 @include('modals.assign-item-to-lists-modal')
@@ -11,7 +11,7 @@
 
         </div>
         <div class="col-md-6">
-           
+
         </div>
         <div class="col-md-2">
             <a href="/gear-list" class="btn btn-primary  btn-sm mt-2 py-2 px-3" style="float: right;" >New List</a>

@@ -8,7 +8,7 @@
                 <div class="card" style="width: 18rem;">
                     <div class="card-img-top create-card"></div>
                     <div class="card-body">
-                    <p class="card-text">Create a New List</p>
+                    <p class="card-text">New Gear List</p>
                     <a href="/gear-list" class="btn btn-primary">Create</a>
                     </div>
                 </div>
@@ -17,7 +17,7 @@
                 <div class="card" style="width: 18rem;">
                     <div class="card-img-top view-card"></div>
                     <div class="card-body">
-                    <p class="card-text">View Saved Gear Lists</p>
+                    <p class="card-text">Gear Lists</p>
                     <a href="/gear-lists" class="btn btn-primary">View</a>
                     </div>
                 </div>
@@ -26,11 +26,11 @@
                 <div class="card" style="width: 18rem;">
                     <div class="card-img-top item-card"></div>
                     <div class="card-body">
-                    <p class="card-text">View All Gear</p>
+                    <p class="card-text">Gear Shed</p>
                     <a href="/all-list-items" class="btn btn-primary">View</a>
                     </div>
                 </div>
-               
+
             </div>
 
         </div>

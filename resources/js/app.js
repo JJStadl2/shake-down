@@ -1121,11 +1121,11 @@ window.addEventListener("DOMContentLoaded", function (e) {
         }
         if(objectType === 'item:' && isMaster === false){
             let listName = element.getAttribute('data-list-name');
-            helptext = `*Deleting an item from this list (${listName}) will not delete it the 'Your Gear' section.`;
+            helptext = `*Deleting an item from the '${listName}' Gear List will not delete it from your Gear Shed.`;
             helperDiv.append(helptext);
         }
         else if(objectType === 'item:' && isMaster === true){
-            helptext = `*Deleting an item from the 'Your Gear' section will delete it from all 'Gear Lists'.`;
+            helptext = `*Deleting an item from your Gear Shed will delete it from all Gear Lists.`;
             helperDiv.append(helptext);
         }
         else if(objectType === 'category:' && isMaster ===false){

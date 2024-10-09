@@ -16,11 +16,11 @@
                     min='1' value="1" />
             </div>
             <div class="col-md-2 mb-3" style="margin-right: -8.4%;">
-                <button style="margin-left: -150%; margin-top:10%;" class="btn btn-primary btn-sm py-2 px-3" onclick="addListItem();">+ Gear</button>
+                <button style="margin-left: -150%; margin-top:10%;" class="btn btn-primary btn-sm py-2 px-3" onclick="addListItem();">+ New</button>
             </div>
             <div class="col-md-2 mb-3" style="margin-top: 1%;">
                 <button id="searchGearBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: left;"  data-bs-toggle="modal" data-bs-target="#gearSearchModal" onclick="showGearAssignModal('{{ $gearList->id }}')">
-                    Search
+                    Your Gear
                 </button>
                 <button  id="listChartBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: right;"  data-bs-toggle="modal" data-bs-target="#gearListChartModal">
                     Analytics

@@ -31,7 +31,7 @@
         <div class="col-md-2 mb-3 mt-3">
 
                     <button id="searchGearBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: left;"  data-bs-toggle="modal" data-bs-target="#gearSearchModal" onclick="showGearAssignModal('{{ $gearList->id }}')">
-                        Search
+                        Your Gear
                     </button>
                     <button  id="listChartBtn" class="btn btn-primary btn-sm mt-2 py-2 px-3" style="float: right;"  data-bs-toggle="modal" data-bs-target="#gearListChartModal">
                         Analytics
@@ -66,7 +66,7 @@
                 $openClass = (!empty($newCategory) && $newCategory === $itemCat->value) ? 'open' : '';
 
             @endphp
-           
+
             <div class="item-collapsible-content {{ $openClass }}">
                 <table class="table table-dark sortable" data-category-id="list-items">
                     <thead>
@@ -212,7 +212,7 @@
                 </table>
                 <div class="row">
                     <div class="col-md-3">
-                        <button class="btn btn-primary btn-sm py-2 px3" onclick="addListItem('{{ $categoryCounter }}','{{ $itemCat->value }}');">+ Gear</button>
+                        <button class="btn btn-primary btn-sm py-2 px3" onclick="addListItem('{{ $categoryCounter }}','{{ $itemCat->value }}');">+ New</button>
                     </div>
                     <div class="col-md-3"> </div>
                     <div class="col-md-3"></div>

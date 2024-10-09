@@ -12,7 +12,7 @@
         <form action="/add-user-gear-to-list/{{ $gearList->id }}" method="post" >
             @csrf
             <div class="modal-body custom-scrollbar">
-                Search your existing gear and add it to this list.
+               
                 <div>
 
                     <table class="table table-dark">
