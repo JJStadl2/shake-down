@@ -140,7 +140,7 @@ class GearListItemsController extends Controller
         $listId = $request->list_id;
         $user = Auth::user();
         $uom = $request->uom ?? false;
-      
+
         try {
             $masterGearList = GearLists::where('user_id', $user->id)->where('master_list', true)->first();
         } catch (\Exception $e) {
@@ -442,7 +442,11 @@ class GearListItemsController extends Controller
         $id = $request->id ?? false;
         $newUOM = $request->newUOM ?? false;
         $isNewRow = $request->isNewRow ?? false;
-        $inputs = $request->except(['_token', 'q', 'id', 'newUOM']);
+        $inputs = $request->except(['_token', 'q', 'id', 'newUOM', 'isNewRow']);
+
+        if(empty($id) || empty($newUOM)){
+            return response()->json(['status' => '0', 'msg' => 'No item Id provided.', 'item'=>[]]);
+        }
 
         try {
             $gearListItem = GearListItems::where('id',$id)->first();
@@ -454,13 +458,22 @@ class GearListItemsController extends Controller
             return response()->json(['status' => '0', 'msg' => 'Failed to update and convert.', 'item'=>[]]);
         }
 
-
-        if(empty($id) || empty($newUOM)){
-            return response()->json(['status' => '0', 'msg' => 'No item Id provided.', 'item'=>[]]);
-        }
         $item = GearListItems::updateItemUomValues($gearListItem,$newUOM, $inputs);
 
-        if($isNewRow){
+        if($gearListItem->list_id === $gearListItem->master_list_id){
+            $masterItemId = $gearListItem->id;
+            $updateInputs = $item->toArray();
+            unset($updateInputs['id'],$updateInputs['list_id'],$updateInputs['master_list_id'],$updateInputs['created_at'] );
+            $updateInputs['master_item_id'] = $masterItemId;
+            try {
+                 GearListItems::where('master_item_id',$masterItemId)->update($updateInputs);
+            } catch (\Exception $e) {
+                Log::error(__FILE__ . ' ' . __LINE__ . ' ' . $e->getMessage());
+                return response()->json(['status' => '0', 'msg' => 'Failed to update and convert.', 'item'=>[]]);
+            }
+
+
+        }else if($isNewRow){
             try {
                 $masterListItem = GearListItems::where('id',$gearListItem->master_item_id)->first();
             } catch (\Exception $e) {
@@ -487,7 +500,7 @@ class GearListItemsController extends Controller
         $userItems = GearListItems::getUserItemsForAssignment($userId,$listId);
 
         if(empty($userItems)){
-            return response()->json(['status' => '0', 'msg' => "You do not have any gear items saved that are not on this list. You can add items to this list directly, or add them in the 'Your Gear' section.", 'userItems'=>[]]);
+            return response()->json(['status' => '0', 'msg' => "You do not have any gear items saved that are not on this list. You can add items to this list directly, or add them in the your Gear Shed section.", 'userItems'=>[]]);
         }
         $userItems =  GearListItems::formatItemsForAssignment($userItems);
         return response()->json(['status' => '1', 'msg' => "items", 'userItems'=>$userItems]);
